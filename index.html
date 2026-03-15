@@ -252,52 +252,44 @@
       <p><strong>Service Area:</strong> Add your city / counties here</p>
     </div>
 
-    <form id="serviceForm">
-      <div class="form-row">
-        <div class="field">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" name="name" required />
-        </div>
-        <div class="field">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" required />
-        </div>
-      </div>
+<script>
+  const form = document.getElementById("serviceForm");
+  const successMessage = document.getElementById("successMessage");
 
-      <div class="form-row">
-        <div class="field">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" name="email" />
-        </div>
-        <div class="field">
-          <label for="serviceType">Type of Service</label>
-          <select id="serviceType" name="serviceType" required>
-            <option value="">Select a service</option>
-            <option>General Repair</option>
-            <option>Installation</option>
-            <option>Preventative Maintenance</option>
-            <option>Rental Property Maintenance</option>
-            <option>Other</option>
-          </select>
-        </div>
-      </div>
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-      <div class="field">
-        <label for="address">Property Address</label>
-        <input type="text" id="address" name="address" required />
-      </div>
+    const formData = {
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      email: document.getElementById("email").value,
+      serviceType: document.getElementById("serviceType").value,
+      address: document.getElementById("address").value,
+      details: document.getElementById("details").value
+    };
 
-      <div class="field">
-        <label for="details">Describe the Work Needed</label>
-        <textarea id="details" name="details" placeholder="Tell us what needs repair or maintenance..." required></textarea>
-      </div>
+    try {
+      const response = await fetch("/api/service-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
 
-      <button type="submit">Submit Request</button>
-      <p class="note">This form is ready for your site. Next we can connect it so submissions are emailed directly to you.</p>
-      <div class="success-message" id="successMessage">
-        Thank you — your service request has been submitted.
-      </div>
-    </form>
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      successMessage.textContent = "Thank you — your service request has been submitted.";
+      successMessage.style.display = "block";
+      form.reset();
+    } catch (error) {
+      successMessage.textContent = "Sorry, there was a problem submitting your request. Please call us directly.";
+      successMessage.style.display = "block";
+    }
+  });
+</script>
   </section>
 
   <footer>
