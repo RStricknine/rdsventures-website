@@ -5,9 +5,7 @@
   <title>RDS Ventures | Residential Maintenance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -106,10 +104,6 @@
       padding: 24px;
     }
 
-    .contact-box p {
-      margin: 10px 0;
-    }
-
     form {
       background: white;
       border-radius: 10px;
@@ -134,9 +128,7 @@
       color: #374151;
     }
 
-    input,
-    textarea,
-    select {
+    input, textarea, select {
       width: 100%;
       padding: 12px;
       border: 1px solid #cbd5e1;
@@ -161,16 +153,6 @@
       cursor: pointer;
     }
 
-    button:hover {
-      opacity: 0.95;
-    }
-
-    .note {
-      font-size: 14px;
-      color: #6b7280;
-      margin-top: 10px;
-    }
-
     .success-message {
       display: none;
       margin-top: 16px;
@@ -191,14 +173,8 @@
     }
 
     @media (max-width: 768px) {
-      header h1 {
-        font-size: 34px;
-      }
-
-      .split,
-      .form-row {
-        grid-template-columns: 1fr;
-      }
+      header h1 { font-size: 34px; }
+      .split, .form-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -243,53 +219,58 @@
   <section class="section split" id="request-service">
     <div class="contact-box">
       <h2>Request Service</h2>
-      <p>
-        Need help with a repair or maintenance issue? Fill out the form and we’ll get back to you.
-      </p>
+      <p>Need help with a repair or maintenance issue? Fill out the form and we’ll get back to you.</p>
       <p><strong>Phone:</strong> (Your Phone Number)</p>
       <p><strong>Email:</strong> info@rdsventures.com</p>
       <p><strong>Hours:</strong> Monday – Friday, 8:00 AM – 5:00 PM</p>
       <p><strong>Service Area:</strong> Add your city / counties here</p>
     </div>
 
-<script>
-  const form = document.getElementById("serviceForm");
-  const successMessage = document.getElementById("successMessage");
+    <form id="serviceForm">
+      <div class="form-row">
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" required />
+        </div>
+      </div>
 
-  form.addEventListener("submit", async function (event) {
-    event.preventDefault();
+      <div class="form-row">
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" />
+        </div>
+        <div class="field">
+          <label for="serviceType">Type of Service</label>
+          <select id="serviceType" name="serviceType" required>
+            <option value="">Select a service</option>
+            <option>General Repair</option>
+            <option>Installation</option>
+            <option>Preventative Maintenance</option>
+            <option>Rental Property Maintenance</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
 
-    const formData = {
-      name: document.getElementById("name").value,
-      phone: document.getElementById("phone").value,
-      email: document.getElementById("email").value,
-      serviceType: document.getElementById("serviceType").value,
-      address: document.getElementById("address").value,
-      details: document.getElementById("details").value
-    };
+      <div class="field">
+        <label for="address">Property Address</label>
+        <input type="text" id="address" name="address" required />
+      </div>
 
-    try {
-      const response = await fetch("/api/service-request", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+      <div class="field">
+        <label for="details">Describe the Work Needed</label>
+        <textarea id="details" name="details" placeholder="Tell us what needs repair or maintenance..." required></textarea>
+      </div>
 
-      if (!response.ok) {
-        throw new Error("Request failed");
-      }
-
-      successMessage.textContent = "Thank you — your service request has been submitted.";
-      successMessage.style.display = "block";
-      form.reset();
-    } catch (error) {
-      successMessage.textContent = "Sorry, there was a problem submitting your request. Please call us directly.";
-      successMessage.style.display = "block";
-    }
-  });
-</script>
+      <button type="submit">Submit Request</button>
+      <div class="success-message" id="successMessage">
+        Thank you — your service request has been submitted.
+      </div>
+    </form>
   </section>
 
   <footer>
@@ -300,10 +281,38 @@
     const form = document.getElementById("serviceForm");
     const successMessage = document.getElementById("successMessage");
 
-    form.addEventListener("submit", function (event) {
+    form.addEventListener("submit", async function (event) {
       event.preventDefault();
-      successMessage.style.display = "block";
-      form.reset();
+
+      const formData = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        email: document.getElementById("email").value,
+        serviceType: document.getElementById("serviceType").value,
+        address: document.getElementById("address").value,
+        details: document.getElementById("details").value
+      };
+
+      try {
+        const response = await fetch("/api/service-request", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+          throw new Error("Request failed");
+        }
+
+        successMessage.textContent = "Thank you — your service request has been submitted.";
+        successMessage.style.display = "block";
+        form.reset();
+      } catch (error) {
+        successMessage.textContent = "Sorry, there was a problem submitting your request. Please call us directly.";
+        successMessage.style.display = "block";
+      }
     });
   </script>
 </body>
