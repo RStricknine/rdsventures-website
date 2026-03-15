@@ -1,151 +1,318 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>RDS Ventures | Residential Maintenance</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>RDS Ventures | Residential Maintenance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-   
-<style>
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fa;
+      color: #1f2937;
+      line-height: 1.5;
+    }
 
-body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#f4f6f8;
-color:#333;
-}
+    header {
+      background: #1f3a5f;
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
 
-header{
-background:#2c3e50;
-color:white;
-padding:60px 20px;
-text-align:center;
-}
+    header h1 {
+      margin: 0 0 10px;
+      font-size: 42px;
+    }
 
-header h1{
-margin:0;
-font-size:40px;
-}
+    header p {
+      margin: 0;
+      font-size: 20px;
+    }
 
-header p{
-font-size:20px;
-margin-top:10px;
-}
+    .hero-buttons {
+      margin-top: 25px;
+    }
 
-.hero-button{
-display:inline-block;
-margin-top:25px;
-padding:12px 25px;
-background:#27ae60;
-color:white;
-text-decoration:none;
-border-radius:5px;
-font-weight:bold;
-}
+    .hero-buttons a {
+      display: inline-block;
+      margin: 8px;
+      padding: 12px 22px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+    }
 
-.section{
-max-width:1000px;
-margin:auto;
-padding:50px 20px;
-}
+    .primary-btn {
+      background: #27ae60;
+      color: white;
+    }
 
-.services{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-margin-top:30px;
-}
+    .secondary-btn {
+      background: white;
+      color: #1f3a5f;
+    }
 
-.card{
-background:white;
-padding:25px;
-border-radius:8px;
-box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 50px 20px;
+    }
 
-.card h3{
-margin-top:0;
-}
+    .section h2 {
+      font-size: 32px;
+      margin-bottom: 15px;
+      color: #1f3a5f;
+    }
 
-.contact{
-background:#ecf0f1;
-text-align:center;
-padding:50px 20px;
-}
+    .intro {
+      font-size: 18px;
+      max-width: 850px;
+    }
 
-footer{
-text-align:center;
-padding:20px;
-font-size:14px;
-color:#777;
-}
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 22px;
+      margin-top: 30px;
+    }
 
-</style>
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .card h3 {
+      margin-top: 0;
+      color: #1f3a5f;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .contact-box {
+      background: #eef3f8;
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    .contact-box p {
+      margin: 10px 0;
+    }
+
+    form {
+      background: white;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #374151;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 16px;
+      background: white;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.95;
+    }
+
+    .note {
+      font-size: 14px;
+      color: #6b7280;
+      margin-top: 10px;
+    }
+
+    .success-message {
+      display: none;
+      margin-top: 16px;
+      padding: 14px;
+      background: #e8f7ed;
+      color: #166534;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 20px;
+      color: #6b7280;
+      font-size: 14px;
+      background: #fff;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 34px;
+      }
+
+      .split,
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <header>
+    <h1>RDS Ventures</h1>
+    <p>Residential Maintenance & Property Services</p>
+    <div class="hero-buttons">
+      <a href="#request-service" class="primary-btn">Request Service</a>
+      <a href="tel:YOUR-PHONE-NUMBER" class="secondary-btn">Call Now</a>
+    </div>
+  </header>
 
-<header>
-<h1>RDS Ventures</h1>
-<p>Residential Maintenance & Property Services</p>
-<a class="hero-button" href="#contact">Request Service</a>
-</header>
+  <section class="section">
+    <h2>Reliable Maintenance for Your Home</h2>
+    <p class="intro">
+      RDS Ventures provides dependable residential maintenance services for homeowners,
+      landlords, and rental properties. From everyday repairs to preventative upkeep,
+      we help keep your property safe, functional, and looking its best.
+    </p>
 
-<section class="section">
+    <div class="services-grid">
+      <div class="card">
+        <h3>General Repairs</h3>
+        <p>Drywall, doors, trim, fixtures, minor repairs, and punch-list items handled professionally.</p>
+      </div>
+      <div class="card">
+        <h3>Home Installations</h3>
+        <p>Lighting, shelving, hardware, fixtures, and other small home improvement installs.</p>
+      </div>
+      <div class="card">
+        <h3>Preventative Maintenance</h3>
+        <p>Routine and seasonal maintenance to catch problems early and avoid bigger repair bills.</p>
+      </div>
+      <div class="card">
+        <h3>Rental Property Upkeep</h3>
+        <p>Dependable maintenance support for landlords, turnovers, and occupied rental properties.</p>
+      </div>
+    </div>
+  </section>
 
-<h2>Reliable Home Maintenance</h2>
-<p>
-RDS Ventures provides dependable residential maintenance services to keep homes safe, functional, and looking their best. 
-We handle everyday repairs, preventative maintenance, and property upkeep so homeowners can focus on what matters most.
-</p>
+  <section class="section split" id="request-service">
+    <div class="contact-box">
+      <h2>Request Service</h2>
+      <p>
+        Need help with a repair or maintenance issue? Fill out the form and we’ll get back to you.
+      </p>
+      <p><strong>Phone:</strong> (Your Phone Number)</p>
+      <p><strong>Email:</strong> info@rdsventures.com</p>
+      <p><strong>Hours:</strong> Monday – Friday, 8:00 AM – 5:00 PM</p>
+      <p><strong>Service Area:</strong> Add your city / counties here</p>
+    </div>
 
-<div class="services">
+    <form id="serviceForm">
+      <div class="form-row">
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" required />
+        </div>
+      </div>
 
-<div class="card">
-<h3>General Repairs</h3>
-<p>Doors, drywall, fixtures, trim work, and other household repairs handled quickly and professionally.</p>
-</div>
+      <div class="form-row">
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" />
+        </div>
+        <div class="field">
+          <label for="serviceType">Type of Service</label>
+          <select id="serviceType" name="serviceType" required>
+            <option value="">Select a service</option>
+            <option>General Repair</option>
+            <option>Installation</option>
+            <option>Preventative Maintenance</option>
+            <option>Rental Property Maintenance</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
 
-<div class="card">
-<h3>Property Maintenance</h3>
-<p>Routine upkeep to keep your home or rental property in excellent condition year-round.</p>
-</div>
+      <div class="field">
+        <label for="address">Property Address</label>
+        <input type="text" id="address" name="address" required />
+      </div>
 
-<div class="card">
-<h3>Installation Services</h3>
-<p>Appliances, fixtures, lighting, shelving, and other home improvements installed correctly.</p>
-</div>
+      <div class="field">
+        <label for="details">Describe the Work Needed</label>
+        <textarea id="details" name="details" placeholder="Tell us what needs repair or maintenance..." required></textarea>
+      </div>
 
-<div class="card">
-<h3>Preventative Maintenance</h3>
-<p>Seasonal inspections and maintenance to prevent costly repairs down the road.</p>
-</div>
+      <button type="submit">Submit Request</button>
+      <p class="note">This form is ready for your site. Next we can connect it so submissions are emailed directly to you.</p>
+      <div class="success-message" id="successMessage">
+        Thank you — your service request has been submitted.
+      </div>
+    </form>
+  </section>
 
-</div>
+  <footer>
+    © 2026 RDS Ventures | Residential Maintenance & Property Services
+  </footer>
 
-</section>
+  <script>
+    const form = document.getElementById("serviceForm");
+    const successMessage = document.getElementById("successMessage");
 
-<section class="contact" id="contact">
-
-<h2>Request Service</h2>
-
-<p>
-Call or email us to schedule a service visit or request a quote.
-</p>
-
-<p>
-<strong>Phone:</strong> (803)984-8581<br>
-<strong>Email:</strong> info@rdsventures.com
-</p>
-
-</section>
-
-<footer>
-
-© 2026 RDS Ventures<br>
-Residential Maintenance Services
-
-</footer>
-
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      successMessage.style.display = "block";
+      form.reset();
+    });
+  </script>
 </body>
 </html>
