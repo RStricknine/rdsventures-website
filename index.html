@@ -2,279 +2,256 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>RDS Ventures | Residential Maintenance</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f5f7fa;
-      color: #1f2937;
-      line-height: 1.5;
-    }
-
-    header {
-      background: #1f3a5f;
-      color: white;
-      padding: 60px 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0 0 10px;
-      font-size: 42px;
-    }
-
-    header p {
-      margin: 0;
-      font-size: 20px;
-    }
-
-    .hero-buttons {
-      margin-top: 25px;
-    }
-
-    .hero-buttons a {
-      display: inline-block;
-      margin: 8px;
-      padding: 12px 22px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .primary-btn {
-      background: #27ae60;
-      color: white;
-    }
-
-    .secondary-btn {
-      background: white;
-      color: #1f3a5f;
-    }
-
-    .section {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 50px 20px;
-    }
-
-    .section h2 {
-      font-size: 32px;
-      margin-bottom: 15px;
-      color: #1f3a5f;
-    }
-
-    .intro {
-      font-size: 18px;
-      max-width: 850px;
-    }
-
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 22px;
-      margin-top: 30px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 10px;
-      padding: 24px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    }
-
-    .card h3 {
-      margin-top: 0;
-      color: #1f3a5f;
-    }
-
-    .split {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 28px;
-      align-items: start;
-    }
-
-    .contact-box {
-      background: #eef3f8;
-      border-radius: 10px;
-      padding: 24px;
-    }
-
-    form {
-      background: white;
-      border-radius: 10px;
-      padding: 24px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .field {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-      color: #374151;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 16px;
-      background: white;
-    }
-
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
-    button {
-      background: #27ae60;
-      color: white;
-      border: none;
-      padding: 14px 22px;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .success-message {
-      display: none;
-      margin-top: 16px;
-      padding: 14px;
-      background: #e8f7ed;
-      color: #166534;
-      border-radius: 6px;
-      font-weight: bold;
-    }
-
-    footer {
-      text-align: center;
-      padding: 24px 20px;
-      color: #6b7280;
-      font-size: 14px;
-      background: #fff;
-      border-top: 1px solid #e5e7eb;
-    }
-
-    @media (max-width: 768px) {
-      header h1 { font-size: 34px; }
-      .split, .form-row { grid-template-columns: 1fr; }
-    }
-  </style>
+  <title>RDS Ventures | Residential Maintenance & Property Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="RDS Ventures provides reliable residential maintenance and property services for homeowners, landlords, and rental properties."
+  />
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <header>
-    <h1>RDS Ventures</h1>
-    <p>Residential Maintenance & Property Services</p>
-    <div class="hero-buttons">
-      <a href="#request-service" class="primary-btn">Request Service</a>
-      <a href="tel:YOUR-PHONE-NUMBER" class="secondary-btn">Call Now</a>
+<body class="bg-slate-50 text-slate-800 antialiased">
+
+  <!-- Header / Nav -->
+  <header class="bg-slate-950 text-white border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-wide">RDS Ventures</h1>
+        <p class="text-sm text-slate-300">Residential Maintenance & Property Services</p>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm text-slate-200">
+        <a href="#services" class="hover:text-white">Services</a>
+        <a href="#why-us" class="hover:text-white">Why Us</a>
+        <a href="#request-service" class="hover:text-white">Request Service</a>
+      </nav>
     </div>
   </header>
 
-  <section class="section">
-    <h2>Reliable Maintenance for Your Home</h2>
-    <p class="intro">
-      RDS Ventures provides dependable residential maintenance services for homeowners,
-      landlords, and rental properties. From everyday repairs to preventative upkeep,
-      we help keep your property safe, functional, and looking its best.
-    </p>
+  <!-- Hero -->
+  <section class="bg-slate-950 text-white">
+    <div class="max-w-7xl mx-auto px-6 py-20 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
+      <div>
+        <p class="text-sm uppercase tracking-[0.2em] text-blue-300 mb-4">Professional Property Care</p>
+        <h2 class="text-4xl md:text-5xl font-semibold leading-tight">
+          Reliable maintenance support for homes, rentals, and investment properties.
+        </h2>
+        <p class="mt-6 text-lg text-slate-300 max-w-2xl">
+          RDS Ventures helps property owners keep homes safe, functional, and well maintained with dependable repair, installation, and upkeep services.
+        </p>
 
-    <div class="services-grid">
-      <div class="card">
-        <h3>General Repairs</h3>
-        <p>Drywall, doors, trim, fixtures, minor repairs, and punch-list items handled professionally.</p>
+        <div class="mt-8 flex flex-wrap gap-4">
+          <a
+            href="#request-service"
+            class="inline-flex items-center rounded-xl bg-blue-500 px-6 py-3 text-white font-medium shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition"
+          >
+            Request Service
+          </a>
+          <a
+            href="tel:YOUR-PHONE-NUMBER"
+            class="inline-flex items-center rounded-xl border border-slate-700 px-6 py-3 text-slate-100 font-medium hover:bg-slate-900 transition"
+          >
+            Call Now
+          </a>
+        </div>
       </div>
-      <div class="card">
-        <h3>Home Installations</h3>
-        <p>Lighting, shelving, hardware, fixtures, and other small home improvement installs.</p>
-      </div>
-      <div class="card">
-        <h3>Preventative Maintenance</h3>
-        <p>Routine and seasonal maintenance to catch problems early and avoid bigger repair bills.</p>
-      </div>
-      <div class="card">
-        <h3>Rental Property Upkeep</h3>
-        <p>Dependable maintenance support for landlords, turnovers, and occupied rental properties.</p>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="rounded-2xl bg-slate-800 p-5">
+            <p class="text-sm text-slate-400">Service Focus</p>
+            <p class="mt-2 text-xl font-semibold">Residential Maintenance</p>
+          </div>
+          <div class="rounded-2xl bg-slate-800 p-5">
+            <p class="text-sm text-slate-400">Clients</p>
+            <p class="mt-2 text-xl font-semibold">Owners & Rental Properties</p>
+          </div>
+          <div class="rounded-2xl bg-slate-800 p-5">
+            <p class="text-sm text-slate-400">Support</p>
+            <p class="mt-2 text-xl font-semibold">Repairs & Installations</p>
+          </div>
+          <div class="rounded-2xl bg-slate-800 p-5">
+            <p class="text-sm text-slate-400">Response</p>
+            <p class="mt-2 text-xl font-semibold">Fast, Clear Communication</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="section split" id="request-service">
-    <div class="contact-box">
-      <h2>Request Service</h2>
-      <p>Need help with a repair or maintenance issue? Fill out the form and we’ll get back to you.</p>
-      <p><strong>Phone:</strong> (Your Phone Number)</p>
-      <p><strong>Email:</strong> info@rdsventures.com</p>
-      <p><strong>Hours:</strong> Monday – Friday, 8:00 AM – 5:00 PM</p>
-      <p><strong>Service Area:</strong> Add your city / counties here</p>
+  <!-- Services -->
+  <section id="services" class="max-w-7xl mx-auto px-6 py-20">
+    <div class="max-w-3xl">
+      <p class="text-sm uppercase tracking-[0.2em] text-blue-600">Services</p>
+      <h3 class="mt-3 text-3xl md:text-4xl font-semibold text-slate-900">
+        Maintenance solutions built for real-world property needs
+      </h3>
+      <p class="mt-4 text-lg text-slate-600">
+        Whether it’s a quick repair, an installation, or preventative maintenance, RDS Ventures helps keep properties operating smoothly and looking their best.
+      </p>
     </div>
 
-    <form id="serviceForm">
-      <div class="form-row">
-        <div class="field">
-          <label for="name">Full Name</label>
-          <input type="text" id="name" name="name" required />
-        </div>
-        <div class="field">
-          <label for="phone">Phone Number</label>
-          <input type="tel" id="phone" name="phone" required />
-        </div>
+    <div class="mt-12 grid md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
+        <div class="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-xl">🛠️</div>
+        <h4 class="mt-5 text-xl font-semibold text-slate-900">General Repairs</h4>
+        <p class="mt-3 text-slate-600">
+          Minor repairs, punch-list items, fixture replacement, trim work, and everyday maintenance needs.
+        </p>
       </div>
 
-      <div class="form-row">
-        <div class="field">
-          <label for="email">Email Address</label>
-          <input type="email" id="email" name="email" />
-        </div>
-        <div class="field">
-          <label for="serviceType">Type of Service</label>
-          <select id="serviceType" name="serviceType" required>
-            <option value="">Select a service</option>
-            <option>General Repair</option>
-            <option>Installation</option>
-            <option>Preventative Maintenance</option>
-            <option>Rental Property Maintenance</option>
-            <option>Other</option>
-          </select>
-        </div>
+      <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
+        <div class="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-xl">💡</div>
+        <h4 class="mt-5 text-xl font-semibold text-slate-900">Installations</h4>
+        <p class="mt-3 text-slate-600">
+          Lighting, hardware, shelving, fixtures, and other practical upgrades installed cleanly and correctly.
+        </p>
       </div>
 
-      <div class="field">
-        <label for="address">Property Address</label>
-        <input type="text" id="address" name="address" required />
+      <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
+        <div class="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-xl">🏠</div>
+        <h4 class="mt-5 text-xl font-semibold text-slate-900">Property Maintenance</h4>
+        <p class="mt-3 text-slate-600">
+          Ongoing support for occupied homes, rental properties, and owner-managed real estate portfolios.
+        </p>
       </div>
 
-      <div class="field">
-        <label for="details">Describe the Work Needed</label>
-        <textarea id="details" name="details" placeholder="Tell us what needs repair or maintenance..." required></textarea>
+      <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
+        <div class="h-12 w-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-xl">📋</div>
+        <h4 class="mt-5 text-xl font-semibold text-slate-900">Preventative Care</h4>
+        <p class="mt-3 text-slate-600">
+          Catch issues early, reduce costly repairs, and keep your property in stronger long-term condition.
+        </p>
       </div>
-
-      <button type="submit">Submit Request</button>
-      <div class="success-message" id="successMessage">
-        Thank you — your service request has been submitted.
-      </div>
-    </form>
+    </div>
   </section>
 
-  <footer>
-    © 2026 RDS Ventures | Residential Maintenance & Property Services
+  <!-- Why Us -->
+  <section id="why-us" class="bg-white border-y border-slate-200">
+    <div class="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-start">
+      <div>
+        <p class="text-sm uppercase tracking-[0.2em] text-blue-600">Why RDS Ventures</p>
+        <h3 class="mt-3 text-3xl md:text-4xl font-semibold text-slate-900">
+          A dependable maintenance partner for owners and property managers
+        </h3>
+        <p class="mt-5 text-lg text-slate-600">
+          The goal is simple: provide consistent, practical maintenance support with clear communication and a professional standard of care.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div class="rounded-3xl bg-slate-50 p-6 border border-slate-200">
+          <h4 class="font-semibold text-slate-900">Responsive Communication</h4>
+          <p class="mt-2 text-slate-600">Know what’s happening, what’s needed, and what comes next.</p>
+        </div>
+        <div class="rounded-3xl bg-slate-50 p-6 border border-slate-200">
+          <h4 class="font-semibold text-slate-900">Property-Focused Service</h4>
+          <p class="mt-2 text-slate-600">Built around the needs of homeowners, rentals, and investment properties.</p>
+        </div>
+        <div class="rounded-3xl bg-slate-50 p-6 border border-slate-200">
+          <h4 class="font-semibold text-slate-900">Professional Standards</h4>
+          <p class="mt-2 text-slate-600">A cleaner, more reliable experience from request to completion.</p>
+        </div>
+        <div class="rounded-3xl bg-slate-50 p-6 border border-slate-200">
+          <h4 class="font-semibold text-slate-900">Scalable for Growth</h4>
+          <p class="mt-2 text-slate-600">Designed to support future scheduling, dashboards, and customer portals.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Request Service -->
+  <section id="request-service" class="max-w-7xl mx-auto px-6 py-20">
+    <div class="grid lg:grid-cols-2 gap-10">
+      <div>
+        <p class="text-sm uppercase tracking-[0.2em] text-blue-600">Request Service</p>
+        <h3 class="mt-3 text-3xl md:text-4xl font-semibold text-slate-900">
+          Tell us what you need
+        </h3>
+        <p class="mt-4 text-lg text-slate-600">
+          Submit a service request and we’ll review the details and follow up with next steps.
+        </p>
+
+        <div class="mt-8 rounded-3xl bg-slate-900 text-white p-8">
+          <h4 class="text-xl font-semibold">Contact Information</h4>
+          <div class="mt-5 space-y-3 text-slate-300">
+            <p><span class="text-white font-medium">Phone:</span> (Your Phone Number)</p>
+            <p><span class="text-white font-medium">Email:</span> info@rdsventures.com</p>
+            <p><span class="text-white font-medium">Hours:</span> Monday – Friday, 8:00 AM – 5:00 PM</p>
+            <p><span class="text-white font-medium">Service Area:</span> Add your city / counties here</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-3xl bg-white border border-slate-200 shadow-sm p-8">
+        <form id="serviceForm" class="space-y-5">
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label for="name" class="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+              <input id="name" name="name" type="text" required
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium text-slate-700 mb-2">Phone Number</label>
+              <input id="phone" name="phone" type="tel" required
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-5">
+            <div>
+              <label for="email" class="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
+              <input id="email" name="email" type="email"
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+            </div>
+            <div>
+              <label for="serviceType" class="block text-sm font-medium text-slate-700 mb-2">Type of Service</label>
+              <select id="serviceType" name="serviceType" required
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select a service</option>
+                <option>General Repair</option>
+                <option>Installation</option>
+                <option>Preventative Maintenance</option>
+                <option>Rental Property Maintenance</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="address" class="block text-sm font-medium text-slate-700 mb-2">Property Address</label>
+            <input id="address" name="address" type="text" required
+              class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
+
+          <div>
+            <label for="details" class="block text-sm font-medium text-slate-700 mb-2">Describe the Work Needed</label>
+            <textarea id="details" name="details" rows="6" required
+              class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Tell us what needs repair or maintenance..."></textarea>
+          </div>
+
+          <div>
+            <button type="submit"
+              class="w-full md:w-auto rounded-xl bg-blue-600 px-6 py-3 text-white font-medium shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition">
+              Submit Request
+            </button>
+          </div>
+
+          <div id="successMessage"
+            class="hidden rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-700 font-medium">
+            Thank you — your service request has been submitted.
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-950 text-slate-400">
+    <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p>© 2026 RDS Ventures. All rights reserved.</p>
+      <p class="text-sm">Residential Maintenance & Property Services</p>
+    </div>
   </footer>
 
   <script>
@@ -307,11 +284,11 @@
         }
 
         successMessage.textContent = "Thank you — your service request has been submitted.";
-        successMessage.style.display = "block";
+        successMessage.classList.remove("hidden");
         form.reset();
       } catch (error) {
         successMessage.textContent = "Sorry, there was a problem submitting your request. Please call us directly.";
-        successMessage.style.display = "block";
+        successMessage.classList.remove("hidden");
       }
     });
   </script>
