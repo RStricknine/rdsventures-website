@@ -129,57 +129,68 @@
 <!-- Service Area -->
 <section id="service-area" class="bg-slate-50 border-y border-slate-200">
   <div class="max-w-7xl mx-auto px-6 py-20">
+
     <div class="max-w-3xl">
       <p class="text-sm uppercase tracking-[0.2em] text-blue-600">Service Area</p>
       <h3 class="mt-3 text-3xl md:text-4xl font-semibold text-slate-900">
-        Proudly serving homeowners and property owners in our local area
+        Serving Lancaster and surrounding communities
       </h3>
       <p class="mt-4 text-lg text-slate-600">
-        RDS Ventures provides residential maintenance and property services throughout our primary service area, with support for homeowners, landlords, and rental properties.
+        RDS Ventures provides reliable residential maintenance services across our primary coverage area and nearby communities.
       </p>
     </div>
 
-    <div class="mt-12 grid lg:grid-cols-3 gap-6">
-      <div class="rounded-3xl bg-white p-6 border border-slate-200 shadow-sm">
-        <h4 class="text-xl font-semibold text-slate-900">Primary Service Area</h4>
-        <p class="mt-4 text-slate-600">
-          Lancaster, SC
-        </p>
-        <p class="mt-2 text-slate-600">
-          Indian Land, SC
-        </p>
-        <p class="mt-2 text-slate-600">
-          Fort Mill, SC
-        </p>
-        <p class="mt-2 text-slate-600">
-          Rock Hill, SC
-        </p>
+    <div class="mt-12 grid lg:grid-cols-2 gap-8 items-stretch">
+
+      <!-- Map Card -->
+      <div class="rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-white">
+        <iframe
+          src="https://www.google.com/maps?q=Lancaster,SC&output=embed"
+          class="w-full h-[350px] border-0"
+          loading="lazy"
+        ></iframe>
+
+        <div class="p-6">
+          <h4 class="text-lg font-semibold text-slate-900">Primary Service Area</h4>
+          <p class="mt-2 text-slate-600">
+            Based in Lancaster, SC with coverage throughout surrounding areas.
+          </p>
+        </div>
       </div>
 
-      <div class="rounded-3xl bg-white p-6 border border-slate-200 shadow-sm">
-        <h4 class="text-xl font-semibold text-slate-900">Additional Coverage</h4>
-        <p class="mt-4 text-slate-600">
-          Charlotte metro area
-        </p>
-        <p class="mt-2 text-slate-600">
-          Surrounding communities by request
-        </p>
-        <p class="mt-2 text-slate-600">
-          Rental and investment property support
-        </p>
-      </div>
+      <!-- Coverage Details -->
+      <div class="grid gap-6">
 
-      <div class="rounded-3xl bg-slate-900 text-white p-6 shadow-sm">
-        <h4 class="text-xl font-semibold">Need service outside this area?</h4>
-        <p class="mt-4 text-slate-300">
-          Contact us with your property location. We may still be able to help depending on the scope of work and scheduling availability.
-        </p>
-        <a
-          href="#request-service"
-          class="mt-6 inline-flex items-center rounded-xl bg-blue-500 px-5 py-3 text-white font-medium hover:bg-blue-600 transition"
-        >
-          Request Service
-        </a>
+        <div class="rounded-3xl bg-white p-6 border border-slate-200 shadow-sm">
+          <h4 class="text-xl font-semibold text-slate-900">Primary Locations</h4>
+          <div class="mt-4 grid grid-cols-2 gap-3 text-slate-600">
+            <p>Lancaster, SC</p>
+            <p>Indian Land, SC</p>
+            <p>Fort Mill, SC</p>
+            <p>Rock Hill, SC</p>
+          </div>
+        </div>
+
+        <div class="rounded-3xl bg-white p-6 border border-slate-200 shadow-sm">
+          <h4 class="text-xl font-semibold text-slate-900">Extended Coverage</h4>
+          <p class="mt-3 text-slate-600">
+            Charlotte metro area and surrounding communities depending on project scope and scheduling.
+          </p>
+        </div>
+
+        <div class="rounded-3xl bg-slate-900 text-white p-6 shadow-sm">
+          <h4 class="text-xl font-semibold">Outside this area?</h4>
+          <p class="mt-3 text-slate-300">
+            Reach out with your property details. We may still be able to accommodate your request.
+          </p>
+          <a
+            href="#request-service"
+            class="mt-5 inline-flex items-center rounded-xl bg-blue-500 px-5 py-3 text-white font-medium hover:bg-blue-600 transition"
+          >
+            Request Service
+          </a>
+        </div>
+
       </div>
     </div>
   </div>
