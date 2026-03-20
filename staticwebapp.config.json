@@ -1,0 +1,22 @@
+{
+  "routes": [
+    {
+      "route": "/dashboard*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/*",
+      "allowedRoles": ["authenticated"]
+    }
+  ],
+  "responseOverrides": {
+    "401": {
+      "statusCode": 302,
+      "redirect": "/.auth/login/aad"
+    }
+  },
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/api/*", "/dashboard/*", "/assets/*", "/*.css", "/*.js", "/*.png", "/*.jpg", "/*.svg"]
+  }
+}
