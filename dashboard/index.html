@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <header class="border-b bg-white">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div>
+        <h1 class="text-2xl font-bold">Dashboard</h1>
+        <p class="text-sm text-slate-500">Internal portal</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="userName" class="text-sm text-slate-600"></span>
+        <a href="/.auth/logout" class="rounded-lg border px-4 py-2 text-sm hover:bg-slate-100">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-6xl px-6 py-8">
+    <div class="mb-8 grid gap-4 md:grid-cols-3">
+      <div class="rounded-2xl bg-white p-6 shadow-sm border">
+        <div class="text-sm text-slate-500">Customers</div>
+        <div id="customersCount" class="mt-2 text-3xl font-semibold">-</div>
+      </div>
+      <div class="rounded-2xl bg-white p-6 shadow-sm border">
+        <div class="text-sm text-slate-500">Properties</div>
+        <div id="propertiesCount" class="mt-2 text-3xl font-semibold">-</div>
+      </div>
+      <div class="rounded-2xl bg-white p-6 shadow-sm border">
+        <div class="text-sm text-slate-500">Open Work Orders</div>
+        <div id="workOrdersCount" class="mt-2 text-3xl font-semibold">-</div>
+      </div>
+    </div>
+
+    <div class="rounded-2xl bg-white p-6 shadow-sm border">
+      <h2 class="text-lg font-semibold">Recent activity</h2>
+      <ul id="recentList" class="mt-4 space-y-3 text-sm text-slate-700"></ul>
+    </div>
+  </main>
+
+  <script>
+    async function loadUser() {
+      const res = await fetch('/.auth/me');
+      if (!res.ok) return;
+      const data = await res.json();
+      const principal = data?.clientPrincipal;
+      if (principal) {
+        document.getElementById('userName').textContent =
+          principal.userDetails || principal.identityProvider || 'Signed in';
+      }
+    }
+
+    async function loadDashboard() {
+      const res = await fetch('/api/dashboard');
+      if (!res.ok) {
+        console.error('Failed to load dashboard', res.status);
+        return;
+      }
+
+      const data = await res.json();
+
+      document.getElementById('customersCount').textContent = data.customers ?? 0;
+      document.getElementById('propertiesCount').textContent = data.properties ?? 0;
+      document.getElementById('workOrdersCount').textContent = data.openWorkOrders ?? 0;
+
+      const recentList = document.getElementById('recentList');
+      recentList.innerHTML = '';
+
+      (data.recentActivity || []).forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'rounded-lg border p-3';
+        li.textContent = item;
+        recentList.appendChild(li);
+      });
+    }
+
+    loadUser();
+    loadDashboard();
+  </script>
+</body>
+</html>
