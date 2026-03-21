@@ -39,63 +39,52 @@
 <div class="rounded-2xl bg-white p-6 shadow-sm border border-slate-200">
   <h3 class="text-lg font-semibold text-slate-900 mb-4">Recent Activity</h3>
 
-  <ul id="recentList" class="space-y-3">
-
-  </ul>
+ <ul id="recentList" class="mt-5 space-y-3 text-sm text-slate-700"></ul>
+ 
 </div>
   </main>
 
    <!-- Dashboard Content Above -->
 
   <script>
-const recentList = document.getElementById("recentList");
+  async function loadUser() {
+    try {
+      const res = await fetch("/.auth/me");
+      if (!res.ok) return;
 
-if (recentList) {
-  recentList.innerHTML = "";
+      const data = await res.json();
+      const principal = data?.clientPrincipal;
+      const userNameEl = document.getElementById("userName");
 
-  (data.recentActivity || []).forEach(item => {
-    const li = document.createElement("li");
-    li.className = "rounded-xl border border-slate-200 bg-slate-50 px-4 py-3";
-    li.textContent = item;
-    recentList.appendChild(li);
-  });
-} else {
-  console.error("recentList element not found");
-}
-
-    
-    async function loadUser() {
-      try {
-        const res = await fetch("/.auth/me");
-        if (!res.ok) return;
-
-        const data = await res.json();
-        const principal = data?.clientPrincipal;
-
-        if (principal) {
-          document.getElementById("userName").textContent =
-            principal.userDetails || "Signed in";
-        }
-      } catch (err) {
-        console.error("Failed to load user", err);
+      if (principal && userNameEl) {
+        userNameEl.textContent = principal.userDetails || "Signed in";
       }
+    } catch (err) {
+      console.error("Failed to load user:", err);
     }
+  }
 
-    async function loadDashboard() {
-      try {
-        const res = await fetch("/api/dashboard");
-        if (!res.ok) {
-          throw new Error("Dashboard API failed: " + res.status);
-        }
+  async function loadDashboard() {
+    try {
+      const res = await fetch("/api/dashboard");
+      if (!res.ok) {
+        throw new Error("Dashboard API failed: " + res.status);
+      }
 
-        const data = await res.json();
+      const data = await res.json();
 
-        document.getElementById("customersCount").textContent = data.customers ?? 0;
-        document.getElementById("propertiesCount").textContent = data.properties ?? 0;
-        document.getElementById("workOrdersCount").textContent = data.openWorkOrders ?? 0;
-        document.getElementById("requestsCount").textContent = data.newRequests ?? 0;
+      const customersEl = document.getElementById("customersCount");
+      const propertiesEl = document.getElementById("propertiesCount");
+      const workOrdersEl = document.getElementById("workOrdersCount");
+      const requestsEl = document.getElementById("requestsCount");
+      const recentList = document.getElementById("recentList");
 
-        const recentList = document.getElementById("recentList");
+      if (customersEl) customersEl.textContent = data.customers ?? 0;
+      if (propertiesEl) propertiesEl.textContent = data.properties ?? 0;
+      if (workOrdersEl) workOrdersEl.textContent = data.openWorkOrders ?? 0;
+      if (requestsEl) requestsEl.textContent = data.newRequests ?? 0;
+
+      if (recentList) {
         recentList.innerHTML = "";
 
         (data.recentActivity || []).forEach(item => {
@@ -104,14 +93,16 @@ if (recentList) {
           li.textContent = item;
           recentList.appendChild(li);
         });
-      } catch (err) {
-        console.error("Dashboard load failed:", err);
       }
+    } catch (err) {
+      console.error("Dashboard load failed:", err);
     }
+  }
 
+  document.addEventListener("DOMContentLoaded", () => {
     loadUser();
     loadDashboard();
-  </script>
-
+  });
+</script>
 </body>
 </html>
