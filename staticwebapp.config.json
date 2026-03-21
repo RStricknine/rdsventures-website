@@ -1,11 +1,19 @@
 {
   "routes": [
     {
+      "route": "/api/service-request",
+      "allowedRoles": ["anonymous"]
+    },
+    {
       "route": "/dashboard*",
       "allowedRoles": ["authenticated"]
     },
     {
-      "route": "/api/*",
+      "route": "/api/dashboard*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/me",
       "allowedRoles": ["authenticated"]
     }
   ],
@@ -14,9 +22,5 @@
       "statusCode": 302,
       "redirect": "/.auth/login/aad"
     }
-  },
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/api/*", "/dashboard/*", "/assets/*", "/*.css", "/*.js", "/*.png", "/*.jpg", "/*.svg"]
   }
 }
