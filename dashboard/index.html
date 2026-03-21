@@ -48,6 +48,22 @@
    <!-- Dashboard Content Above -->
 
   <script>
+const recentList = document.getElementById("recentList");
+
+if (recentList) {
+  recentList.innerHTML = "";
+
+  (data.recentActivity || []).forEach(item => {
+    const li = document.createElement("li");
+    li.className = "rounded-xl border border-slate-200 bg-slate-50 px-4 py-3";
+    li.textContent = item;
+    recentList.appendChild(li);
+  });
+} else {
+  console.error("recentList element not found");
+}
+
+    
     async function loadUser() {
       try {
         const res = await fetch("/.auth/me");
