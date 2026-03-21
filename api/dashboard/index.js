@@ -84,16 +84,18 @@ module.exports = async function (context, req) {
       }
     };
   } catch (error) {
-    context.log.error("Dashboard API error:", error);
+  context.log.error("Dashboard API error:", error);
 
-    context.res = {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: {
-        error: "Failed to load dashboard data"
-      }
-    };
-  }
+  context.res = {
+    status: 500,
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: {
+      error: "Failed to load dashboard data",
+      message: error.message,
+      code: error.code || null
+    }
+  };
+}
 };
