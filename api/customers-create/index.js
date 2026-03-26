@@ -1,6 +1,31 @@
 const sql = require("mssql");
 const { randomUUID } = require("crypto");
 
+let pool;
+
+async function getPool() {
+  if (pool) return pool;
+
+  pool = await sql.connect({
+    server: process.env.SQL_SERVER,
+    database: process.env.SQL_DATABASE,
+    user: process.env.SQL_USER,
+    password: process.env.SQL_PASSWORD,
+    port: parseInt(process.env.SQL_PORT || "1433", 10),
+    options: {
+      encrypt: true,
+      trustServerCertificate: false
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      idleTimeoutMillis: 30000
+    }
+  });
+
+  return pool;
+}
+
 module.exports = async function (context, req) {
   try {
     const {
@@ -21,9 +46,9 @@ module.exports = async function (context, req) {
       return;
     }
 
-    const pool = await sql.connect(process.env.SQL_CONNECTION_STRING);
+    const db = await getPool();
 
-    const duplicateCheck = await pool.request()
+    const duplicateCheck = await db.request()
       .input("Name", sql.NVarChar(255), name.trim())
       .query(`
         SELECT TOP 1 CustomerId
@@ -42,7 +67,7 @@ module.exports = async function (context, req) {
 
     const customerId = randomUUID();
 
-    await pool.request()
+    await db.request()
       .input("CustomerId", sql.UniqueIdentifier, customerId)
       .input("Name", sql.NVarChar(255), name.trim())
       .input("BillingStreet", sql.NVarChar(255), address?.trim() || null)
@@ -81,14 +106,16 @@ module.exports = async function (context, req) {
         customerId
       }
     };
-  } catch (err) {
-    context.log.error("create customer error:", err);
+  } catch (error) {
+    context.log.error("Create Customer API error:", error);
 
     context.res = {
       status: 500,
       headers: { "Content-Type": "application/json" },
       body: {
-        error: err.message || "Server error creating customer."
+        error: "Failed to create customer",
+        message: error.message,
+        code: error.code || null
       }
     };
   }
