@@ -354,7 +354,7 @@ async function loadCustomerProperties(customerId) {
   propertyMessage.textContent = "Loading properties...";
 
   try {
-    const res = await fetch(`/api/customers/properties?customerId=${encodeURIComponent(customerId)}`);
+    const res = await fetch(`/api/customers/properties?CustomerId=${encodeURIComponent(customerId)}`);
     const raw = await res.text();
 
     let data = [];
