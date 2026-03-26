@@ -281,7 +281,7 @@
           types.forEach(t => {
             const option = document.createElement("option");
             option.value = t.CustomerTypeId;
-            option.textContent = t.Name;
+            option.textContent = t.TypeName;
             select.appendChild(option);
           });
         } catch (err) {
