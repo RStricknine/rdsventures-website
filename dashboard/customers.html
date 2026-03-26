@@ -15,7 +15,7 @@
 
   <main class="max-w-6xl mx-auto p-6 space-y-6">
 
-    <!-- ACTIVE CUSTOMERS -->
+    // ACTIVE CUSTOMERS 
     <section class="bg-white rounded-xl shadow p-6">
       <h2 class="text-2xl font-bold mb-4">Active Customers</h2>
 
@@ -46,7 +46,7 @@
     </section>
 
 
-<!-- PROPERTIES FOR EACH CUSTOMER -->
+// PROPERTIES FOR EACH CUSTOMER 
 <section class="bg-white rounded-xl shadow p-6">
   <div class="flex items-center justify-between mb-4">
     <div>
@@ -76,7 +76,7 @@
 
 
     
-    <!-- ADD CUSTOMER -->
+    // ADD CUSTOMER
     <section id="add" class="bg-white rounded-xl shadow p-6">
       <h2 class="text-2xl font-bold mb-6">Add Customer</h2>
 
@@ -145,11 +145,11 @@
     </section>
   </main>
 
-<!-- SCRIPT CODE BELOW -->  
+// SCRIPT CODE BELOW 
 <script>
   let allCustomers = [];
 
-  <!-- RESET CUSTOMER FORM -->
+  // RESET CUSTOMER FORM
     
   function resetCustomerForm() {
     document.getElementById("customerId").value = "";
@@ -162,7 +162,7 @@
   }
 
     
-  <!-- RENDER CUSTOMERS -->
+  // RENDER CUSTOMERS
     
   function renderCustomers(customers) {
     const table = document.getElementById("customerTable");
@@ -249,7 +249,7 @@
     }
   }
 
-  <!-- LOAD CUSTOMER TYPES -->
+  // LOAD CUSTOMER TYPES
     
   async function loadCustomerTypes() {
     try {
@@ -357,7 +357,7 @@
   });
 
 
-<!-- LOAD CUSTOMER PROPERTIES -->
+// LOAD CUSTOMER PROPERTIES 
   
 async function loadCustomerProperties(customerId) {
   const propertyTable = document.getElementById("propertyTable");
@@ -407,7 +407,7 @@ async function loadCustomerProperties(customerId) {
   }
 }
 
-  <!-- CLEAR CUSTOMER PROPERTIES -->
+// CLEAR CUSTOMER PROPERTIES
 function clearCustomerProperties() {
   const propertyTable = document.getElementById("propertyTable");
   const propertyMessage = document.getElementById("propertyMessage");
