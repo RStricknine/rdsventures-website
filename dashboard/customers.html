@@ -31,6 +31,7 @@
           <thead>
             <tr class="border-b bg-slate-50">
               <th class="text-left p-3">Name</th>
+              <th class="text-left p-3">Type</th> 
               <th class="text-left p-3">Email</th>
               <th class="text-left p-3">Phone</th>
               <th class="text-left p-3">City</th>
@@ -55,7 +56,12 @@
           <label class="block text-sm font-medium mb-1">Name</label>
           <input id="name" type="text" class="w-full border rounded-lg px-3 py-2" required />
         </div>
-
+        <div>
+          <label class="block text-sm font-medium mb-1">Customer Type</label>
+          <select id="customerTypeId" class="w-full border rounded-lg px-3 py-2">
+            <option value="">Select type</option>
+          </select>
+        </div>
         <div>
           <label class="block text-sm font-medium mb-1">Email</label>
           <input id="email" type="email" class="w-full border rounded-lg px-3 py-2" />
@@ -136,8 +142,9 @@
         const row = document.createElement("tr");
         row.className = "border-b hover:bg-slate-50 cursor-pointer";
 
-        row.innerHTML = `
+       row.innerHTML = `
           <td class="p-3">${c.Name || ""}</td>
+          <td class="p-3">${c.CustomerTypeName || ""}</td>
           <td class="p-3">${c.Email || ""}</td>
           <td class="p-3">${c.Phone || ""}</td>
           <td class="p-3">${c.BillingCity || ""}</td>
