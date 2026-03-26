@@ -270,8 +270,28 @@
       }
     });
 
+      async function loadCustomerTypes() {
+        try {
+          const res = await fetch("/api/customers/types");
+          const types = await res.json();
+      
+          const select = document.getElementById("customerTypeId");
+          select.innerHTML = '<option value="">Select type</option>';
+      
+          types.forEach(t => {
+            const option = document.createElement("option");
+            option.value = t.CustomerTypeId;
+            option.textContent = t.Name;
+            select.appendChild(option);
+          });
+        } catch (err) {
+          console.error("Failed to load customer types:", err);
+        }
+      }
+    
     document.addEventListener("DOMContentLoaded", () => {
       loadCustomers();
+      loadCustomerTypes();
     });
   </script>
 </body>
