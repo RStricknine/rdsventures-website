@@ -350,11 +350,13 @@ async function loadCustomerProperties(customerId) {
   const propertyTable = document.getElementById("propertyTable");
   const propertyMessage = document.getElementById("propertyMessage");
 
+  if (!propertyTable || !propertyMessage) return;
+
   propertyTable.innerHTML = "";
   propertyMessage.textContent = "Loading properties...";
 
   try {
-    const res = await fetch(`/api/customers/properties?CustomerId=${encodeURIComponent(customerId)}`);
+    const res = await fetch(`/api/customers/properties?customerId=${encodeURIComponent(customerId)}`);
     const raw = await res.text();
 
     let data = [];
@@ -378,14 +380,12 @@ async function loadCustomerProperties(customerId) {
     data.forEach(p => {
       const row = document.createElement("tr");
       row.className = "border-b";
-
       row.innerHTML = `
         <td class="p-3">${p.Address || ""}</td>
         <td class="p-3">${p.City || ""}</td>
         <td class="p-3">${p.State || ""}</td>
         <td class="p-3">${p.PostalCode || ""}</td>
       `;
-
       propertyTable.appendChild(row);
     });
   } catch (err) {
@@ -395,12 +395,12 @@ async function loadCustomerProperties(customerId) {
 }
 
 function clearCustomerProperties() {
-  document.getElementById("propertyTable").innerHTML = "";
-  document.getElementById("propertyMessage").textContent = "Select a customer to view properties.";
+  const propertyTable = document.getElementById("propertyTable");
+  const propertyMessage = document.getElementById("propertyMessage");
+
+  if (propertyTable) propertyTable.innerHTML = "";
+  if (propertyMessage) propertyMessage.textContent = "Select a customer to view properties.";
 }
-
-
-
 
 
 
