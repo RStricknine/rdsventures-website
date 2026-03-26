@@ -274,7 +274,7 @@
 
      async function loadCustomerTypes() {
   try {
-    const res = await fetch("/api/customers/types/list/");
+    const res = await fetch("/api/customer/types/list/");
     const raw = await res.text();
     let types = [];
 
