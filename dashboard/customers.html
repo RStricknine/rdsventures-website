@@ -206,9 +206,11 @@
         document.getElementById("cancelEditButton").classList.remove("hidden");
         document.getElementById("add").scrollIntoView({ behavior: "smooth" });
 
+  if (c.CustomerId) {
     loadCustomerProperties(c.CustomerId);
   } else {
     clearCustomerProperties();
+  }
 
         
       });
