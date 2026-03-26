@@ -14,6 +14,11 @@ async function getPool() {
     options: {
       encrypt: true,
       trustServerCertificate: false
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      idleTimeoutMillis: 30000
     }
   });
 
@@ -25,7 +30,7 @@ module.exports = async function (context, req) {
     const db = await getPool();
 
     const result = await db.request().query(`
-      SELECT TOP 100
+      SELECT
         CustomerId,
         Name,
         Email,
@@ -45,13 +50,17 @@ module.exports = async function (context, req) {
       headers: { "Content-Type": "application/json" },
       body: result.recordset
     };
-
-  } catch (err) {
-    context.log.error("Customer list error:", err);
+  } catch (error) {
+    context.log.error("Customer list API error:", error);
 
     context.res = {
       status: 500,
-      body: { error: err.message }
+      headers: { "Content-Type": "application/json" },
+      body: {
+        error: "Failed to load customers",
+        message: error.message,
+        code: error.code || null
+      }
     };
   }
 };
