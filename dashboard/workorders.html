@@ -40,17 +40,17 @@
       </div>
 
       <div class="mt-4">
-        <label class="block text-sm font-medium mb-1">Choose Photo</label>
-        <input id="photoFile" type="file" accept="image/*" class="w-full border rounded-lg px-3 py-2" />
+        <label class="block text-sm font-medium mb-1">Choose Photo(s)</label>
+        <input id="photoFile" type="file" accept="image/*" capture="environment" multiple class="w-full border rounded-lg px-3 py-2" />
       </div>
 
       <div class="mt-4 flex gap-3">
         <button id="uploadPhotoButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-          Upload Photo
+          Upload Photo(s)
         </button>
 
         <button id="loadPhotosButton" type="button" class="border px-4 py-2 rounded-lg">
-          Load Photos
+          Load Photo(s)
         </button>
       </div>
 
@@ -101,6 +101,79 @@
 
   
   <script>
+
+async function uploadPhoto() {
+  const message = document.getElementById("photoMessage");
+  message.textContent = "Uploading...";
+
+  const workOrderRowId = document.getElementById("workOrderRowId").value.trim();
+  const photoType = document.getElementById("photoType").value;
+  const caption = document.getElementById("caption").value.trim();
+  const fileInput = document.getElementById("photoFile");
+  const files = Array.from(fileInput.files || []);
+
+  if (!workOrderRowId) {
+    message.textContent = "Work Order RowID is required.";
+    return;
+  }
+
+  if (!files.length) {
+    message.textContent = "Please choose one or more photos.";
+    return;
+  }
+
+  try {
+    let successCount = 0;
+
+    for (const file of files) {
+      const contentBase64 = await fileToBase64(file);
+
+      const payload = {
+        workOrderRowId: parseInt(workOrderRowId, 10),
+        photoType,
+        fileName: file.name,
+        contentBase64,
+        caption,
+        uploadedBy: "dashboard-user"
+      };
+
+      const res = await fetch("/api/workorders/photos/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const raw = await res.text();
+      let data = {};
+
+      try {
+        data = raw ? JSON.parse(raw) : {};
+      } catch {
+        throw new Error(`Invalid JSON from upload API: ${raw || "(empty response)"}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || `Upload failed for ${file.name} with status ${res.status}`);
+      }
+
+      successCount++;
+    }
+
+    message.textContent = `${successCount} photo(s) uploaded successfully.`;
+    document.getElementById("caption").value = "";
+    document.getElementById("photoFile").value = "";
+
+    await loadPhotos();
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Upload failed.";
+  }
+}
+
+
+
+
+    
     async function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -124,7 +197,7 @@
       const photoType = document.getElementById("photoType").value;
       const caption = document.getElementById("caption").value.trim();
       const fileInput = document.getElementById("photoFile");
-      const file = fileInput.files[0];
+      // const file = fileInput.files[0];
 
       if (!workOrderRowId) {
         message.textContent = "Work Order RowID is required.";
