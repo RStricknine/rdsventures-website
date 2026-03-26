@@ -50,7 +50,14 @@ module.exports = async function (context, req) {
     }
 
     const db = await getPool();
-
+    
+context.log("Update payload:", {
+  customerId,
+  name,
+  customerTypeId,
+  email,
+  phone
+});
     await db.request()
       .input("CustomerId", sql.UniqueIdentifier, customerId)
       .input("Name", sql.NVarChar(255), name.trim())
