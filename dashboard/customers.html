@@ -15,7 +15,7 @@
 
   <main class="max-w-6xl mx-auto p-6 space-y-6">
 
-    <!-- Active Customers -->
+    <!-- ACTIVE CUSTOMERS -->
     <section class="bg-white rounded-xl shadow p-6">
       <h2 class="text-2xl font-bold mb-4">Active Customers</h2>
 
@@ -46,7 +46,7 @@
     </section>
 
 
-<!-- Properties for each customer -->
+<!-- PROPERTIES FOR EACH CUSTOMER -->
 <section class="bg-white rounded-xl shadow p-6">
   <div class="flex items-center justify-between mb-4">
     <div>
@@ -76,7 +76,7 @@
 
 
     
-    <!-- Add Customer -->
+    <!-- ADD CUSTOMER -->
     <section id="add" class="bg-white rounded-xl shadow p-6">
       <h2 class="text-2xl font-bold mb-6">Add Customer</h2>
 
@@ -149,6 +149,8 @@
 <script>
   let allCustomers = [];
 
+  <!-- RESET CUSTOMER FORM -->
+    
   function resetCustomerForm() {
     document.getElementById("customerId").value = "";
     document.getElementById("customerForm").reset();
@@ -159,6 +161,9 @@
     clearCustomerProperties();
   }
 
+    
+  <!-- RENDER CUSTOMERS -->
+    
   function renderCustomers(customers) {
     const table = document.getElementById("customerTable");
     const listMessage = document.getElementById("listMessage");
@@ -212,6 +217,9 @@
     });
   }
 
+
+  <!-- LOAD CUSTOMERS -->
+    
   async function loadCustomers() {
     const listMessage = document.getElementById("listMessage");
     listMessage.textContent = "Loading customers...";
@@ -239,6 +247,8 @@
     }
   }
 
+  <!-- LOAD CUSTOMER TYPES -->
+    
   async function loadCustomerTypes() {
     try {
       const res = await fetch("/api/customers/types");
@@ -345,7 +355,8 @@
   });
 
 
-
+<!-- LOAD CUSTOMER PROPERTIES -->
+  
 async function loadCustomerProperties(customerId) {
   const propertyTable = document.getElementById("propertyTable");
   const propertyMessage = document.getElementById("propertyMessage");
@@ -394,6 +405,7 @@ async function loadCustomerProperties(customerId) {
   }
 }
 
+  <!-- CLEAR CUSTOMER PROPERTIES -->
 function clearCustomerProperties() {
   const propertyTable = document.getElementById("propertyTable");
   const propertyMessage = document.getElementById("propertyMessage");
