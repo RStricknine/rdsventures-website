@@ -157,6 +157,7 @@ async function uploadPhoto() {
       }
 
       successCount++;
+      message.textContent = `Uploaded ${successCount} of ${files.length}...`;
     }
 
     message.textContent = `${successCount} photo(s) uploaded successfully.`;
