@@ -154,6 +154,7 @@
         row.addEventListener("click", () => {
           document.getElementById("customerId").value = c.CustomerId || "";
           document.getElementById("name").value = c.Name || "";
+          document.getElementById("customertypeId').value = c.customertypeid || "";
           document.getElementById("email").value = c.Email || "";
           document.getElementById("phone").value = c.Phone || "";
           document.getElementById("address").value = c.BillingStreet || "";
@@ -227,6 +228,7 @@
       const payload = {
         customerId,
         name: document.getElementById("name").value.trim(),
+        customerTypeId: document.getElementById("customerTypeId").value || null,
         email: document.getElementById("email").value.trim(),
         phone: document.getElementById("phone").value.trim(),
         address: document.getElementById("address").value.trim(),
