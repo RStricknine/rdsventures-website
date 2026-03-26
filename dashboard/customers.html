@@ -8,10 +8,10 @@
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-  <nav class="flex gap-4 p-4 bg-slate-800 text-white">
-    <a href="/dashboard.html">Dashboard</a>
-    <a href="/customers.html" class="font-bold">Customers</a>
-  </nav>
+<nav class="flex gap-4 p-4 bg-slate-800 text-white">
+  <a href="/dashboard/index.html">Dashboard</a>
+  <a href="/dashboard/customers.html" class="font-bold">Customers</a>
+</nav>
 
   <main class="max-w-3xl mx-auto p-6">
     <div class="bg-white rounded-xl shadow p-6">
@@ -77,27 +77,18 @@
         isActive: document.getElementById("isActive").checked
       };
 
-     try {
+ try {
   const res = await fetch("/api/customers/create", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
   });
 
-  const raw = await res.text();
-  let data = {};
+  const data = await res.json();
 
-  try {
-    data = raw ? JSON.parse(raw) : {};
-  } catch {
-    throw new Error(`Server returned invalid JSON: ${raw || "(empty response)"}`);
-  }
+  if (!res.ok) throw new Error(data.error);
 
-  if (!res.ok) {
-    throw new Error(data.error || `Request failed with status ${res.status}`);
-  }
-
-  message.textContent = data.message || "Customer saved successfully.";
+  message.textContent = "Customer saved successfully.";
   document.getElementById("customerForm").reset();
   document.getElementById("isActive").checked = true;
 
