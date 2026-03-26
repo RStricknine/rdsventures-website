@@ -108,27 +108,85 @@
 
   <script>
 
+function loadCustomerIntoForm(c) {
+  document.getElementById("customerId").value = c.CustomerId || "";
+  document.getElementById("name").value = c.Name || "";
+  document.getElementById("email").value = c.Email || "";
+  document.getElementById("phone").value = c.Phone || "";
+  document.getElementById("address").value = c.BillingStreet || "";
+  document.getElementById("city").value = c.BillingCity || "";
+  document.getElementById("state").value = c.BillingState || "";
+  document.getElementById("postalCode").value = c.BillingPostalCode || "";
+  document.getElementById("isActive").checked = !!c.IsActive;
 
+  document.getElementById("saveButton").textContent = "Update Customer";
+  document.getElementById("cancelEditButton").classList.remove("hidden");
 
-
-async function loadCustomers() {
-  try {
-    const res = await fetch("/api/customers/list");
-    const data = await res.json();
-
-    renderCustomers(data);
-  } catch (err) {
-    console.error("Failed to load customers:", err);
+  const addSection = document.getElementById("add");
+  if (addSection) {
+    addSection.scrollIntoView({ behavior: "smooth" });
   }
 }
+function resetCustomerForm() {
+  document.getElementById("customerId").value = "";
+  document.getElementById("customerForm").reset();
+  document.getElementById("isActive").checked = true;
+  document.getElementById("saveButton").textContent = "Save Customer";
+  document.getElementById("cancelEditButton").classList.add("hidden");
+}
 
+document.getElementById("customerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const message = document.getElementById("message");
+  message.textContent = "Saving...";
+
+  const customerId = document.getElementById("customerId").value.trim();
+
+  const payload = {
+    customerId,
+    name: document.getElementById("name").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    address: document.getElementById("address").value.trim(),
+    city: document.getElementById("city").value.trim(),
+    state: document.getElementById("state").value.trim(),
+    postalCode: document.getElementById("postalCode").value.trim(),
+    isActive: document.getElementById("isActive").checked
+  };
+
+  const url = customerId ? "/api/customers/update" : "/api/customers/create";
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || "Save failed");
+
+    message.textContent = customerId
+      ? "Customer updated successfully."
+      : "Customer saved successfully.";
+
+    resetCustomerForm();
+    await loadCustomers();
+
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Error saving customer.";
+  }
+});
 function renderCustomers(customers) {
   const table = document.getElementById("customerTable");
   table.innerHTML = "";
 
   customers.forEach(c => {
     const row = document.createElement("tr");
-    row.className = "border-b";
+    row.className = "border-b cursor-pointer hover:bg-slate-50";
 
     row.innerHTML = `
       <td class="p-2">${c.Name || ""}</td>
@@ -136,6 +194,10 @@ function renderCustomers(customers) {
       <td class="p-2">${c.Phone || ""}</td>
       <td class="p-2">${c.BillingCity || ""}</td>
     `;
+
+    row.addEventListener("click", () => {
+      loadCustomerIntoForm(c);
+    });
 
     table.appendChild(row);
   });
