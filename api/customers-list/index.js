@@ -43,7 +43,7 @@ module.exports = async function (context, req) {
         c.CustomerTypeId,
         ct.TypeName as CustomerTypeName
       FROM dbo.Customers c
-      LEFT JOIN dbo.CustomerType ct
+      LEFT JOIN dbo.CustomerTypes ct
         ON c.CustomerTypeId = ct.CustomerTypeId
       WHERE c.IsActive = 1
       ORDER BY c.Name
