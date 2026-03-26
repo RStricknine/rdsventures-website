@@ -33,6 +33,7 @@ module.exports = async function (context, req) {
       SELECT
         c.CustomerId,
         c.Name,
+        c.CustomerTypeId, 
         c.Email,
         c.Phone,
         c.BillingStreet,
@@ -40,7 +41,7 @@ module.exports = async function (context, req) {
         c.BillingState,
         c.BillingPostalCode,
         c.IsActive,
-        c.CustomerTypeId,
+        
         ct.TypeName as CustomerTypeName
       FROM dbo.Customers c
       LEFT JOIN dbo.CustomerTypes ct
