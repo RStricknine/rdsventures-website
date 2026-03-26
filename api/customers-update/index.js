@@ -54,6 +54,7 @@ module.exports = async function (context, req) {
     await db.request()
       .input("CustomerId", sql.UniqueIdentifier, customerId)
       .input("Name", sql.NVarChar(255), name.trim())
+      .input("CustomerTypeId", sql.Int, customerTypeId ? parseInt(customerTypeId, 10) : null)      
       .input("Email", sql.NVarChar(255), email?.trim() || null)
       .input("Phone", sql.NVarChar(50), phone?.trim() || null)
       .input("BillingStreet", sql.NVarChar(255), address?.trim() || null)
@@ -65,6 +66,7 @@ module.exports = async function (context, req) {
         UPDATE dbo.Customers
         SET
           Name = @Name,
+          CustomerTypeId = @CustomerTypeId,
           Email = @Email,
           Phone = @Phone,
           BillingStreet = @BillingStreet,
