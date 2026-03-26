@@ -41,7 +41,7 @@ module.exports = async function (context, req) {
         c.BillingPostalCode,
         c.IsActive,
         c.CustomerTypeId,
-        ct.Name as CustomerTypeName
+        ct.TypeName as CustomerTypeName
       FROM dbo.Customers c
       LEFT JOIN dbo.CustomerType ct
         ON c.CustomerTypeId = ct.CustomerTypeId
