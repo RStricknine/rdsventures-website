@@ -22,9 +22,9 @@ module.exports = async function (context) {
     const db = await getPool();
 
     const result = await db.request().query(`
-      SELECT CustomerTypeId, Name
+      SELECT CustomerTypeId, TypeName
       FROM dbo.CustomerType
-      ORDER BY Name
+      ORDER BY TypeName
     `);
 
     context.res = {
