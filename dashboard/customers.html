@@ -13,6 +13,35 @@
   <a href="/dashboard/customers.html" class="font-bold">Customers</a>
 </nav>
 
+<div class="bg-white rounded-xl shadow p-6 mb-6">
+  <h2 class="text-xl font-bold mb-4">Active Customers</h2>
+
+  <input
+    id="search"
+    placeholder="Search customers..."
+    class="w-full border rounded-lg px-3 py-2 mb-4"
+  />
+
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b">
+        <th class="text-left p-2">Name</th>
+        <th class="text-left p-2">Email</th>
+        <th class="text-left p-2">Phone</th>
+        <th class="text-left p-2">City</th>
+      </tr>
+    </thead>
+    <tbody id="customerTable"></tbody>
+  </table>
+</div>
+
+
+
+
+
+
+
+  
   <main class="max-w-3xl mx-auto p-6">
     <div class="bg-white rounded-xl shadow p-6">
       <h1 class="text-2xl font-bold mb-6">Add Customer</h1>
@@ -70,6 +99,64 @@
   </main>
 
   <script>
+
+
+
+
+async function loadCustomers() {
+  try {
+    const res = await fetch("/api/customers/list");
+    const data = await res.json();
+
+    renderCustomers(data);
+  } catch (err) {
+    console.error("Failed to load customers:", err);
+  }
+}
+
+function renderCustomers(customers) {
+  const table = document.getElementById("customerTable");
+  table.innerHTML = "";
+
+  customers.forEach(c => {
+    const row = document.createElement("tr");
+    row.className = "border-b";
+
+    row.innerHTML = `
+      <td class="p-2">${c.Name || ""}</td>
+      <td class="p-2">${c.Email || ""}</td>
+      <td class="p-2">${c.Phone || ""}</td>
+      <td class="p-2">${c.BillingCity || ""}</td>
+    `;
+
+    table.appendChild(row);
+  });
+}
+
+
+
+document.getElementById("search").addEventListener("input", (e) => {
+  const value = e.target.value.toLowerCase();
+
+  const rows = document.querySelectorAll("#customerTable tr");
+
+  rows.forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(value)
+      ? ""
+      : "none";
+  });
+});
+
+
+
+
+
+
+
+
+
+
+    
     document.getElementById("customerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -107,6 +194,8 @@ const payload = {
   message.textContent = err.message || "Error saving customer.";
 }
     });
+
+   loadCustomers(); 
   </script>
 
 </body>
