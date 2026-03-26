@@ -47,7 +47,7 @@
       <h1 class="text-2xl font-bold mb-6">Add Customer</h1>
 
       <form id="customerForm" class="space-y-4">
-
+<input id="customerId" type="hidden" />
         <div>
           <label class="block text-sm font-medium mb-1">Name</label>
           <input id="name" type="text" class="w-full border rounded-lg px-3 py-2" required />
@@ -91,7 +91,15 @@
         <button class="bg-slate-800 text-white px-4 py-2 rounded-lg">
           Save Customer
         </button>
+<div class="flex gap-3">
+  <button id="saveButton" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+    Save Customer
+  </button>
 
+  <button type="button" id="cancelEditButton" class="border px-4 py-2 rounded-lg hidden">
+    Cancel Edit
+  </button>
+</div>
         <p id="message" class="text-sm"></p>
 
       </form>
