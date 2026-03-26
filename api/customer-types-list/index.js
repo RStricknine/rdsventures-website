@@ -23,7 +23,7 @@ module.exports = async function (context) {
 
     const result = await db.request().query(`
       SELECT CustomerTypeId, TypeName
-      FROM dbo.CustomerType
+      FROM dbo.CustomerTypes
       ORDER BY TypeName
     `);
 
