@@ -31,18 +31,22 @@ module.exports = async function (context, req) {
 
     const result = await db.request().query(`
       SELECT
-        CustomerId,
-        Name,
-        Email,
-        Phone,
-        BillingStreet,
-        BillingCity,
-        BillingState,
-        BillingPostalCode,
-        IsActive
-      FROM dbo.Customers
-      WHERE IsActive = 1
-      ORDER BY Name
+        c.CustomerId,
+        c.Name,
+        c.Email,
+        c.Phone,
+        c.BillingStreet,
+        c.BillingCity,
+        c.BillingState,
+        c.BillingPostalCode,
+        c.IsActive,
+        c.CustomerTypeId,
+        ct.Name as CustomerTypeName
+      FROM dbo.Customers c
+      LEFT JOIN dbo.CustomerType ct
+        ON c.CustomerTypeId = ct.CustomerTypeId
+      WHERE c.IsActive = 1
+      ORDER BY c.Name
     `);
 
     context.res = {
