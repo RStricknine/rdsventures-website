@@ -81,7 +81,6 @@ module.exports = async function (context, req) {
         customerId
       }
     };
-
   } catch (err) {
     context.log.error("create customer error:", err);
 
