@@ -68,14 +68,16 @@
       const message = document.getElementById("message");
       message.textContent = "Saving...";
 
-      const payload = {
-        name: document.getElementById("name").value.trim(),
-        address: document.getElementById("address").value.trim(),
-        city: document.getElementById("city").value.trim(),
-        state: document.getElementById("state").value.trim(),
-        postalCode: document.getElementById("postalCode").value.trim(),
-        isActive: document.getElementById("isActive").checked
-      };
+const payload = {
+  name: document.getElementById("name").value.trim(),
+  email: document.getElementById("email").value.trim(),
+  phone: document.getElementById("phone").value.trim(),
+  address: document.getElementById("address").value.trim(),
+  city: document.getElementById("city").value.trim(),
+  state: document.getElementById("state").value.trim(),
+  postalCode: document.getElementById("postalCode").value.trim(),
+  isActive: document.getElementById("isActive").checked
+};;
 
  try {
   const res = await fetch("/api/customers/create", {
