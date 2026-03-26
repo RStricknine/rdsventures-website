@@ -1,40 +1,11 @@
 const sql = require("mssql");
-const { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions } = require("@azure/storage-blob");
+const {
+  BlobSASPermissions,
+  generateBlobSASQueryParameters,
+  StorageSharedKeyCredential
+} = require("@azure/storage-blob");
 
 let pool;
-
-
-
-function getSasUrl(containerName, blobName) {
-  const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
-  const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
-
-  const sharedKeyCredential = new (require("@azure/storage-blob").StorageSharedKeyCredential)(
-    accountName,
-    accountKey
-  );
-
-  const expiresOn = new Date(new Date().valueOf() + 60 * 60 * 1000); // 1 hour
-
-  const sasToken = generateBlobSASQueryParameters(
-    {
-      containerName,
-      blobName,
-      permissions: BlobSASPermissions.parse("r"),
-      expiresOn
-    },
-    sharedKeyCredential
-  ).toString();
-
-  return `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
-}
-
-
-
-
-
-
-
 
 async function getPool() {
   if (pool) return pool;
@@ -57,6 +28,31 @@ async function getPool() {
   });
 
   return pool;
+}
+
+function getSasUrl(containerName, blobName) {
+  const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
+  const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
+
+  if (!accountName || !accountKey) {
+    throw new Error("Missing AZURE_STORAGE_ACCOUNT_NAME or AZURE_STORAGE_ACCOUNT_KEY");
+  }
+
+  const sharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
+
+  const expiresOn = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+  const sasToken = generateBlobSASQueryParameters(
+    {
+      containerName,
+      blobName,
+      permissions: BlobSASPermissions.parse("r"),
+      expiresOn
+    },
+    sharedKeyCredential
+  ).toString();
+
+  return `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
 }
 
 module.exports = async function (context, req) {
@@ -93,10 +89,17 @@ module.exports = async function (context, req) {
         ORDER BY PhotoType, ISNULL(SortOrder, 999999), UploadedAt
       `);
 
+    const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+
+    const photosWithUrls = result.recordset.map(photo => ({
+      ...photo,
+      ImageUrl: getSasUrl(containerName, photo.BlobName)
+    }));
+
     context.res = {
       status: 200,
       headers: { "Content-Type": "application/json" },
-      body: result.recordset
+      body: photosWithUrls
     };
   } catch (error) {
     context.log.error("Work order photo list error:", error);
