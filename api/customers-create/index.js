@@ -30,6 +30,8 @@ module.exports = async function (context, req) {
   try {
     const {
       name,
+      email,
+      phone,
       address,
       city,
       state,
@@ -70,6 +72,8 @@ module.exports = async function (context, req) {
     await db.request()
       .input("CustomerId", sql.UniqueIdentifier, customerId)
       .input("Name", sql.NVarChar(255), name.trim())
+      .input("Email",sql.NVarchar(255), email?.trim())
+      .input("Phone",sql.NVarChar(50), phone?.trim())
       .input("BillingStreet", sql.NVarChar(255), address?.trim() || null)
       .input("BillingCity", sql.NVarChar(100), city?.trim() || null)
       .input("BillingState", sql.NVarChar(50), state?.trim() || null)
@@ -80,6 +84,8 @@ module.exports = async function (context, req) {
         (
           CustomerId,
           Name,
+          Email,
+          Phone,
           BillingStreet,
           BillingCity,
           BillingState,
@@ -90,6 +96,8 @@ module.exports = async function (context, req) {
         (
           @CustomerId,
           @Name,
+          @Email,
+          @Phone,
           @BillingStreet,
           @BillingCity,
           @BillingState,
