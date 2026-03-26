@@ -31,18 +31,11 @@ module.exports = async function (context, req) {
 
     const countsResult = await db.request().query(`
       SELECT
-          (SELECT COUNT(*)
-           FROM dbo.Customers
-           WHERE IsDeleted = 0) AS Customers,
-
-          (SELECT COUNT(*)
-           FROM dbo.Properties
-           WHERE IsDeleted = 0) AS Properties,
-
+          (SELECT COUNT(*) FROM dbo.Customers) AS Customers,
+          (SELECT COUNT(*) FROM dbo.Properties) AS Properties,
           (SELECT COUNT(*)
            FROM dbo.stg_WorkOrders
            WHERE Status IN ('Warranty', 'Dispatched')) AS OpenWorkOrders,
-
           (SELECT COUNT(*)
            FROM dbo.stg_WorkOrders
            WHERE Created >= DATEADD(DAY, -7, GETUTCDATE())) AS NewRequests;
@@ -84,18 +77,18 @@ module.exports = async function (context, req) {
       }
     };
   } catch (error) {
-  context.log.error("Dashboard API error:", error);
+    context.log.error("Dashboard API error:", error);
 
-  context.res = {
-    status: 500,
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: {
-      error: "Failed to load dashboard data",
-      message: error.message,
-      code: error.code || null
-    }
-  };
-}
+    context.res = {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        error: "Failed to load dashboard data",
+        message: error.message,
+        code: error.code || null
+      }
+    };
+  }
 };

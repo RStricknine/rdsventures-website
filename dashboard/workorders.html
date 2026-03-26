@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work Orders - RDS Ventures</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+  <nav class="flex gap-4 p-4 bg-slate-800 text-white">
+    <a href="/dashboard/index.html">Dashboard</a>
+    <a href="/dashboard/customers.html">Customers</a>
+    <a href="/dashboard/workorders.html" class="font-bold">Work Orders</a>
+  </nav>
+
+  <main class="max-w-6xl mx-auto p-6 space-y-6">
+
+    <section class="bg-white rounded-xl shadow p-6">
+      <h1 class="text-2xl font-bold mb-4">Work Order Photo Upload</h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Work Order RowID</label>
+          <input id="workOrderRowId" type="number" class="w-full border rounded-lg px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Photo Type</label>
+          <select id="photoType" class="w-full border rounded-lg px-3 py-2">
+            <option value="Before">Before</option>
+            <option value="After">After</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Caption</label>
+          <input id="caption" type="text" class="w-full border rounded-lg px-3 py-2" />
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <label class="block text-sm font-medium mb-1">Choose Photo</label>
+        <input id="photoFile" type="file" accept="image/*" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div class="mt-4 flex gap-3">
+        <button id="uploadPhotoButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+          Upload Photo
+        </button>
+
+        <button id="loadPhotosButton" type="button" class="border px-4 py-2 rounded-lg">
+          Load Photos
+        </button>
+      </div>
+
+      <p id="photoMessage" class="text-sm mt-4"></p>
+    </section>
+
+    <section class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-4">Uploaded Photos</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="text-lg font-semibold mb-3">Before Photos</h3>
+          <div id="beforePhotoList" class="space-y-3"></div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold mb-3">After Photos</h3>
+          <div id="afterPhotoList" class="space-y-3"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          const result = reader.result || "";
+          const base64 = String(result).split(",")[1];
+          resolve(base64);
+        };
+
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function uploadPhoto() {
+      const message = document.getElementById("photoMessage");
+      message.textContent = "Uploading...";
+
+      const workOrderRowId = document.getElementById("workOrderRowId").value.trim();
+      const photoType = document.getElementById("photoType").value;
+      const caption = document.getElementById("caption").value.trim();
+      const fileInput = document.getElementById("photoFile");
+      const file = fileInput.files[0];
+
+      if (!workOrderRowId) {
+        message.textContent = "Work Order RowID is required.";
+        return;
+      }
+
+      if (!file) {
+        message.textContent = "Please choose a photo.";
+        return;
+      }
+
+      try {
+        const contentBase64 = await fileToBase64(file);
+
+        const payload = {
+          workOrderRowId: parseInt(workOrderRowId, 10),
+          photoType,
+          fileName: file.name,
+          contentBase64,
+          caption,
+          uploadedBy: "dashboard-user"
+        };
+
+        const res = await fetch("/api/workorders/photos/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const raw = await res.text();
+        let data = {};
+
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch {
+          throw new Error(`Invalid JSON from upload API: ${raw || "(empty response)"}`);
+        }
+
+        if (!res.ok) {
+          throw new Error(data.error || `Upload failed with status ${res.status}`);
+        }
+
+        message.textContent = "Photo uploaded successfully.";
+        document.getElementById("caption").value = "";
+        document.getElementById("photoFile").value = "";
+
+        await loadPhotos();
+      } catch (err) {
+        console.error(err);
+        message.textContent = err.message || "Upload failed.";
+      }
+    }
+
+    async function loadPhotos() {
+      const workOrderRowId = document.getElementById("workOrderRowId").value.trim();
+      const beforeList = document.getElementById("beforePhotoList");
+      const afterList = document.getElementById("afterPhotoList");
+      const message = document.getElementById("photoMessage");
+
+      beforeList.innerHTML = "";
+      afterList.innerHTML = "";
+
+      if (!workOrderRowId) {
+        message.textContent = "Enter a Work Order RowID to load photos.";
+        return;
+      }
+
+      message.textContent = "Loading photos...";
+
+      try {
+        const res = await fetch(`/api/workorders/photos/list?workOrderRowId=${encodeURIComponent(workOrderRowId)}`);
+        const raw = await res.text();
+        let data = [];
+
+        try {
+          data = raw ? JSON.parse(raw) : [];
+        } catch {
+          throw new Error(`Invalid JSON from list API: ${raw || "(empty response)"}`);
+        }
+
+        if (!res.ok) {
+          throw new Error(data.error || `Photo list failed with status ${res.status}`);
+        }
+
+        const beforePhotos = data.filter(p => p.PhotoType === "Before");
+        const afterPhotos = data.filter(p => p.PhotoType === "After");
+
+        renderPhotoList(beforePhotos, beforeList);
+        renderPhotoList(afterPhotos, afterList);
+
+        message.textContent = `${data.length} photo(s) loaded.`;
+      } catch (err) {
+        console.error(err);
+        message.textContent = err.message || "Failed to load photos.";
+      }
+    }
+
+    function renderPhotoList(photos, container) {
+      if (!photos.length) {
+        container.innerHTML = `<p class="text-sm text-slate-500">No photos found.</p>`;
+        return;
+      }
+
+      photos.forEach(photo => {
+        const card = document.createElement("div");
+        card.className = "border rounded-lg p-3 bg-slate-50";
+
+        card.innerHTML = `
+          <div class="font-medium text-sm">${photo.FileName || ""}</div>
+          <div class="text-xs text-slate-500 mt-1">${photo.Caption || ""}</div>
+          <div class="text-xs text-slate-500 mt-1">${photo.UploadedAt || ""}</div>
+          <div class="text-xs text-slate-400 mt-1 break-all">${photo.BlobName || ""}</div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    document.getElementById("uploadPhotoButton").addEventListener("click", uploadPhoto);
+    document.getElementById("loadPhotosButton").addEventListener("click", loadPhotos);
+  </script>
+</body>
+</html>
