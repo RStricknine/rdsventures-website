@@ -45,6 +45,37 @@
       <p id="listMessage" class="text-sm text-slate-500 mt-3"></p>
     </section>
 
+
+<!-- Properties for each customer -->
+<section class="bg-white rounded-xl shadow p-6">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <h2 class="text-2xl font-bold">Customer Properties</h2>
+      <p class="text-sm text-slate-500">Properties for the selected customer</p>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="border-b bg-slate-50">
+          <th class="text-left p-3">Address</th>
+          <th class="text-left p-3">City</th>
+          <th class="text-left p-3">State</th>
+          <th class="text-left p-3">Postal Code</th>
+        </tr>
+      </thead>
+      <tbody id="propertyTable"></tbody>
+    </table>
+  </div>
+
+  <p id="propertyMessage" class="text-sm text-slate-500 mt-3">
+    Select a customer to view properties.
+  </p>
+</section>
+
+
+    
     <!-- Add Customer -->
     <section id="add" class="bg-white rounded-xl shadow p-6">
       <h2 class="text-2xl font-bold mb-6">Add Customer</h2>
@@ -113,6 +144,8 @@
       </form>
     </section>
   </main>
+
+<!-- SCRIPT CODE BELOW -->  
 <script>
   let allCustomers = [];
 
@@ -123,6 +156,7 @@
     document.getElementById("saveButton").textContent = "Save Customer";
     document.getElementById("cancelEditButton").classList.add("hidden");
     document.getElementById("message").textContent = "";
+    clearCustomerProperties();
   }
 
   function renderCustomers(customers) {
@@ -166,6 +200,12 @@
         document.getElementById("saveButton").textContent = "Update Customer";
         document.getElementById("cancelEditButton").classList.remove("hidden");
         document.getElementById("add").scrollIntoView({ behavior: "smooth" });
+
+    loadCustomerProperties(c.CustomerId);
+  } else {
+    clearCustomerProperties();
+
+        
       });
 
       table.appendChild(row);
@@ -304,11 +344,81 @@
     }
   });
 
+
+
+async function loadCustomerProperties(customerId) {
+  const propertyTable = document.getElementById("propertyTable");
+  const propertyMessage = document.getElementById("propertyMessage");
+
+  propertyTable.innerHTML = "";
+  propertyMessage.textContent = "Loading properties...";
+
+  try {
+    const res = await fetch(`/api/customers/properties?customerId=${encodeURIComponent(customerId)}`);
+    const raw = await res.text();
+
+    let data = [];
+    try {
+      data = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from /api/customers/properties: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || `Properties failed with status ${res.status}`);
+    }
+
+    if (!data.length) {
+      propertyMessage.textContent = "No properties found for this customer.";
+      return;
+    }
+
+    propertyMessage.textContent = `${data.length} propert${data.length === 1 ? "y" : "ies"}`;
+
+    data.forEach(p => {
+      const row = document.createElement("tr");
+      row.className = "border-b";
+
+      row.innerHTML = `
+        <td class="p-3">${p.Address || ""}</td>
+        <td class="p-3">${p.City || ""}</td>
+        <td class="p-3">${p.State || ""}</td>
+        <td class="p-3">${p.PostalCode || ""}</td>
+      `;
+
+      propertyTable.appendChild(row);
+    });
+  } catch (err) {
+    console.error("Failed to load customer properties:", err);
+    propertyMessage.textContent = err.message || "Failed to load properties.";
+  }
+}
+
+function clearCustomerProperties() {
+  document.getElementById("propertyTable").innerHTML = "";
+  document.getElementById("propertyMessage").textContent = "Select a customer to view properties.";
+}
+
+
+
+
+
+
+
+  
   document.addEventListener("DOMContentLoaded", async () => {
     await loadCustomers();
     await loadCustomerTypes();
   });
-</script>
 
+
+
+
+
+
+
+
+  
+</script>
 </body>
 </html>
