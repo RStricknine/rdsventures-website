@@ -154,7 +154,7 @@
         row.addEventListener("click", () => {
           document.getElementById("customerId").value = c.CustomerId || "";
           document.getElementById("name").value = c.Name || "";
-          document.getElementById("customertypeId').value = c.CustomerTypeId || "";
+          document.getElementById("CustomerTypeId').value = c.CustomerTypeId || "";
           document.getElementById("email").value = c.Email || "";
           document.getElementById("phone").value = c.Phone || "";
           document.getElementById("address").value = c.BillingStreet || "";
@@ -272,24 +272,35 @@
       }
     });
 
-      async function loadCustomerTypes() {
-        try {
-          const res = await fetch("/api/customers/types");
-          const types = await res.json();
-      
-          const select = document.getElementById("customerTypeId");
-          select.innerHTML = '<option value="">Select type</option>';
-      
-          types.forEach(t => {
-            const option = document.createElement("option");
-            option.value = t.CustomerTypeId;
-            option.textContent = t.TypeName;
-            select.appendChild(option);
-          });
-        } catch (err) {
-          console.error("Failed to load customer types:", err);
-        }
-      }
+     async function loadCustomerTypes() {
+  try {
+    const res = await fetch("/api/customers/types");
+    const raw = await res.text();
+    let types = [];
+
+    try {
+      types = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from /api/customers/types: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(types.error || `Customer types failed with status ${res.status}`);
+    }
+
+    const select = document.getElementById("customerTypeId");
+    select.innerHTML = '<option value="">Select type</option>';
+
+    types.forEach(t => {
+      const option = document.createElement("option");
+      option.value = t.CustomerTypeId;
+      option.textContent = t.TypeName;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    console.error("Failed to load customer types:", err);
+  }
+}
     
     document.addEventListener("DOMContentLoaded", () => {
       loadCustomers();
