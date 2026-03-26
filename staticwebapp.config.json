@@ -4,6 +4,10 @@
       "route": "/api/service-request",
       "allowedRoles": ["anonymous"]
     },
+   {
+  "route": "/api/customers*",
+  "allowedRoles": ["authenticated"]
+    },
     {
       "route": "/dashboard*",
       "allowedRoles": ["authenticated"]
