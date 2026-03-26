@@ -1,4 +1,5 @@
 const sql = require("mssql");
+const { randomUUID } = require("crypto");
 
 let pool;
 
@@ -27,48 +28,83 @@ async function getPool() {
 
 module.exports = async function (context, req) {
   try {
+    const {
+      name,
+      address,
+      city,
+      state,
+      postalCode,
+      isActive
+    } = req.body || {};
+
+    if (!name || !name.trim()) {
+      context.res = {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: {
+          error: "Name is required."
+        }
+      };
+      return;
+    }
+
     const db = await getPool();
 
-    const countsResult = await db.request().query(`
-      SELECT
-          (SELECT COUNT(*)
-           FROM dbo.Customers
-           WHERE IsDeleted = 0) AS Customers,
+    const duplicateCheck = await db.request()
+      .input("Name", sql.NVarChar(255), name.trim())
+      .query(`
+        SELECT TOP 1 CustomerId
+        FROM dbo.Customers
+        WHERE UPPER(LTRIM(RTRIM(Name))) = UPPER(LTRIM(RTRIM(@Name)))
+      `);
 
-          (SELECT COUNT(*)
-           FROM dbo.Properties
-           WHERE IsDeleted = 0) AS Properties,
+    if (duplicateCheck.recordset.length > 0) {
+      context.res = {
+        status: 409,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: {
+          error: "A customer with that name already exists."
+        }
+      };
+      return;
+    }
 
-          (SELECT COUNT(*)
-           FROM dbo.stg_WorkOrders
-           WHERE Status IN ('Warranty', 'Dispatched')) AS OpenWorkOrders,
+    const customerId = randomUUID();
 
-          (SELECT COUNT(*)
-           FROM dbo.stg_WorkOrders
-           WHERE Created >= DATEADD(DAY, -7, GETUTCDATE())) AS NewRequests;
-    `);
-
-    const activityResult = await db.request().query(`
-      SELECT TOP 10
-          CONCAT(
-              'WO ',
-              ISNULL(WorkOrderNumber, CAST(RowID AS nvarchar(20))),
-              CASE
-                  WHEN Subject IS NOT NULL AND LTRIM(RTRIM(Subject)) <> ''
-                  THEN ' - ' + Subject
-                  ELSE ''
-              END,
-              CASE
-                  WHEN Address IS NOT NULL AND LTRIM(RTRIM(Address)) <> ''
-                  THEN ' @ ' + Address
-                  ELSE ''
-              END
-          ) AS Activity
-      FROM dbo.stg_WorkOrders
-      ORDER BY Created DESC, RowID DESC;
-    `);
-
-    const counts = countsResult.recordset[0] || {};
+    await db.request()
+      .input("CustomerId", sql.UniqueIdentifier, customerId)
+      .input("Name", sql.NVarChar(255), name.trim())
+      .input("BillingStreet", sql.NVarChar(255), address?.trim() || null)
+      .input("BillingCity", sql.NVarChar(100), city?.trim() || null)
+      .input("BillingState", sql.NVarChar(50), state?.trim() || null)
+      .input("BillingPostalCode", sql.NVarChar(20), postalCode?.trim() || null)
+      .input("IsActive", sql.Bit, isActive ? 1 : 0)
+      .query(`
+        INSERT INTO dbo.Customers
+        (
+          CustomerId,
+          Name,
+          BillingStreet,
+          BillingCity,
+          BillingState,
+          BillingPostalCode,
+          IsActive
+        )
+        VALUES
+        (
+          @CustomerId,
+          @Name,
+          @BillingStreet,
+          @BillingCity,
+          @BillingState,
+          @BillingPostalCode,
+          @IsActive
+        )
+      `);
 
     context.res = {
       status: 200,
@@ -76,26 +112,23 @@ module.exports = async function (context, req) {
         "Content-Type": "application/json"
       },
       body: {
-        customers: counts.Customers ?? 0,
-        properties: counts.Properties ?? 0,
-        openWorkOrders: counts.OpenWorkOrders ?? 0,
-        newRequests: counts.NewRequests ?? 0,
-        recentActivity: activityResult.recordset.map(r => r.Activity)
+        message: "Customer created successfully.",
+        customerId
       }
     };
   } catch (error) {
-  context.log.error("Dashboard API error:", error);
+    context.log.error("Create Customer API error:", error);
 
-  context.res = {
-    status: 500,
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: {
-      error: "Failed to load dashboard data",
-      message: error.message,
-      code: error.code || null
-    }
-  };
-}
+    context.res = {
+      status: 500,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: {
+        error: "Failed to create customer",
+        message: error.message,
+        code: error.code || null
+      }
+    };
+  }
 };
