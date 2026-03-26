@@ -6,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": ["post"],
-      "route": "workorders-photos-upload"
+      "route": "workorders/photos/upload"
     },
     {
       "type": "http",
