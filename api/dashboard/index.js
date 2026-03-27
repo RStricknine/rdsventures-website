@@ -29,17 +29,21 @@ module.exports = async function (context, req) {
   try {
     const db = await getPool();
 
-    const countsResult = await db.request().query(`
-      SELECT
-          (SELECT COUNT(*) FROM dbo.Customers) AS Customers,
-          (SELECT COUNT(*) FROM dbo.Properties) AS Properties,
-          (SELECT COUNT(*)
-           FROM dbo.stg_WorkOrders
-           WHERE Status IN ('Warranty', 'Dispatched')) AS OpenWorkOrders,
-          (SELECT COUNT(*)
-           FROM dbo.stg_WorkOrders
-           WHERE Created >= DATEADD(DAY, -7, GETUTCDATE())) AS NewRequests;
-    `);
+   const countsResult = await db.request().query(`
+  SELECT
+      (SELECT COUNT(*) FROM dbo.Customers) AS Customers,
+      (SELECT COUNT(*) FROM dbo.Properties) AS Properties,
+      (SELECT COUNT(*)
+       FROM dbo.stg_WorkOrders
+       WHERE Status IN ('Warranty', 'Dispatched')) AS OpenWorkOrders,
+      (SELECT COUNT(*)
+       FROM dbo.stg_WorkOrders
+       WHERE Created >= DATEADD(DAY, -7, GETUTCDATE())) AS NewRequests,
+      (SELECT COUNT(*)
+       FROM dbo.ServiceRequests
+       WHERE RequestStatus = 'New'
+         AND IsDeleted = 0) AS NewServiceRequests;
+`);
 
     const activityResult = await db.request().query(`
       SELECT TOP 10
