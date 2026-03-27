@@ -42,7 +42,7 @@ module.exports = async function (context, req) {
       FROM dbo.stg_WorkOrders w
       LEFT JOIN dbo.Customers c
         ON w.CustomerId = c.CustomerId  WHERE w.Status <> 'Billed' AND w.Status <> 'Canceled'
-      ORDER BY w.Created DESC, w.RowID DESC
+      ORDER BY w.StartDate DESC, w.RowID DESC
     `);
 
     context.res = {
