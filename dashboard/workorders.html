@@ -205,17 +205,7 @@ row.innerHTML = `
   <td class="p-3">${w.CustomerName ?? ""}</td>
   <td class="p-3">${w.Subject ?? ""}</td>
   <td class="p-3">${w.Status ?? ""}</td>
-  <td class="p-3">${w.Address ?? ""}</td>
-  <td class="p-3">
-    <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">
-      ${w.BeforeCount ?? 0}
-    </span>
-  </td>
-  <td class="p-3">
-    <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
-      ${w.AfterCount ?? 0}
-    </span>
-  </td>;
+  <td class="p-3">${w.Address ?? ""}</td>;
 
 
 
@@ -260,8 +250,7 @@ detailCell.innerHTML = `
     <div class="md:col-span-2 xl:col-span-3">
       <strong>Address:</strong> ${w.Address ?? ""}
     </div>
-  </div>
-`;
+  </div>;
 
 
     
