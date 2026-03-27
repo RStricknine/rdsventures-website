@@ -37,7 +37,6 @@
 <!--           <th class="text-left p-3">Start Date</th>         -->
           <th class="text-left p-3">Status</th>
           <th class="text-left p-3">Address</th>
-          <th class="text-left p-3">Photos</th>
         </tr>
       </thead>
       <tbody id="workOrderTable"></tbody>
@@ -200,24 +199,38 @@ function renderWorkOrders(workOrders) {
     // MAIN ROW
     const row = document.createElement("tr");
     row.className = "border-b hover:bg-slate-50 cursor-pointer";
+row.innerHTML = `
+  <td class="p-3">${w.RowID ?? ""}</td>
+  <td class="p-3">${w.WorkOrderNumber ?? ""}</td>
+  <td class="p-3">${w.CustomerName ?? ""}</td>
+  <td class="p-3">${w.Subject ?? ""}</td>
+  <td class="p-3">${w.Status ?? ""}</td>
+  <td class="p-3">${w.Address ?? ""}</td>
+  <td class="p-3">
+    <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800">
+      ${w.BeforeCount ?? 0}
+    </span>
+  </td>
+  <td class="p-3">
+    <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
+      ${w.AfterCount ?? 0}
+    </span>
+  </td>;
 
-    row.innerHTML = `
-      <td class="p-3">${w.RowID ?? ""}</td>
-      <td class="p-3">${w.WorkOrderNumber ?? ""}</td>
-      <td class="p-3">${w.CustomerName ?? ""}</td>
-      <td class="p-3">${w.Subject ?? ""}</td>
-      <td class="p-3">${w.Status ?? ""}</td>
-      <td class="p-3">${w.Address ?? ""}</td>
-    `;
+
+
+
+    
 
     // DETAIL ROW (hidden unless selected)
     const detailRow = document.createElement("tr");
     detailRow.className = "bg-slate-50";
 
     const detailCell = document.createElement("td");
-    detailCell.colSpan = 7;
+    detailCell.colSpan = 6;
 
-    detailCell.innerHTML = `
+
+detailCell.innerHTML = `
   <div class="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
     <div><strong>RowID:</strong> ${w.RowID ?? ""}</div>
     <div><strong>WO #:</strong> ${w.WorkOrderNumber ?? ""}</div>
@@ -225,24 +238,33 @@ function renderWorkOrders(workOrders) {
     <div><strong>Status:</strong> ${w.Status ?? ""}</div>
     <div><strong>Priority:</strong> ${w.Priority ?? ""}</div>
     <div><strong>Start Date:</strong> ${formatWorkOrderDate(w.StartDate)}</div>
-    <div><strong>Before Photos:</strong>
-          <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800 ml-2">
-              ${w.BeforeCount ?? 0}
-          </span>
-      </div>
 
-      <div>
-        <strong>After Photos:</strong>
-              <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800 ml-2">
-                    ${w.AfterCount ?? 0}
-                </span>
-        </div>
-          <div class="md:col-span-2 xl:col-span-3"><strong>Subject:</strong> ${w.Subject ?? ""}</div>
-          <div class="md:col-span-2 xl:col-span-3"><strong>Address:</strong> ${w.Address ?? ""}</div>
-      </div>
-            <div class="md:col-span-2 xl:col-span-3"><strong>Address:</strong> ${w.Address ?? ""}</div>
-        
-      </div>
+    <div>
+      <strong>Before Photos:</strong>
+      <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800 ml-2">
+        ${w.BeforeCount ?? 0}
+      </span>
+    </div>
+
+    <div>
+      <strong>After Photos:</strong>
+      <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800 ml-2">
+        ${w.AfterCount ?? 0}
+      </span>
+    </div>
+
+    <div class="md:col-span-2 xl:col-span-3">
+      <strong>Subject:</strong> ${w.Subject ?? ""}
+    </div>
+
+    <div class="md:col-span-2 xl:col-span-3">
+      <strong>Address:</strong> ${w.Address ?? ""}
+    </div>
+  </div>
+`;
+
+
+    
 
     detailRow.appendChild(detailCell);
 
@@ -275,8 +297,12 @@ function renderWorkOrders(workOrders) {
 //FUNCTION SELECTWORKORDER(WORKORDER)
 function selectWorkOrder(workOrder) {
   document.getElementById("workOrderRowId").value = workOrder.RowID ?? "";
+
   document.getElementById("photoMessage").textContent =
-    'Selected work order ' ${workOrder.WorkOrderNumber || workOrder.RowID};
+    `Selected work order ${workOrder.WorkOrderNumber || workOrder.RowID}`;
+
+  document.getElementById("selectedWorkOrderLabel").textContent =
+    `Selected: WO ${workOrder.WorkOrderNumber || workOrder.RowID} - ${workOrder.Subject || ""}`;
 
   loadPhotos();
 }
