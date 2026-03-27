@@ -1,139 +1,105 @@
-const https = require("https");
+const sql = require("mssql");
 
-function sendEmailWithSendGrid({ apiKey, from, to, subject, text, html }) {
-  const data = JSON.stringify({
-    personalizations: [
-      {
-        to: [{ email: to }],
-        subject
-      }
-    ],
-    from: { email: from },
-    content: [
-      { type: "text/plain", value: text },
-      { type: "text/html", value: html }
-    ]
+let pool;
+
+async function getPool() {
+  if (pool) return pool;
+
+  pool = await sql.connect({
+    server: process.env.SQL_SERVER,
+    database: process.env.SQL_DATABASE,
+    user: process.env.SQL_USER,
+    password: process.env.SQL_PASSWORD,
+    port: parseInt(process.env.SQL_PORT || "1433", 10),
+    options: {
+      encrypt: true,
+      trustServerCertificate: false
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      idleTimeoutMillis: 30000
+    }
   });
 
-  return new Promise((resolve, reject) => {
-    const req = https.request(
-      {
-        hostname: "api.sendgrid.com",
-        port: 443,
-        path: "/v3/mail/send",
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(data)
-        }
-      },
-      (res) => {
-        let body = "";
-
-        res.on("data", (chunk) => {
-          body += chunk;
-        });
-
-        res.on("end", () => {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            resolve();
-          } else {
-            reject(
-              new Error(`SendGrid error ${res.statusCode}: ${body || "Unknown error"}`)
-            );
-          }
-        });
-      }
-    );
-
-    req.on("error", reject);
-    req.write(data);
-    req.end();
-  });
+  return pool;
 }
 
 module.exports = async function (context, req) {
   try {
-    const { name, phone, email, serviceType, address, details } = req.body || {};
+    const {
+      name,
+      phone,
+      email,
+      serviceType,
+      address,
+      details
+    } = req.body || {};
 
-    if (!name || !phone || !serviceType || !address || !details) {
+    if (!name || !phone || !address || !details) {
       context.res = {
         status: 400,
-        jsonBody: { message: "Missing required fields." }
+        headers: { "Content-Type": "application/json" },
+        body: {
+          error: "Name, phone, address, and details are required."
+        }
       };
       return;
     }
 
-    const apiKey = process.env.SENDGRID_API_KEY;
-    const fromEmail = process.env.SENDGRID_FROM_EMAIL;
-    const toEmail = process.env.SERVICE_REQUEST_TO_EMAIL;
+    const db = await getPool();
 
-    if (!apiKey || !fromEmail || !toEmail) {
-      context.log.error("Missing required environment variables.");
-      context.res = {
-        status: 500,
-        jsonBody: { message: "Server configuration is incomplete." }
-      };
-      return;
-    }
-
-    const safeEmail = email && email.trim() ? email.trim() : "Not provided";
-
-    const subject = `New Service Request - ${serviceType} - ${name}`;
-
-    const text = `
-New service request received
-
-Name: ${name}
-Phone: ${phone}
-Email: ${safeEmail}
-Service Type: ${serviceType}
-Address: ${address}
-
-Details:
-${details}
-`.trim();
-
-    const html = `
-      <h2>New Service Request</h2>
-      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
-      <p><strong>Phone:</strong> ${escapeHtml(phone)}</p>
-      <p><strong>Email:</strong> ${escapeHtml(safeEmail)}</p>
-      <p><strong>Service Type:</strong> ${escapeHtml(serviceType)}</p>
-      <p><strong>Address:</strong> ${escapeHtml(address)}</p>
-      <p><strong>Details:</strong></p>
-      <p>${escapeHtml(details).replace(/\n/g, "<br>")}</p>
-    `;
-
-    await sendEmailWithSendGrid({
-      apiKey,
-      from: fromEmail,
-      to: toEmail,
-      subject,
-      text,
-      html
-    });
+    const result = await db.request()
+      .input("RequestName", sql.NVarChar(200), name.trim())
+      .input("RequestPhone", sql.NVarChar(50), phone.trim())
+      .input("RequestEmail", sql.NVarChar(255), email?.trim() || null)
+      .input("PropertyAddress", sql.NVarChar(255), address.trim())
+      .input("ServiceType", sql.NVarChar(100), serviceType?.trim() || null)
+      .input("Details", sql.NVarChar(sql.MAX), details.trim())
+      .input("CreatedBy", sql.NVarChar(100), "Website")
+      .query(`
+        INSERT INTO dbo.ServiceRequests
+        (
+          RequestName,
+          RequestPhone,
+          RequestEmail,
+          PropertyAddress,
+          ServiceType,
+          Details,
+          CreatedBy
+        )
+        OUTPUT INSERTED.ServiceRequestId
+        VALUES
+        (
+          @RequestName,
+          @RequestPhone,
+          @RequestEmail,
+          @PropertyAddress,
+          @ServiceType,
+          @Details,
+          @CreatedBy
+        )
+      `);
 
     context.res = {
       status: 200,
-      jsonBody: { message: "Request submitted successfully." }
+      headers: { "Content-Type": "application/json" },
+      body: {
+        message: "Service request submitted successfully.",
+        serviceRequestId: result.recordset[0].ServiceRequestId
+      }
     };
   } catch (error) {
-    context.log.error("Service request email failed:", error.message);
+    context.log.error("Service request API error:", error);
 
     context.res = {
       status: 500,
-      jsonBody: { message: "There was a problem submitting your request." }
+      headers: { "Content-Type": "application/json" },
+      body: {
+        error: "Failed to submit service request.",
+        message: error.message,
+        code: error.code || null
+      }
     };
   }
 };
-
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
