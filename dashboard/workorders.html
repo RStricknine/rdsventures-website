@@ -16,9 +16,48 @@
 
   <main class="max-w-6xl mx-auto p-6 space-y-6">
 
+<section class="bg-white rounded-xl shadow p-6">
+  <h2 class="text-2xl font-bold mb-4">Work Orders</h2>
+
+  <input
+    id="workOrderSearch"
+    type="text"
+    placeholder="Search work orders..."
+    class="w-full border rounded-lg px-3 py-2 mb-4"
+  />
+
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="border-b bg-slate-50">
+          <th class="text-left p-3">RowID</th>
+          <th class="text-left p-3">WO #</th>
+          <th class="text-left p-3">Customer</th>
+          <th class="text-left p-3">Subject</th>
+          <th class="text-left p-3">Status</th>
+          <th class="text-left p-3">Address</th>
+        </tr>
+      </thead>
+      <tbody id="workOrderTable"></tbody>
+    </table>
+  </div>
+
+  <p id="workOrderListMessage" class="text-sm text-slate-500 mt-3"></p>
+</section>
+
+
+
+
+    
     <section class="bg-white rounded-xl shadow p-6">
       <h1 class="text-2xl font-bold mb-4">Work Order Photo Upload</h1>
 
+      
+<p id="selectedWorkOrderLabel" class="text-sm text-slate-500 mb-4">
+  No work order selected.
+</p>
+
+      
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label class="block text-sm font-medium mb-1">Work Order RowID</label>
@@ -99,8 +138,115 @@
 
 
 
+<script>
+let allWorkOrders = [];
+
+
+
   
-  <script>
+    
+//FUNCTION LOADWORKORDERS()
+async function loadWorkOrders() {
+  const listMessage = document.getElementById("workOrderListMessage");
+  listMessage.textContent = "Loading work orders...";
+
+  try {
+    const res = await fetch("/api/workorders/list");
+    const raw = await res.text();
+
+    let data = [];
+    try {
+      data = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from /api/workorders/list: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || `Work order list failed with status ${res.status}`);
+    }
+
+    allWorkOrders = Array.isArray(data) ? data : [];
+    renderWorkOrders(allWorkOrders);
+  } catch (err) {
+    console.error("Failed to load work orders:", err);
+    listMessage.textContent = err.message || "Failed to load work orders.";
+  }
+}
+
+
+  
+//FUNCTION RENDERWORKORDERS(WORKORDERS)    
+function renderWorkOrders(workOrders) {
+  const table = document.getElementById("workOrderTable");
+  const listMessage = document.getElementById("workOrderListMessage");
+
+  table.innerHTML = "";
+
+  if (!workOrders || workOrders.length === 0) {
+    listMessage.textContent = "No work orders found.";
+    return;
+  }
+
+  listMessage.textContent = `${workOrders.length} work order(s)`;
+
+  workOrders.forEach(w => {
+    const row = document.createElement("tr");
+    row.className = "border-b hover:bg-slate-50 cursor-pointer";
+
+    row.innerHTML = `
+      <td class="p-3">${w.RowID ?? ""}</td>
+      <td class="p-3">${w.WorkOrderNumber ?? ""}</td>
+      <td class="p-3">${w.CustomerName ?? ""}</td>
+      <td class="p-3">${w.Subject ?? ""}</td>
+      <td class="p-3">${w.Status ?? ""}</td>
+      <td class="p-3">${w.Address ?? ""}</td>
+    `;
+
+    row.addEventListener("click", () => {
+      selectWorkOrder(w);
+    });
+
+    table.appendChild(row);
+  });
+}
+
+
+  
+//FUNCTION SELECTWORKORDER(WORKORDER)
+function selectWorkOrder(workOrder) {
+ // document.getElementById("workOrderRowId").value = workOrder.RowID ?? "";
+ // document.getElementById("photoMessage").textContent =
+ //   `Selected work order ${workOrder.WorkOrderNumber || workOrder.RowID}`;
+
+  document.getElementById("selectedWorkOrderLabel").textContent =
+  `Selected: WO ${workOrder.WorkOrderNumber || ""} - ${workOrder.Subject || ""}`;
+  
+  loadPhotos();
+
+  const uploadSection = document.getElementById("workOrderRowId");
+  if (uploadSection) {
+    uploadSection.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+}
+
+document.getElementById("workOrderSearch").addEventListener("input", (e) => {
+  const value = e.target.value.toLowerCase().trim();
+
+  const filtered = allWorkOrders.filter(w =>
+    String(w.RowID || "").toLowerCase().includes(value) ||
+    String(w.WorkOrderNumber || "").toLowerCase().includes(value) ||
+    String(w.CustomerName || "").toLowerCase().includes(value) ||
+    String(w.Subject || "").toLowerCase().includes(value) ||
+    String(w.Status || "").toLowerCase().includes(value) ||
+    String(w.Address || "").toLowerCase().includes(value)
+  );
+
+  renderWorkOrders(filtered);
+});
+
+
+  
+//FUNCTION UPLOADPHOTO()
 async function uploadPhoto() {
   const message = document.getElementById("photoMessage");
   message.textContent = "Uploading...";
@@ -164,6 +310,8 @@ async function uploadPhoto() {
 }
 
 
+  
+//FUNCTION RESIZEIMAGE
 async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -199,7 +347,7 @@ async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
 
     
 
-
+//FUNCTION LOADPHOTOS()
     async function loadPhotos() {
       const workOrderRowId = document.getElementById("workOrderRowId").value.trim();
       const beforeList = document.getElementById("beforePhotoList");
@@ -246,6 +394,11 @@ async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
 
 
 
+
+
+
+  
+//FUNCTION RENDERPHOTOLIST(PHOTOS,CONTAINER)
 function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
@@ -283,15 +436,28 @@ function renderPhotoList(photos, container) {
   });
 }
 
+
+
+
+
+
+  
+//FUNCTION FORMATPHOTODATE
 function formatPhotoDate(value) {
   if (!value) return "";
-
-  const dt = new Date(value);
+    const dt = new Date(value);
   if (Number.isNaN(dt.getTime())) return value;
-
-  return dt.toLocaleString();
+    return dt.toLocaleString();
 }
 
+
+
+
+
+
+
+  
+//FUNCTION OPENIMAGEMODAL
 function openImageModal(imageUrl) {
   const modal = document.getElementById("imageModal");
   const modalImage = document.getElementById("modalImage");
@@ -300,6 +466,14 @@ function openImageModal(imageUrl) {
   modal.classList.remove("hidden");
 }
 
+
+
+
+
+
+
+  
+//FUNCTION CLOSEIMAGEMODAL
 function closeImageModal() {
   const modal = document.getElementById("imageModal");
   const modalImage = document.getElementById("modalImage");
@@ -308,18 +482,22 @@ function closeImageModal() {
   modalImage.src = "";
 }    
 
-    document.getElementById("uploadPhotoButton").addEventListener("click", uploadPhoto);
-    document.getElementById("loadPhotosButton").addEventListener("click", loadPhotos);
-
-
-document.getElementById("closeImageModal").addEventListener("click", closeImageModal);
-
-document.getElementById("imageModal").addEventListener("click", (e) => {
+  document.getElementById("uploadPhotoButton").addEventListener("click", uploadPhoto);
+  document.getElementById("loadPhotosButton").addEventListener("click", loadPhotos);
+  document.getElementById("closeImageModal").addEventListener("click", closeImageModal);
+  document.getElementById("imageModal").addEventListener("click", (e) => {
+  
   if (e.target.id === "imageModal") {
     closeImageModal();
   }
 });
 
+
+
+  
+document.addEventListener("DOMContentLoaded", () => {
+  loadWorkOrders();
+});
     
   </script>
 </body>
