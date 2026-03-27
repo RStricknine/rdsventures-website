@@ -178,6 +178,8 @@ async function loadWorkOrders() {
 
   
 //FUNCTION RENDERWORKORDERS(WORKORDERS)    
+let expandedRowId = null;
+
 function renderWorkOrders(workOrders) {
   const table = document.getElementById("workOrderTable");
   const listMessage = document.getElementById("workOrderListMessage");
@@ -192,6 +194,7 @@ function renderWorkOrders(workOrders) {
   listMessage.textContent = `${workOrders.length} work order(s)`;
 
   workOrders.forEach(w => {
+    // MAIN ROW
     const row = document.createElement("tr");
     row.className = "border-b hover:bg-slate-50 cursor-pointer";
 
@@ -204,33 +207,71 @@ function renderWorkOrders(workOrders) {
       <td class="p-3">${w.Address ?? ""}</td>
     `;
 
+    // DETAIL ROW (hidden unless selected)
+    const detailRow = document.createElement("tr");
+    detailRow.className = "bg-slate-50";
+
+    const detailCell = document.createElement("td");
+    detailCell.colSpan = 6;
+
+    detailCell.innerHTML = `
+      <div class="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div><strong>RowID:</strong> ${w.RowID ?? ""}</div>
+        <div><strong>WO #:</strong> ${w.WorkOrderNumber ?? ""}</div>
+        <div><strong>Customer:</strong> ${w.CustomerName ?? ""}</div>
+        <div><strong>Status:</strong> ${w.Status ?? ""}</div>
+        <div><strong>Priority:</strong> ${w.Priority ?? ""}</div>
+        <div><strong>Start Date:</strong> ${formatWorkOrderDate(w.StartDate)}</div>
+        <div class="md:col-span-2 xl:col-span-3">
+          <strong>Subject:</strong> ${w.Subject ?? ""}
+        </div>
+        <div class="md:col-span-2 xl:col-span-3">
+          <strong>Address:</strong> ${w.Address ?? ""}
+        </div>
+      </div>
+    `;
+
+    detailRow.appendChild(detailCell);
+
+    // Hide if not selected
+    if (expandedRowId !== w.RowID) {
+      detailRow.style.display = "none";
+    }
+
+    // CLICK HANDLER
     row.addEventListener("click", () => {
+      if (expandedRowId === w.RowID) {
+        expandedRowId = null;
+      } else {
+        expandedRowId = w.RowID;
+      }
+
       selectWorkOrder(w);
+      renderWorkOrders(workOrders);
     });
 
     table.appendChild(row);
+    table.appendChild(detailRow);
   });
 }
 
 
   
+
+  
 //FUNCTION SELECTWORKORDER(WORKORDER)
 function selectWorkOrder(workOrder) {
- // document.getElementById("workOrderRowId").value = workOrder.RowID ?? "";
- // document.getElementById("photoMessage").textContent =
- //   `Selected work order ${workOrder.WorkOrderNumber || workOrder.RowID}`;
+  document.getElementById("workOrderRowId").value = workOrder.RowID ?? "";
+  document.getElementById("photoMessage").textContent =
+    `Selected work order ${workOrder.WorkOrderNumber || workOrder.RowID}`;
 
-  document.getElementById("selectedWorkOrderLabel").textContent =
-  `Selected: WO ${workOrder.WorkOrderNumber || ""} - ${workOrder.Subject || ""}`;
-  
   loadPhotos();
-
-  const uploadSection = document.getElementById("workOrderRowId");
-  if (uploadSection) {
-    uploadSection.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
 }
 
+
+
+
+  
 document.getElementById("workOrderSearch").addEventListener("input", (e) => {
   const value = e.target.value.toLowerCase().trim();
 
@@ -452,9 +493,15 @@ function formatPhotoDate(value) {
     return dt.toLocaleString();
 }
 
+//FUNCTION FORMATWORKORDERDATE(VALUE)
+function formatWorkOrderDate(value) {
+  if (!value) return "";
 
+  const dt = new Date(value);
+  if (Number.isNaN(dt.getTime())) return value;
 
-
+  return dt.toLocaleDateString();
+}
 
 
 
