@@ -40,16 +40,17 @@ const result = await db.request().query(`
     w.StartDate,
     w.Address,
     c.Name AS CustomerName,
-    ISNULL(p.PhotoCount, 0) AS PhotoCount
+    ISNULL(p.BeforeCount, 0) AS BeforeCount,
+    ISNULL(p.AfterCount, 0) AS AfterCount
   FROM dbo.stg_WorkOrders w
   LEFT JOIN dbo.Customers c
     ON w.CustomerId = c.CustomerId
   LEFT JOIN (
     SELECT
       WorkOrderRowId,
-      COUNT(*) AS PhotoCount
+      SUM(CASE WHEN PhotoType = 'Before' AND IsActive = 1 THEN 1 ELSE 0 END) AS BeforeCount,
+      SUM(CASE WHEN PhotoType = 'After' AND IsActive = 1 THEN 1 ELSE 0 END) AS AfterCount
     FROM dbo.WorkOrderPhotos
-    WHERE IsActive = 1
     GROUP BY WorkOrderRowId
   ) p
     ON w.RowID = p.WorkOrderRowId
