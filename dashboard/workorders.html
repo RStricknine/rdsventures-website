@@ -225,33 +225,24 @@ function renderWorkOrders(workOrders) {
     <div><strong>Status:</strong> ${w.Status ?? ""}</div>
     <div><strong>Priority:</strong> ${w.Priority ?? ""}</div>
     <div><strong>Start Date:</strong> ${formatWorkOrderDate(w.StartDate)}</div>
-    <div>
-  <strong>Before Photos:</strong>
-  <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800 ml-2">
-    ${w.BeforeCount ?? 0}
-  </span>
-</div>
+    <div><strong>Before Photos:</strong>
+          <span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-800 ml-2">
+              ${w.BeforeCount ?? 0}
+          </span>
+      </div>
 
-<div>
-  <strong>After Photos:</strong>
-  <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800 ml-2">
-    ${w.AfterCount ?? 0}
-  </span>
-</div>
-    <div class="md:col-span-2 xl:col-span-3">
-      <strong>Subject:</strong> ${w.Subject ?? ""}
-    </div>
-    <div class="md:col-span-2 xl:col-span-3">
-      <strong>Address:</strong> ${w.Address ?? ""}
-    </div>
-  </div>
-`;
-        <div class="md:col-span-2 xl:col-span-3">
-          <strong>Address:</strong> ${w.Address ?? ""}
+      <div>
+        <strong>After Photos:</strong>
+              <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800 ml-2">
+                    ${w.AfterCount ?? 0}
+                </span>
         </div>
+          <div class="md:col-span-2 xl:col-span-3"><strong>Subject:</strong> ${w.Subject ?? ""}</div>
+          <div class="md:col-span-2 xl:col-span-3"><strong>Address:</strong> ${w.Address ?? ""}</div>
+      </div>
+            <div class="md:col-span-2 xl:col-span-3"><strong>Address:</strong> ${w.Address ?? ""}</div>
         
       </div>
-    `;
 
     detailRow.appendChild(detailCell);
 
