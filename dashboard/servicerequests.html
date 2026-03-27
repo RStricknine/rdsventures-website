@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Requests - RDS Ventures</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+  <nav class="flex gap-4 p-4 bg-slate-800 text-white">
+    <a href="/dashboard/index.html">Dashboard</a>
+    <a href="/dashboard/customers.html">Customers</a>
+    <a href="/dashboard/workorders.html">Work Orders</a>
+    <a href="/dashboard/servicerequests.html" class="font-bold">Service Requests</a>
+  </nav>
+
+  <main class="max-w-6xl mx-auto p-6 space-y-6">
+
+    <!-- LIST -->
+    <section class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-4">Service Requests</h2>
+
+      <input
+        id="search"
+        type="text"
+        placeholder="Search service requests..."
+        class="w-full border rounded-lg px-3 py-2 mb-4"
+      />
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b bg-slate-50">
+              <th class="text-left p-3">Name</th>
+              <th class="text-left p-3">Phone</th>
+              <th class="text-left p-3">Address</th>
+              <th class="text-left p-3">Service</th>
+              <th class="text-left p-3">Status</th>
+              <th class="text-left p-3">Created</th>
+            </tr>
+          </thead>
+          <tbody id="requestTable"></tbody>
+        </table>
+      </div>
+
+      <p id="listMessage" class="text-sm text-slate-500 mt-3"></p>
+    </section>
+
+    <!-- DETAILS -->
+    <section class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-2xl font-bold mb-4">Request Details</h2>
+
+      <div id="detailsCard" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div><strong>Name:</strong> <span id="dName"></span></div>
+          <div><strong>Phone:</strong> <span id="dPhone"></span></div>
+          <div><strong>Email:</strong> <span id="dEmail"></span></div>
+          <div><strong>Service Type:</strong> <span id="dService"></span></div>
+          <div class="md:col-span-2"><strong>Address:</strong> <span id="dAddress"></span></div>
+
+          <div><strong>Status:</strong> <span id="dStatus"></span></div>
+          <div><strong>Created:</strong> <span id="dCreated"></span></div>
+
+          <div class="md:col-span-2">
+            <strong>Details:</strong>
+            <div id="dDetails" class="mt-1 text-slate-700"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <p id="detailsMessage" class="text-sm text-slate-500">
+        Select a request to view details.
+      </p>
+    </section>
+
+  </main>
+
+<script>
+let allRequests = [];
+
+async function loadRequests() {
+  const listMessage = document.getElementById("listMessage");
+  listMessage.textContent = "Loading requests...";
+
+  try {
+    const res = await fetch("/api/servicerequests/list");
+    const raw = await res.text();
+
+    let data = raw ? JSON.parse(raw) : [];
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to load requests");
+    }
+
+    allRequests = Array.isArray(data) ? data : [];
+    renderRequests(allRequests);
+
+  } catch (err) {
+    console.error(err);
+    listMessage.textContent = err.message;
+  }
+}
+
+function renderRequests(requests) {
+  const table = document.getElementById("requestTable");
+  const listMessage = document.getElementById("listMessage");
+
+  table.innerHTML = "";
+
+  if (!requests.length) {
+    listMessage.textContent = "No requests found.";
+    return;
+  }
+
+  listMessage.textContent = `${requests.length} request(s)`;
+
+  requests.forEach(r => {
+    const row = document.createElement("tr");
+    row.className = "border-b hover:bg-slate-50 cursor-pointer";
+
+    row.innerHTML = `
+      <td class="p-3">${r.RequestName}</td>
+      <td class="p-3">${r.RequestPhone}</td>
+      <td class="p-3">${r.PropertyAddress}</td>
+      <td class="p-3">${r.ServiceType || ""}</td>
+      <td class="p-3">${r.RequestStatus}</td>
+      <td class="p-3">${formatDate(r.CreatedAt)}</td>
+    `;
+
+    row.addEventListener("click", () => {
+      showDetails(r);
+    });
+
+    table.appendChild(row);
+  });
+}
+
+function showDetails(r) {
+  document.getElementById("detailsCard").classList.remove("hidden");
+  document.getElementById("detailsMessage").textContent = "";
+
+  document.getElementById("dName").textContent = r.RequestName;
+  document.getElementById("dPhone").textContent = r.RequestPhone;
+  document.getElementById("dEmail").textContent = r.RequestEmail || "";
+  document.getElementById("dService").textContent = r.ServiceType || "";
+  document.getElementById("dAddress").textContent = r.PropertyAddress;
+  document.getElementById("dStatus").textContent = r.RequestStatus;
+  document.getElementById("dCreated").textContent = formatDate(r.CreatedAt);
+  document.getElementById("dDetails").textContent = r.Details;
+}
+
+function formatDate(value) {
+  if (!value) return "";
+  const dt = new Date(value);
+  return dt.toLocaleString();
+}
+
+document.getElementById("search").addEventListener("input", (e) => {
+  const value = e.target.value.toLowerCase();
+
+  const filtered = allRequests.filter(r =>
+    (r.RequestName || "").toLowerCase().includes(value) ||
+    (r.RequestPhone || "").toLowerCase().includes(value) ||
+    (r.PropertyAddress || "").toLowerCase().includes(value) ||
+    (r.ServiceType || "").toLowerCase().includes(value)
+  );
+
+  renderRequests(filtered);
+});
+
+document.addEventListener("DOMContentLoaded", loadRequests);
+</script>
+
+</body>
+</html>
