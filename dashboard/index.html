@@ -192,7 +192,11 @@
         const workOrdersEl = document.getElementById("workOrdersCount");
         const requestsEl = document.getElementById("requestsCount");
         const recentList = document.getElementById("recentList");
-
+        const serviceRequestsEl = document.getElementById("serviceRequestsCount");
+        
+        if (serviceRequestsEl) {
+          serviceRequestsEl.textContent = data.newServiceRequests ?? 0;
+        }
         if (customersEl) customersEl.textContent = data.customers ?? 0;
         if (propertiesEl) propertiesEl.textContent = data.properties ?? 0;
         if (workOrdersEl) workOrdersEl.textContent = data.openWorkOrders ?? 0;
