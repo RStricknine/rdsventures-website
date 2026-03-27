@@ -276,7 +276,7 @@ function renderWorkOrders(workOrders) {
 function selectWorkOrder(workOrder) {
   document.getElementById("workOrderRowId").value = workOrder.RowID ?? "";
   document.getElementById("photoMessage").textContent =
-    `Selected work order ${workOrder.WorkOrderNumber || workOrder.RowID}`;
+    'Selected work order ' ${workOrder.WorkOrderNumber || workOrder.RowID};
 
   loadPhotos();
 }
