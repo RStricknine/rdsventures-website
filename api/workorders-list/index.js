@@ -29,22 +29,41 @@ module.exports = async function (context, req) {
   try {
     const db = await getPool();
 
-    const result = await db.request().query(`
-      SELECT TOP 200
-        w.RowID,
-        w.WorkOrderNumber,
-        w.Subject,
-        w.Status,
-        w.Priority,
-        w.StartDate,
-        w.Address,
-        c.Name AS CustomerName
-      FROM dbo.stg_WorkOrders w
-      LEFT JOIN dbo.Customers c
-        ON w.CustomerId = c.CustomerId  WHERE w.Status <> 'Billed' AND w.Status <> 'Canceled'
-      ORDER BY w.StartDate DESC, w.RowID DESC
-    `);
 
+const result = await db.request().query(`
+  SELECT TOP 200
+    w.RowID,
+    w.WorkOrderNumber,
+    w.Subject,
+    w.Status,
+    w.Priority,
+    w.StartDate,
+    w.Address,
+    c.Name AS CustomerName,
+    ISNULL(p.PhotoCount, 0) AS PhotoCount
+  FROM dbo.stg_WorkOrders w
+  LEFT JOIN dbo.Customers c
+    ON w.CustomerId = c.CustomerId
+  LEFT JOIN (
+    SELECT
+      WorkOrderRowId,
+      COUNT(*) AS PhotoCount
+    FROM dbo.WorkOrderPhotos
+    WHERE IsActive = 1
+    GROUP BY WorkOrderRowId
+  ) p
+    ON w.RowID = p.WorkOrderRowId
+  WHERE w.Status NOT IN ('Billed', 'Canceled')
+  ORDER BY w.Created DESC, w.RowID DESC
+`);
+
+
+
+
+
+
+
+    
     context.res = {
       status: 200,
       headers: { "Content-Type": "application/json" },
