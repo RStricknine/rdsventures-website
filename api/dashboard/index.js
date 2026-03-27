@@ -67,19 +67,25 @@ module.exports = async function (context, req) {
 
     const counts = countsResult.recordset[0] || {};
 
-    context.res = {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: {
-        customers: counts.Customers ?? 0,
-        properties: counts.Properties ?? 0,
-        openWorkOrders: counts.OpenWorkOrders ?? 0,
-        newRequests: counts.NewRequests ?? 0,
-        recentActivity: activityResult.recordset.map(r => r.Activity)
-      }
-    };
+  context.res = {
+  status: 200,
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: {
+    customers: counts.Customers ?? 0,
+    properties: counts.Properties ?? 0,
+    openWorkOrders: counts.OpenWorkOrders ?? 0,
+    newRequests: counts.NewRequests ?? 0,
+    newServiceRequests: counts.NewServiceRequests ?? 0,
+    recentActivity: activityResult.recordset.map(r => r.Activity)
+  }
+};
+
+
+
+
+    
   } catch (error) {
     context.log.error("Dashboard API error:", error);
 
