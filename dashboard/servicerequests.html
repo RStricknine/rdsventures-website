@@ -154,20 +154,17 @@ function renderRequests(requests) {
 }
 
 function showDetails(r) {
-  selectedRequest = r;
+const button = document.getElementById("convertToWorkOrderButton");
 
-  document.getElementById("detailsCard").classList.remove("hidden");
-  document.getElementById("detailsMessage").textContent = "";
-  document.getElementById("convertMessage").textContent = "";
-
-  document.getElementById("dName").textContent = r.RequestName;
-  document.getElementById("dPhone").textContent = r.RequestPhone;
-  document.getElementById("dEmail").textContent = r.RequestEmail || "";
-  document.getElementById("dService").textContent = r.ServiceType || "";
-  document.getElementById("dAddress").textContent = r.PropertyAddress;
-  document.getElementById("dStatus").textContent = r.RequestStatus;
-  document.getElementById("dCreated").textContent = formatDate(r.CreatedAt);
-  document.getElementById("dDetails").textContent = r.Details;
+if (r.ConvertedToJobId) {
+  button.disabled = true;
+  button.textContent = `Converted (#${r.ConvertedToJobId})`;
+  button.classList.add("opacity-50", "cursor-not-allowed");
+} else {
+  button.disabled = false;
+  button.textContent = "Convert to Work Order";
+  button.classList.remove("opacity-50", "cursor-not-allowed");
+}
 }
 
 function formatDate(value) {
@@ -190,6 +187,57 @@ document.getElementById("search").addEventListener("input", (e) => {
 });
 
 document.addEventListener("DOMContentLoaded", loadRequests);
+document.getElementById("convertToWorkOrderButton").addEventListener("click", async () => {
+  const message = document.getElementById("convertMessage");
+
+  if (!selectedRequest) {
+    message.textContent = "Select a request first.";
+    return;
+  }
+
+  if (!confirm("Convert this request into a work order?")) {
+    return;
+  }
+
+  message.textContent = "Converting...";
+
+  try {
+    const res = await fetch("/api/servicerequests/convert", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        serviceRequestId: selectedRequest.ServiceRequestId
+      })
+    });
+
+    const raw = await res.text();
+    let data = {};
+
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new Error(`Invalid JSON: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || "Conversion failed.");
+    }
+
+    message.textContent = `Converted to Work Order #${data.workOrderRowId}`;
+
+    // Refresh list
+    await loadRequests();
+
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Conversion failed.";
+  }
+});
+
+
+  
 </script>
 
 </body>
