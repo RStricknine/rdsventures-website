@@ -245,8 +245,8 @@ document.getElementById("convertToWorkOrderButton").addEventListener("click", as
     }
 
     if (!res.ok) {
-      throw new Error(data.error || "Conversion failed.");
-    }
+  throw new Error(data.message || data.error || "Conversion failed.");
+}
 
     message.textContent = `Converted to Work Order #${data.workOrderRowId}`;
 
