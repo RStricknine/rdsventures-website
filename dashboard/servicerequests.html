@@ -93,8 +93,11 @@
 
   </main>
 
+
+
 <script>
 let allRequests = [];
+let selectedRequest = null;
 
 async function loadRequests() {
   const listMessage = document.getElementById("listMessage");
@@ -104,7 +107,12 @@ async function loadRequests() {
     const res = await fetch("/api/servicerequests/list");
     const raw = await res.text();
 
-    let data = raw ? JSON.parse(raw) : [];
+    let data = [];
+    try {
+      data = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from /api/servicerequests/list: ${raw || "(empty response)"}`);
+    }
 
     if (!res.ok) {
       throw new Error(data.error || "Failed to load requests");
@@ -112,10 +120,9 @@ async function loadRequests() {
 
     allRequests = Array.isArray(data) ? data : [];
     renderRequests(allRequests);
-
   } catch (err) {
     console.error(err);
-    listMessage.textContent = err.message;
+    listMessage.textContent = err.message || "Failed to load requests";
   }
 }
 
@@ -137,11 +144,11 @@ function renderRequests(requests) {
     row.className = "border-b hover:bg-slate-50 cursor-pointer";
 
     row.innerHTML = `
-      <td class="p-3">${r.RequestName}</td>
-      <td class="p-3">${r.RequestPhone}</td>
-      <td class="p-3">${r.PropertyAddress}</td>
+      <td class="p-3">${r.RequestName || ""}</td>
+      <td class="p-3">${r.RequestPhone || ""}</td>
+      <td class="p-3">${r.PropertyAddress || ""}</td>
       <td class="p-3">${r.ServiceType || ""}</td>
-      <td class="p-3">${r.RequestStatus}</td>
+      <td class="p-3">${r.RequestStatus || ""}</td>
       <td class="p-3">${formatDate(r.CreatedAt)}</td>
     `;
 
@@ -154,39 +161,55 @@ function renderRequests(requests) {
 }
 
 function showDetails(r) {
-const button = document.getElementById("convertToWorkOrderButton");
+  selectedRequest = r;
 
-if (r.ConvertedToJobId) {
-  button.disabled = true;
-  button.textContent = `Converted (#${r.ConvertedToJobId})`;
-  button.classList.add("opacity-50", "cursor-not-allowed");
-} else {
-  button.disabled = false;
-  button.textContent = "Convert to Work Order";
-  button.classList.remove("opacity-50", "cursor-not-allowed");
-}
+  document.getElementById("detailsCard").classList.remove("hidden");
+  document.getElementById("detailsMessage").textContent = "";
+  document.getElementById("convertMessage").textContent = "";
+
+  document.getElementById("dName").textContent = r.RequestName || "";
+  document.getElementById("dPhone").textContent = r.RequestPhone || "";
+  document.getElementById("dEmail").textContent = r.RequestEmail || "";
+  document.getElementById("dService").textContent = r.ServiceType || "";
+  document.getElementById("dAddress").textContent = r.PropertyAddress || "";
+  document.getElementById("dStatus").textContent = r.RequestStatus || "";
+  document.getElementById("dCreated").textContent = formatDate(r.CreatedAt);
+  document.getElementById("dDetails").textContent = r.Details || "";
+
+  const button = document.getElementById("convertToWorkOrderButton");
+
+  if (r.ConvertedToJobId) {
+    button.disabled = true;
+    button.textContent = `Converted (#${r.ConvertedToJobId})`;
+    button.classList.add("opacity-50", "cursor-not-allowed");
+  } else {
+    button.disabled = false;
+    button.textContent = "Convert to Work Order";
+    button.classList.remove("opacity-50", "cursor-not-allowed");
+  }
 }
 
 function formatDate(value) {
   if (!value) return "";
   const dt = new Date(value);
+  if (Number.isNaN(dt.getTime())) return value;
   return dt.toLocaleString();
 }
 
 document.getElementById("search").addEventListener("input", (e) => {
-  const value = e.target.value.toLowerCase();
+  const value = e.target.value.toLowerCase().trim();
 
   const filtered = allRequests.filter(r =>
     (r.RequestName || "").toLowerCase().includes(value) ||
     (r.RequestPhone || "").toLowerCase().includes(value) ||
     (r.PropertyAddress || "").toLowerCase().includes(value) ||
-    (r.ServiceType || "").toLowerCase().includes(value)
+    (r.ServiceType || "").toLowerCase().includes(value) ||
+    (r.RequestStatus || "").toLowerCase().includes(value)
   );
 
   renderRequests(filtered);
 });
 
-document.addEventListener("DOMContentLoaded", loadRequests);
 document.getElementById("convertToWorkOrderButton").addEventListener("click", async () => {
   const message = document.getElementById("convertMessage");
 
@@ -227,18 +250,25 @@ document.getElementById("convertToWorkOrderButton").addEventListener("click", as
 
     message.textContent = `Converted to Work Order #${data.workOrderRowId}`;
 
-    // Refresh list
     await loadRequests();
 
+    const updated = allRequests.find(x => x.ServiceRequestId === selectedRequest.ServiceRequestId);
+    if (updated) {
+      showDetails(updated);
+    }
   } catch (err) {
     console.error(err);
     message.textContent = err.message || "Conversion failed.";
   }
 });
 
-
-  
+document.addEventListener("DOMContentLoaded", () => {
+  loadRequests();
+});
 </script>
 
+
+
+  
 </body>
 </html>
