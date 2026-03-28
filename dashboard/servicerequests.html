@@ -66,9 +66,6 @@
 
   <p id="convertMessage" class="text-sm mt-3"></p>
 
-
-
-          
           <div><strong>Name:</strong> <span id="dName"></span></div>
           <div><strong>Phone:</strong> <span id="dPhone"></span></div>
           <div><strong>Email:</strong> <span id="dEmail"></span></div>
@@ -92,6 +89,7 @@
     </section>
 
   </main>
+
 
 
 
@@ -245,8 +243,8 @@ document.getElementById("convertToWorkOrderButton").addEventListener("click", as
     }
 
     if (!res.ok) {
-  throw new Error(data.message || data.error || "Conversion failed.");
-}
+      throw new Error(data.message || data.error || "Conversion failed.");
+    }
 
     message.textContent = `Converted to Work Order #${data.workOrderRowId}`;
 
@@ -256,23 +254,20 @@ document.getElementById("convertToWorkOrderButton").addEventListener("click", as
     if (updated) {
       showDetails(updated);
     }
-    
-  } catch (error) {
-  context.log.error("Service request convert error:", error);
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Conversion failed.";
+  }
+});
 
-  context.res = {
-    status: 500,
-    body: {
-      error: "Conversion failed",
-      message: error.message
-    }
-  };
-}
-
-  
 document.addEventListener("DOMContentLoaded", () => {
   loadRequests();
 });
 </script>
+
+
+
+
+  
 </body>
 </html>
