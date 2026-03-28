@@ -256,12 +256,17 @@ document.getElementById("convertToWorkOrderButton").addEventListener("click", as
     if (updated) {
       showDetails(updated);
     }
-  } catch (err) {
-    console.error(err);
-    message.textContent = err.message || "Conversion failed.";
-  }
-});
+  } catch (error) {
+  context.log.error("Service request convert error:", error);
 
+  context.res = {
+    status: 500,
+    body: {
+      error: "Conversion failed",
+      message: error.message
+    }
+  };
+}
 document.addEventListener("DOMContentLoaded", () => {
   loadRequests();
 });
