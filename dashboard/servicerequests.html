@@ -154,8 +154,11 @@ function renderRequests(requests) {
 }
 
 function showDetails(r) {
+  selectedRequest = r;
+
   document.getElementById("detailsCard").classList.remove("hidden");
   document.getElementById("detailsMessage").textContent = "";
+  document.getElementById("convertMessage").textContent = "";
 
   document.getElementById("dName").textContent = r.RequestName;
   document.getElementById("dPhone").textContent = r.RequestPhone;
