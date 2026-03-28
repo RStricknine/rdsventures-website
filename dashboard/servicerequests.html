@@ -256,6 +256,7 @@ document.getElementById("convertToWorkOrderButton").addEventListener("click", as
     if (updated) {
       showDetails(updated);
     }
+    
   } catch (error) {
   context.log.error("Service request convert error:", error);
 
@@ -267,6 +268,8 @@ document.getElementById("convertToWorkOrderButton").addEventListener("click", as
     }
   };
 }
+
+  
 document.addEventListener("DOMContentLoaded", () => {
   loadRequests();
 });
