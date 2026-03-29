@@ -25,21 +25,21 @@ module.exports = async function (context, req) {
     const db = await getPool();
 
     const result = await db.request().query(`
-      SELECT TOP 200
-        ServiceRequestId,
-        RequestName,
-        RequestPhone,
-        RequestEmail,
-        PropertyAddress,
-        ServiceType,
-        Details,
-        RequestStatus,
-        CreatedAt
-      FROM dbo.ServiceRequests
-      WHERE IsDeleted = 0
-      ORDER BY CreatedAt DESC
-    `);
-
+  SELECT TOP 200
+    ServiceRequestId,
+    RequestName,
+    RequestPhone,
+    RequestEmail,
+    PropertyAddress,
+    ServiceType,
+    Details,
+    RequestStatus,
+    ConvertedToWorkOrderRowId,
+    CreatedAt
+  FROM dbo.ServiceRequests
+  WHERE IsDeleted = 0
+  ORDER BY CreatedAt DESC
+`);
     context.res = {
       status: 200,
       headers: { "Content-Type": "application/json" },
