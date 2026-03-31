@@ -239,8 +239,8 @@ async function loadWorkOrders() {
     }
 
     if (!res.ok) {
-      throw new Error(data.error || "Failed to load work orders");
-    }
+  throw new Error(data.message || data.error || "Failed to load work orders");
+}
 
     allWorkOrders = Array.isArray(data) ? data : [];
     renderWorkOrderList(allWorkOrders);
