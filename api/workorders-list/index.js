@@ -53,7 +53,7 @@ FROM dbo.stg_WorkOrders w
 LEFT JOIN dbo.Customers c
     ON w.CustomerId = c.CustomerId
 LEFT JOIN dbo.Properties p
-    ON w.PropertyId = p.PropertyId
+    ON TRY_CONVERT(int,w.PropertyId) = p.PropertyId
 ORDER BY w.RowID DESC;
 ');
 
