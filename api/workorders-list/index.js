@@ -38,6 +38,7 @@ SELECT TOP 200
     c.Name AS CustomerName,
     w.PropertyId,
     p.Address AS PropertyAddress,
+    w.Address,
     w.Street,
     w.City,
     w.State,
@@ -56,12 +57,6 @@ LEFT JOIN dbo.Properties p
 ORDER BY w.RowID DESC;
 ');
 
-
-
-
-
-
-    
     context.res = {
       status: 200,
       headers: { "Content-Type": "application/json" },
