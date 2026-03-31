@@ -326,7 +326,7 @@ function showWorkOrderDetails(w) {
   document.getElementById("dRowId").textContent = w.RowID ?? "";
   document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
   document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
-  document.getElementById("dProperty").textContent = w.PropertyId ?? "";
+  document.getElementById("dProperty").textContent = w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;;
   document.getElementById("dStatus").textContent = w.Status ?? "";
   document.getElementById("dPriority").textContent = w.Priority ?? "";
   document.getElementById("dStartDate").textContent = formatDateOnly(w.StartDate);
