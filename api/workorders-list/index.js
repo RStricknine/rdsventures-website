@@ -38,7 +38,6 @@ SELECT TOP 200
     c.Name AS CustomerName,
     w.PropertyId,
     p.Address AS PropertyAddress,
-    w.Address,
     w.Street,
     w.City,
     w.State,
@@ -46,14 +45,12 @@ SELECT TOP 200
     w.Subject,
     w.Status,
     w.Priority,
-    w.StartDate,
-    w.EndDate,
-    w.Notes
+    w.StartDate
 FROM dbo.stg_WorkOrders w
 LEFT JOIN dbo.Customers c
     ON w.CustomerId = c.CustomerId
 LEFT JOIN dbo.Properties p
-    ON TRY_CONVERT(int,w.PropertyId) = p.PropertyId
+    ON TRY_CONVERT(int, w.PropertyId) = p.PropertyId
 ORDER BY w.RowID DESC;
 ');
 
