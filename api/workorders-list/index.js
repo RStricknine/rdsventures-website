@@ -56,7 +56,6 @@ LEFT JOIN dbo.Customers c
     ON w.CustomerId = c.CustomerId
 LEFT JOIN dbo.Properties p
     ON w.PropertyId = p.PropertyId
-WHERE w.IsDeleted = 0
 ORDER BY w.RowID DESC;
 
 
