@@ -31,32 +31,33 @@ module.exports = async function (context, req) {
 
 
 const result = await db.request().query(`
-  SELECT TOP 200
+SELECT TOP 200
     w.RowID,
     w.WorkOrderNumber,
+    w.CustomerId,
+    c.Name AS CustomerName,
+
+    w.PropertyId,
+    p.Address AS PropertyAddress,
+
+    w.Street,
+    w.City,
+    w.State,
+    w.PostalCode,
+
     w.Subject,
     w.Status,
     w.Priority,
     w.StartDate,
-    w.Address,
-    c.Name AS CustomerName,
-    ISNULL(p.BeforeCount, 0) AS BeforeCount,
-    ISNULL(p.AfterCount, 0) AS AfterCount
-  FROM dbo.stg_WorkOrders w
-  LEFT JOIN dbo.Customers c
+    w.EndDate,
+    w.Notes
+FROM dbo.stg_WorkOrders w
+LEFT JOIN dbo.Customers c
     ON w.CustomerId = c.CustomerId
-  LEFT JOIN (
-    SELECT
-      WorkOrderRowId,
-      SUM(CASE WHEN PhotoType = 'Before' AND IsActive = 1 THEN 1 ELSE 0 END) AS BeforeCount,
-      SUM(CASE WHEN PhotoType = 'After' AND IsActive = 1 THEN 1 ELSE 0 END) AS AfterCount
-    FROM dbo.WorkOrderPhotos
-    GROUP BY WorkOrderRowId
-  ) p
-    ON w.RowID = p.WorkOrderRowId
-  WHERE w.Status NOT IN ('Billed', 'Canceled')
-  ORDER BY w.Created DESC, w.RowID DESC
-`);
+LEFT JOIN dbo.Properties p
+    ON w.PropertyId = p.PropertyId
+WHERE w.IsDeleted = 0
+ORDER BY w.RowID DESC;
 
 
 
