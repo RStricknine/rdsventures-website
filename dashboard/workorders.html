@@ -227,27 +227,27 @@ async function loadWorkOrders() {
   const listMessage = document.getElementById("workOrderListMessage");
   listMessage.textContent = "Loading work orders...";
 
+try {
+  const res = await fetch("/api/workorders/list");
+  const raw = await res.text();
+
+  let data = [];
   try {
-    const res = await fetch("/api/workorders/list");
-    const raw = await res.text();
-
-    let data = [];
-    try {
-      data = raw ? JSON.parse(raw) : [];
-    } catch {
-      throw new Error(`Invalid JSON from /api/workorders/list: ${raw || "(empty response)"}`);
-    }
-
-    if (!res.ok) {
-  throw new Error(data.message || data.error || "Failed to load work orders");
-}
-
-    allWorkOrders = Array.isArray(data) ? data : [];
-    renderWorkOrderList(allWorkOrders);
-  } catch (err) {
-    console.error(err);
-    listMessage.textContent = err.message || "Failed to load work orders.";
+    data = raw ? JSON.parse(raw) : [];
+  } catch {
+    throw new Error(`Invalid JSON from /api/workorders/list: ${raw || "(empty response)"}`);
   }
+
+  if (!res.ok) {
+    throw new Error(data.message || data.error || "Failed to load work orders");
+  }
+
+  allWorkOrders = Array.isArray(data) ? data : [];
+  renderWorkOrderList(allWorkOrders);
+} catch (err) {
+  console.error(err);
+  listMessage.textContent = err.message || "Failed to load work orders.";
+}
 }
 
 function renderWorkOrderList(workOrders) {
