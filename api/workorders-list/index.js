@@ -54,7 +54,7 @@ LEFT JOIN dbo.Customers c
 LEFT JOIN dbo.Properties p
     ON w.PropertyId = p.PropertyId
 ORDER BY w.RowID DESC;
-
+')
 
 
 
