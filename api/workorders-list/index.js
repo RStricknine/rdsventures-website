@@ -36,15 +36,12 @@ SELECT TOP 200
     w.WorkOrderNumber,
     w.CustomerId,
     c.Name AS CustomerName,
-
     w.PropertyId,
     p.Address AS PropertyAddress,
-
     w.Street,
     w.City,
     w.State,
     w.PostalCode,
-
     w.Subject,
     w.Status,
     w.Priority,
@@ -70,17 +67,16 @@ ORDER BY w.RowID DESC;
       headers: { "Content-Type": "application/json" },
       body: result.recordset
     };
-  } catch (error) {
-    context.log.error("Work orders list API error:", error);
+} catch (error) {
+  context.log.error("Work orders list error:", error);
 
-    context.res = {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        error: "Failed to load work orders",
-        message: error.message,
-        code: error.code || null
-      }
-    };
-  }
+  context.res = {
+    status: 500,
+    headers: { "Content-Type": "application/json" },
+    body: {
+      error: "Failed to load work orders",
+      message: error.message
+    }
+  };
+}
 };
