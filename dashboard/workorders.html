@@ -297,6 +297,8 @@ try {
 }
 }
 
+
+
 function renderWorkOrderList(workOrders) {
   const list = document.getElementById("workOrderList");
   const listMessage = document.getElementById("workOrderListMessage");
@@ -326,12 +328,12 @@ function renderWorkOrderList(workOrders) {
           <div class="font-semibold text-slate-900">${w.WorkOrderNumber ?? "No WO #"}</div>
           <div class="text-sm text-slate-600">${w.Subject ?? ""}</div>
           <div class="text-sm text-slate-500 mt-1">${w.CustomerName ?? ""}</div>
-          <div class="text-xs text-slate-500 mt-1">${w.Address ?? ""}</div>
+          <div class="text-xs text-slate-500 mt-1">${w.PropertyAddress || w.Address || ""}</div>
         </div>
         <div class="text-right">
-<div class="text-xs rounded-full px-2 py-1 inline-block ${getStatusClass(w.Status)}">
-  ${w.Status ?? ""}
-</div>
+          <div class="text-xs rounded-full px-2 py-1 inline-block ${getStatusClass(w.Status)}">
+            ${w.Status ?? ""}
+          </div>
           <div class="text-xs text-slate-500 mt-2">${formatDateOnly(w.StartDate)}</div>
         </div>
       </div>
@@ -346,6 +348,9 @@ function renderWorkOrderList(workOrders) {
     list.appendChild(card);
   });
 }
+
+
+  
 
   
 
