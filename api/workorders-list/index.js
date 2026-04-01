@@ -37,6 +37,7 @@ module.exports = async function (context, req) {
           c.Name AS CustomerName,
           w.PropertyId,
           p.Address AS PropertyAddress,
+          w.Address,
           w.Street,
           w.City,
           w.State,
