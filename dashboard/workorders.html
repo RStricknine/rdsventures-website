@@ -300,27 +300,37 @@ function renderWorkOrderList(workOrders) {
   });
 }
 
+  
+
 function filterWorkOrders() {
   const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
-  
-  const statusValue = (w.Status || "New").trim();
-    document.getElementById("editStatus").value = statuValue;
+  const selectedStatus = document.getElementById("statusFilter").value;
 
   return allWorkOrders.filter(w => {
     const matchesSearch =
-      String(w.RowID || "").toLowerCase().includes(searchValue) ||
       String(w.WorkOrderNumber || "").toLowerCase().includes(searchValue) ||
       String(w.CustomerName || "").toLowerCase().includes(searchValue) ||
       String(w.Subject || "").toLowerCase().includes(searchValue) ||
       String(w.Address || "").toLowerCase().includes(searchValue);
 
-    const matchesStatus = !statusValue || (w.Status || "") === statusValue;
+    const matchesStatus =
+      !selectedStatus || (w.Status || "").trim() === selectedStatus;
 
     return matchesSearch && matchesStatus;
   });
 }
 
+
+
+
+
+
+  
+
+  
 function showWorkOrderDetails(w) {
+  const statusValue = (w.status || "New").trim();
+  
   document.getElementById("emptyState").classList.add("hidden");
   document.getElementById("detailWorkspace").classList.remove("hidden");
 
@@ -331,7 +341,7 @@ function showWorkOrderDetails(w) {
   document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
   document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
   document.getElementById("dProperty").textContent = w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;;
-  document.getElementById("dStatus").textContent = w.Status ?? "";
+  document.getElementById("dStatus").textContent = statusValue;
   document.getElementById("dPriority").textContent = w.Priority ?? "";
   document.getElementById("dStartDate").textContent = formatDateOnly(w.StartDate);
   document.getElementById("dEndDate").textContent = formatDateOnly(w.EndDate);
