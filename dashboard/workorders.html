@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Work Orders - RDS Ventures</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
+<body class="bg-slate-100 h-screen overflow-hidden text-slate-800">
 
-  <nav class="flex gap-4 p-4 bg-slate-800 text-white">
+  <nav class="sticky top-0 z-50 flex gap-4 p-4 bg-slate-800 text-white shadow">
     <a href="/dashboard/index.html">Dashboard</a>
     <a href="/dashboard/customers.html">Customers</a>
     <a href="/dashboard/workorders.html" class="font-bold">Work Orders</a>
@@ -18,18 +18,20 @@
 
 
 
-<main class="max-w-[1600px] mx-auto p-6">
+<main class="max-w-[1600px] mx-auto p-6 h-[calc(100vh-73px)] overflow-hidden">
   <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
 
-    <!-- LEFT: WORK ORDER LIST -->
-    <section class="xl:col-span-4 bg-white rounded-xl shadow p-6 xl:sticky xl:top-6">
+
+    
+<!-- LEFT: WORK ORDER LIST -->
+    
+    <section class="xl:col-span-4 bg-white rounded-xl shadow p-6 h-full overflow-hidden flex flex-col">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-bold">Work Orders</h2>
         <button
           id="newWorkOrderButton"
           type="button"
-          class="bg-slate-800 text-white px-4 py-2 rounded-lg"
-        >
+          class="bg-slate-800 text-white px-4 py-2 rounded-lg">
           New Work Order
         </button>
       </div>
@@ -39,8 +41,7 @@
           id="workOrderSearch"
           type="text"
           placeholder="Search work orders..."
-          class="w-full border rounded-lg px-3 py-2"
-        />
+          class="w-full border rounded-lg px-3 py-2"/>
 
         <select id="statusFilter" class="w-full border rounded-lg px-3 py-2">
           <option value="">All Statuses</option>
@@ -59,247 +60,258 @@
 
       <p id="workOrderListMessage" class="text-sm text-slate-500 mb-4"></p>
 
-      <div id="workOrderList" class="space-y-3 max-h-[75vh] overflow-y-auto pr-1"></div>
+      <div id="workOrderList" class="space-y-3 flex-1 overflow-y-auto pr-1"></div>
     </section>
+<!-- END OF LEFT PANEL WORKORDER LIST -->
 
-    <!-- RIGHT -->
-    <section class="xl:col-span-8 space-y-6">
+
+
+    
+<!-- RIGHT PANEL-->
+<!-- <section class="xl:col-span-8 space-y-6"> -->
+    <section class="xl:col-span-8 h-full overflow-y-auto pr-1">
+      <div class="space-y-6">    
 
       <!-- NEW WORK ORDER FORM -->
       <section id="newWorkOrderForm" class="hidden bg-white rounded-xl shadow p-6">
         <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium mb-1">Customer ID</label>
-            <input id="newCustomerId" type="text" class="w-full border rounded-lg px-3 py-2" />
-          </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">Customer ID</label>
+                  <input id="newCustomerId" type="text" class="w-full border rounded-lg px-3 py-2" />
+                </div>
 
-          <div>
-            <label class="block text-sm font-medium mb-1">Property ID</label>
-            <input id="newPropertyId" type="number" class="w-full border rounded-lg px-3 py-2" />
-          </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">Property ID</label>
+                  <input id="newPropertyId" type="number" class="w-full border rounded-lg px-3 py-2" />
+                </div>
 
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium mb-1">Subject</label>
-            <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
-          </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium mb-1">Subject</label>
+                  <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
+                </div>
 
-          <div>
-            <label class="block text-sm font-medium mb-1">Status</label>
-            <select id="newStatus" class="w-full border rounded-lg px-3 py-2">
-              <option value="New">New</option>
-              <option value="Need to Schedule">Need to Schedule</option>
-              <option value="Scheduled">Scheduled</option>
-              <option value="Dispatched">Dispatched</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Billed">Billed</option>
-              <option value="Pending Invoice">Pending Invoice</option>
-              <option value="Warranty">Warranty</option>
-              <option value="Completed">Completed</option>
-              <option value="Canceled">Canceled</option>
-            </select>
-          </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">Status</label>
+                  <select id="newStatus" class="w-full border rounded-lg px-3 py-2">
+                    <option value="New">New</option>
+                    <option value="Need to Schedule">Need to Schedule</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Dispatched">Dispatched</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Billed">Billed</option>
+                    <option value="Pending Invoice">Pending Invoice</option>
+                    <option value="Warranty">Warranty</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Canceled">Canceled</option>
+                  </select>
+                </div>
 
-          <div>
-            <label class="block text-sm font-medium mb-1">Priority</label>
-            <select id="newPriority" class="w-full border rounded-lg px-3 py-2">
-              <option value="Low">Low</option>
-              <option value="Medium" selected>Medium</option>
-              <option value="High">High</option>
-              <option value="Very High">Very High</option>
-            </select>
-          </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">Priority</label>
+                  <select id="newPriority" class="w-full border rounded-lg px-3 py-2">
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                    <option value="Very High">Very High</option>
+                  </select>
+                </div>
 
-          <div>
-            <label class="block text-sm font-medium mb-1">Start Date</label>
-            <input id="newStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-          </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">Start Date</label>
+                  <input id="newStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+                </div>
 
-          <div>
-            <label class="block text-sm font-medium mb-1">End Date</label>
-            <input id="newEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-          </div>
+                <div>
+                  <label class="block text-sm font-medium mb-1">End Date</label>
+                  <input id="newEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+                </div>
 
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium mb-1">Notes</label>
-            <textarea id="newNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
-          </div>
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium mb-1">Notes</label>
+                  <textarea id="newNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
+                </div>
         </div>
 
-        <div class="mt-4 flex gap-3">
-          <button id="saveNewWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-            Create Work Order
-          </button>
-          <button id="cancelNewWorkOrderButton" type="button" class="border px-4 py-2 rounded-lg">
-            Cancel
-          </button>
-        </div>
+                <div class="mt-4 flex gap-3">
+                  <button id="saveNewWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+                    Create Work Order
+                  </button>
+                  <button id="cancelNewWorkOrderButton" type="button" class="border px-4 py-2 rounded-lg">
+                    Cancel
+                  </button>
+                  </div>
 
-        <p id="newWorkOrderMessage" class="text-sm mt-3"></p>
+                  <p id="newWorkOrderMessage" class="text-sm mt-3"></p>
+     
+      
       </section>
 
       <!-- TOP RIGHT: OVERVIEW -->
-      <section class="bg-white rounded-xl shadow p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <h2 class="text-2xl font-bold">Work Order Overview</h2>
-            <p id="selectedWorkOrderLabel" class="text-sm text-slate-500 mt-1">
-              No work order selected.
-            </p>
-          </div>
-        </div>
-
-        <div id="emptyState" class="text-slate-500">
-          Select a work order from the left to view details.
-        </div>
-
-        <div id="detailWorkspace" class="hidden">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><strong>RowID:</strong> <span id="dRowId"></span></div>
-            <div><strong>Work Order #:</strong> <span id="dWorkOrderNumber"></span></div>
-            <div><strong>Customer:</strong> <span id="dCustomer"></span></div>
-            <div><strong>Property:</strong> <span id="dProperty"></span></div>
-            <div><strong>Status:</strong> <span id="dStatus"></span></div>
-            <div><strong>Priority:</strong> <span id="dPriority"></span></div>
-            <div><strong>Start Date:</strong> <span id="dStartDate"></span></div>
-            <div><strong>End Date:</strong> <span id="dEndDate"></span></div>
-            <div class="md:col-span-2"><strong>Subject:</strong> <span id="dSubject"></span></div>
-            <div class="md:col-span-2"><strong>Address:</strong> <span id="dAddress"></span></div>
-          </div>
-        </div>
-      </section>
+                    <section class="bg-white rounded-xl shadow p-6">
+                      <div class="flex items-start justify-between gap-4 mb-4">
+                        <div>
+                          <h2 class="text-2xl font-bold">Work Order Overview</h2>
+                          <p id="selectedWorkOrderLabel" class="text-sm text-slate-500 mt-1">
+                            No work order selected.
+                          </p>
+                        </div>
+                      </div>
+              
+                      <div id="emptyState" class="text-slate-500">
+                        Select a work order from the left to view details.
+                      </div>
+              
+                      <div id="detailWorkspace" class="hidden">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div><strong>RowID:</strong> <span id="dRowId"></span></div>
+                          <div><strong>Work Order #:</strong> <span id="dWorkOrderNumber"></span></div>
+                          <div><strong>Customer:</strong> <span id="dCustomer"></span></div>
+                          <div><strong>Property:</strong> <span id="dProperty"></span></div>
+                          <div><strong>Status:</strong> <span id="dStatus"></span></div>
+                          <div><strong>Priority:</strong> <span id="dPriority"></span></div>
+                          <div><strong>Start Date:</strong> <span id="dStartDate"></span></div>
+                          <div><strong>End Date:</strong> <span id="dEndDate"></span></div>
+                          <div class="md:col-span-2"><strong>Subject:</strong> <span id="dSubject"></span></div>
+                          <div class="md:col-span-2"><strong>Address:</strong> <span id="dAddress"></span></div>
+                        </div>
+                      </div>
+                    </section>
 
       <!-- BOTTOM RIGHT: WORKFLOW AREA -->
       <section class="bg-white rounded-xl shadow p-6">
-        <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
+      <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
 
         <div id="workflowWorkspace" class="hidden space-y-6">
 
           <!-- STATUS / SCHEDULE -->
           <section class="border rounded-xl p-4">
-            <h3 class="text-lg font-semibold mb-4">Status & Schedule</h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-1">Status</label>
-                <select id="editStatus" class="w-full border rounded-lg px-3 py-2">
-                  <option value="New">New</option>
-                  <option value="Need to Schedule">Need to Schedule</option>
-                  <option value="Scheduled">Scheduled</option>
-                  <option value="Dispatched">Dispatched</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Billed">Billed</option>
-                  <option value="Pending Invoice">Pending Invoice</option>
-                  <option value="Warranty">Warranty</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Canceled">Canceled</option>
-                </select>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium mb-1">Start Date</label>
-                <input id="editStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium mb-1">End Date</label>
-                <input id="editEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-              </div>
-
-              <div class="md:col-span-3">
-                <label class="block text-sm font-medium mb-1">Scheduling Notes</label>
-                <textarea id="editScheduleNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
-              </div>
-            </div>
-
-            <div class="mt-4 flex gap-3">
-              <button id="saveWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-                Save Updates
-              </button>
-
-              <button id="deleteWorkOrderButton" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg">
-                Delete Work Order
-              </button>
-            </div>
-
-            <p id="workOrderMessage" class="text-sm mt-3"></p>
+                      <h3 class="text-lg font-semibold mb-4">Status & Schedule</h3>
+          
+                      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label class="block text-sm font-medium mb-1">Status</label>
+                          <select id="editStatus" class="w-full border rounded-lg px-3 py-2">
+                            <option value="New">New</option>
+                            <option value="Need to Schedule">Need to Schedule</option>
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Dispatched">Dispatched</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Billed">Billed</option>
+                            <option value="Pending Invoice">Pending Invoice</option>
+                            <option value="Warranty">Warranty</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Canceled">Canceled</option>
+                          </select>
+                        </div>
+          
+                        <div>
+                          <label class="block text-sm font-medium mb-1">Start Date</label>
+                          <input id="editStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+                        </div>
+          
+                        <div>
+                          <label class="block text-sm font-medium mb-1">End Date</label>
+                          <input id="editEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+                        </div>
+          
+                        <div class="md:col-span-3">
+                          <label class="block text-sm font-medium mb-1">Scheduling Notes</label>
+                          <textarea id="editScheduleNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
+                        </div>
+                      </div>
+          
+                      <div class="mt-4 flex gap-3">
+                        <button id="saveWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+                          Save Updates
+                        </button>
+          
+                        <button id="deleteWorkOrderButton" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                          Delete Work Order
+                        </button>
+                      </div>
+          
+                      <p id="workOrderMessage" class="text-sm mt-3"></p>
           </section>
 
-          <!-- NOTES -->
+  <!-- 1. NOTES -->
           <section class="border rounded-xl p-4">
-            <h3 class="text-lg font-semibold mb-4">Notes</h3>
-            <div class="text-sm text-slate-700 whitespace-pre-wrap min-h-[80px]" id="dNotes"></div>
+                      <h3 class="text-lg font-semibold mb-4">Notes</h3>
+                      <div class="text-sm text-slate-700 whitespace-pre-wrap min-h-[80px]" id="dNotes"></div>
           </section>
 
-          <!-- CONTACT -->
-          <section class="border rounded-xl p-4">
-            <h3 class="text-lg font-semibold mb-4">Contact</h3>
+  <!-- 2. CONTACT -->
+                        <section class="border rounded-xl p-4">
+                                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                        
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div><strong>Name:</strong> <span id="dContactName"></span></div>
+                                      <div><strong>Type:</strong> <span id="dContactType"></span></div>
+                                      <div><strong>Phone:</strong> <span id="dContactPhone"></span></div>
+                                      <div><strong>Email:</strong> <span id="dContactEmail"></span></div>
+                                    </div>
+                        </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><strong>Name:</strong> <span id="dContactName"></span></div>
-              <div><strong>Type:</strong> <span id="dContactType"></span></div>
-              <div><strong>Phone:</strong> <span id="dContactPhone"></span></div>
-              <div><strong>Email:</strong> <span id="dContactEmail"></span></div>
-            </div>
-          </section>
-
-          <!-- PHOTOS -->
-          <section class="border rounded-xl p-4">
-            <h3 class="text-lg font-semibold mb-4">Photos</h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-1">Photo Type</label>
-                <select id="photoType" class="w-full border rounded-lg px-3 py-2">
-                  <option value="Before">Before</option>
-                  <option value="After">After</option>
-                </select>
-              </div>
-
-              <div class="md:col-span-2">
-                <label class="block text-sm font-medium mb-1">Caption</label>
-                <input id="caption" type="text" class="w-full border rounded-lg px-3 py-2" />
-              </div>
-            </div>
-
-            <div class="mt-4">
-              <label class="block text-sm font-medium mb-1">Choose Photo(s)</label>
-              <input id="photoFile" type="file" accept="image/*" capture="environment" multiple class="w-full border rounded-lg px-3 py-2" />
-            </div>
-
-            <div class="mt-4 flex gap-3">
-              <button id="uploadPhotoButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-                Upload Photo(s)
-              </button>
-
-              <button id="loadPhotosButton" type="button" class="border px-4 py-2 rounded-lg">
-                Refresh Photos
-              </button>
-            </div>
-
-            <p id="photoMessage" class="text-sm mt-4"></p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div>
-                <h4 class="text-base font-semibold mb-3">Before Photos</h4>
-                <div id="beforePhotoList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-              </div>
-
-              <div>
-                <h4 class="text-base font-semibold mb-3">After Photos</h4>
-                <div id="afterPhotoList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-              </div>
-            </div>
-          </section>
+  <!-- 3. PHOTOS -->
+                        <section class="border rounded-xl p-4">
+                                    <h3 class="text-lg font-semibold mb-4">Photos</h3>
+                        
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                              <label class="block text-sm font-medium mb-1">Photo Type</label>
+                                              <select id="photoType" class="w-full border rounded-lg px-3 py-2">
+                                                <option value="Before">Before</option>
+                                                <option value="After">After</option>
+                                              </select>
+                                              </div>
+                        
+                                              <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium mb-1">Caption</label>
+                                                <input id="caption" type="text" class="w-full border rounded-lg px-3 py-2" />
+                                              </div>
+                                      </div>
+                        
+                                      <div class="mt-4">
+                                        <label class="block text-sm font-medium mb-1">Choose Photo(s)</label>
+                                        <input id="photoFile" type="file" accept="image/*" capture="environment" multiple class="w-full border rounded-lg px-3 py-2" />
+                                      </div>
+                        
+                                      <div class="mt-4 flex gap-3">
+                                        <button id="uploadPhotoButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+                                          Upload Photo(s)
+                                        </button>
+                          
+                                        <button id="loadPhotosButton" type="button" class="border px-4 py-2 rounded-lg">
+                                          Refresh Photos
+                                        </button>
+                                      </div>
+                        
+                                      <p id="photoMessage" class="text-sm mt-4"></p>
+                        
+                                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                          <div>
+                                            <h4 class="text-base font-semibold mb-3">Before Photos</h4>
+                                            <div id="beforePhotoList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                                          </div>
+                          
+                                          <div>
+                                            <h4 class="text-base font-semibold mb-3">After Photos</h4>
+                                            <div id="afterPhotoList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                                          </div>
+                                        </div>
+                        </section>
+          <!-- END OF PHOTOS -->
+          
         </div>
 
-        <div id="workflowEmptyState" class="text-slate-500">
-          Select a work order to manage notes, schedule, contact info, and photos.
-        </div>
+                  <div id="workflowEmptyState" class="text-slate-500">
+                    Select a work order to manage notes, schedule, contact info, and photos.
+                  </div>
       </section>
     </section>
   </div>
+</section>
 </main>
 
 
