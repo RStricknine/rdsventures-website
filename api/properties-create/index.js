@@ -40,6 +40,7 @@ async function createProperty() {
     });
 
     const raw = await res.text();
+    console.log("RAW RESPONSE:", raw);
     let data = {};
 
     try {
