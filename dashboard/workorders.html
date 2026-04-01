@@ -639,8 +639,8 @@ function showWorkOrderDetails(w) {
 
   
   // Header
-  document.getElementById("selectedWorkOrderLabel").textContent =
-    `Selected WO ${w.WorkOrderNumber || w.RowID}`;
+  document.getElementById("selectedWorkOrderLabel").textContent = w.ExternalWorkOrderNumber ?? "";
+ //   `Selected WO ${w.WorkOrderNumber || w.RowID}`;
 
   // Overview fields
   document.getElementById("dRowId").textContent = w.RowID ?? "";
