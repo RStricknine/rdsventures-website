@@ -72,16 +72,25 @@
         <section id="newWorkOrderForm" class="hidden bg-white rounded-xl shadow p-6">
           <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Customer ID</label>
-              <input id="newCustomerId" type="text" class="w-full border rounded-lg px-3 py-2" />
-            </div>
+<!-- CUSTOMER -->
+<div>
+  <label class="block text-sm font-medium mb-1">Customer</label>
+  <input
+    id="customerSearch"
+    type="text"
+    placeholder="Search customer..."
+    class="w-full border rounded-lg px-3 py-2"
+  />
+  <div id="customerResults" class="border rounded-lg mt-1 max-h-40 overflow-y-auto hidden bg-white"></div>
+</div>
 
-            <div>
-              <label class="block text-sm font-medium mb-1">Property ID</label>
-              <input id="newPropertyId" type="number" class="w-full border rounded-lg px-3 py-2" />
-            </div>
+<!-- PROPERTY -->
+<div>
+  <label class="block text-sm font-medium mb-1">Property</label>
+  <select id="propertySelect" class="w-full border rounded-lg px-3 py-2">
+    <option value="">Select a customer first</option>
+  </select>
+</div>
 
             <div class="md:col-span-2">
               <label class="block text-sm font-medium mb-1">Subject</label>
@@ -347,8 +356,65 @@
 <script>
 let allWorkOrders = [];
 let selectedWorkOrder = null;
+let selectedCustomerId = null;
+let selectedPropertyId = null;
+
+document.getElementById("customerSearch").addEventListener("input", async function () {
+  const query = this.value.trim();
+
+  if (query.length < 2) {
+    document.getElementById("customerResults").classList.add("hidden");
+    return;
+  }
+
+  const res = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}`);
+  const customers = await res.json();
+
+  const results = document.getElementById("customerResults");
+  results.innerHTML = "";
+
+  customers.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "px-3 py-2 hover:bg-slate-100 cursor-pointer";
+    div.textContent = c.Name;
+
+    div.addEventListener("click", () => {
+      document.getElementById("customerSearch").value = c.Name;
+      selectedCustomerId = c.CustomerId;
+      results.classList.add("hidden");
+
+      loadPropertiesForCustomer(c.CustomerId);
+    });
+
+    results.appendChild(div);
+  });
+
+  results.classList.remove("hidden");
+});
 
 
+
+async function loadPropertiesForCustomer(customerId) {
+  const res = await fetch(`/api/properties/byCustomer?customerId=${customerId}`);
+  const properties = await res.json();
+
+  const select = document.getElementById("propertySelect");
+  select.innerHTML = '<option value="">Select property</option>';
+
+  properties.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.PropertyId;
+    opt.textContent = p.Address;
+    select.appendChild(opt);
+  });
+}
+
+
+
+
+
+
+  
   // --- Helper function
 function getStatusClass(status) {
   switch ((status || "").trim()) {
@@ -873,8 +939,12 @@ async function createNewWorkOrder() {
   const message = document.getElementById("newWorkOrderMessage");
 
   const payload = {
-    customerId: document.getElementById("newCustomerId").value.trim(),
-    propertyId: document.getElementById("newPropertyId").value.trim(),
+   // customerId: document.getElementById("newCustomerId").value.trim(),
+   // propertyId: document.getElementById("newPropertyId").value.trim(),
+
+customerId: selectedCustomerId,
+propertyId: selectedPropertyId,
+    
     subject: document.getElementById("newSubject").value.trim(),
     status: document.getElementById("newStatus").value,
     priority: document.getElementById("newPriority").value,
@@ -883,6 +953,20 @@ async function createNewWorkOrder() {
     notes: document.getElementById("newNotes").value.trim()
   };
 
+
+if (!selectedCustomerId) {
+  message.textContent = "Select a customer.";
+  return;
+}
+
+if (!selectedPropertyId) {
+  message.textContent = "Select a property.";
+  return;
+}
+
+
+
+  
   if (!payload.customerId) {
     message.textContent = "CustomerId is required.";
     return;
@@ -946,7 +1030,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelButton = document.getElementById("cancelNewWorkOrderButton");
   const saveButton = document.getElementById("saveNewWorkOrderButton");
   const form = document.getElementById("newWorkOrderForm");
+  
+  document.getElementById("propertySelect").addEventListener("change", function () {
+  selectedPropertyId = this.value;
 
+    
+});
   console.log("newWorkOrderButton:", newButton);
   console.log("newWorkOrderForm:", form);
 
@@ -969,10 +1058,56 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+// CUSTOMER SEARCH
+document.getElementById("customerSearch").addEventListener("input", async function () {
+  const query = this.value.trim();
+
+  if (query.length < 2) {
+    document.getElementById("customerResults").classList.add("hidden");
+    return;
+  }
+
+  const res = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}`);
+  const customers = await res.json();
+
+  const results = document.getElementById("customerResults");
+  results.innerHTML = "";
+
+  customers.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "px-3 py-2 hover:bg-slate-100 cursor-pointer";
+    div.textContent = c.Name;
+
+    div.addEventListener("click", () => {
+      document.getElementById("customerSearch").value = c.Name;
+      selectedCustomerId = c.CustomerId;
+      results.classList.add("hidden");
+
+      loadPropertiesForCustomer(c.CustomerId);
+    });
+
+    results.appendChild(div);
+  });
+
+  results.classList.remove("hidden");
+});
 
 
+// LOAD PROPERTIES FUNCTION
+async function loadPropertiesForCustomer(customerId) {
+  const res = await fetch(`/api/properties/byCustomer?customerId=${customerId}`);
+  const properties = await res.json();
 
+  const select = document.getElementById("propertySelect");
+  select.innerHTML = '<option value="">Select property</option>';
 
+  properties.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.PropertyId;
+    opt.textContent = p.Address;
+    select.appendChild(opt);
+  });
+}
 
 
 
