@@ -1175,7 +1175,10 @@ async function loadPropertiesForCustomer(customerId) {
 
   const select = document.getElementById("propertySelect");
   select.innerHTML = '<option value="">Select property</option>';
-
+  
+// -- Line below added 
+  selectedPropertyId = null;
+// --
   properties.forEach(p => {
     const opt = document.createElement("option");
     opt.value = p.PropertyId;
