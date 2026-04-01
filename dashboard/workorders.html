@@ -625,6 +625,8 @@ function filterWorkOrders() {
 
 
 function showWorkOrderDetails(w) {
+console.log("WORK ORDER OBJECT:", w);
+  
   // Normalize status (fixes case + whitespace issues)
   const statusValue = (w.Status || "New").trim();
 
