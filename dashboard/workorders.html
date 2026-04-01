@@ -71,7 +71,9 @@
         <!-- NEW WORK ORDER FORM -->
         <section id="newWorkOrderForm" class="hidden bg-white rounded-xl shadow p-6 w-full">
           <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+  
 <!-- CUSTOMER -->
 <div>
   <label class="block text-sm font-medium mb-1">Customer</label>
@@ -90,6 +92,15 @@
   <select id="propertySelect" class="w-full border rounded-lg px-3 py-2">
     <option value="">Select a customer first</option>
   </select>
+
+<button
+    id="showAddPropertyButton"
+    type="button"
+    class="mt-2 text-sm text-slate-700 underline">
+    Add Property
+</button>
+
+  
 </div>
 
             <div class="md:col-span-2">
@@ -139,6 +150,51 @@
             </div>
           </div>
 
+<section id="addPropertyForm" class="hidden border rounded-xl p-4 mt-4">
+  <h4 class="text-lg font-semibold mb-3">Add Property</h4>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium mb-1">Street</label>
+      <input id="addPropertyStreet" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">City</label>
+      <input id="addPropertyCity" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">State</label>
+      <input id="addPropertyState" type="text" maxlength="2" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Postal Code</label>
+      <input id="addPropertyPostalCode" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Lockbox</label>
+      <input id="addPropertyLockbox" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+  </div>
+
+  <div class="mt-4 flex gap-3">
+    <button id="savePropertyButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+      Save Property
+    </button>
+    <button id="cancelAddPropertyButton" type="button" class="border px-4 py-2 rounded-lg">
+      Cancel
+    </button>
+  </div>
+
+  <p id="addPropertyMessage" class="text-sm mt-3"></p>
+</section>
+
+
+
+          
           <div class="mt-4 flex gap-3">
             <button id="saveNewWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
               Create Work Order
@@ -401,6 +457,9 @@ async function loadPropertiesForCustomer(customerId) {
   const select = document.getElementById("propertySelect");
   select.innerHTML = '<option value="">Select property</option>';
 
+
+
+  
   properties.forEach(p => {
     const opt = document.createElement("option");
     opt.value = p.PropertyId;
@@ -920,9 +979,25 @@ document.getElementById("imageModal").addEventListener("click", (e) => {
   if (e.target.id === "imageModal") closeImageModal();
 });
 
+// -- Added to create a button for adding a property
+document.getElementById("showAddPropertyButton").addEventListener("click", () => {
+  const message = document.getElementById("addPropertyMessage");
 
+  if (!selectedCustomerId) {
+    message.textContent = "Select a customer first.";
+    document.getElementById("addPropertyForm").classList.remove("hidden");
+    return;
+  }
 
+  message.textContent = "";
+  document.getElementById("addPropertyForm").classList.remove("hidden");
+});
 
+document.getElementById("cancelAddPropertyButton").addEventListener("click", () => {
+  document.getElementById("addPropertyForm").classList.add("hidden");
+  document.getElementById("addPropertyMessage").textContent = "";
+});
+// -- End of Button Add
 
 document.getElementById("newWorkOrderButton").addEventListener("click", () => {
   document.getElementById("newWorkOrderForm").classList.remove("hidden");
@@ -1110,8 +1185,84 @@ async function loadPropertiesForCustomer(customerId) {
 }
 
 
+// -- Added for Step 4 of save property
+document.getElementById("savePropertyButton").addEventListener("click", createProperty);
 
+async function createProperty() {
+  const message = document.getElementById("addPropertyMessage");
 
+  if (!selectedCustomerId) {
+    message.textContent = "Select a customer first.";
+    return;
+  }
+
+  const street = document.getElementById("addPropertyStreet").value.trim();
+  const city = document.getElementById("addPropertyCity").value.trim();
+  const state = document.getElementById("addPropertyState").value.trim().toUpperCase();
+  const postalCode = document.getElementById("addPropertyPostalCode").value.trim();
+  const lockbox = document.getElementById("addPropertyLockbox").value.trim();
+
+  if (!street || !city || !state || !postalCode) {
+    message.textContent = "Street, City, State, and Postal Code are required.";
+    return;
+  }
+
+  message.textContent = "Saving property...";
+
+  const payload = {
+    customerId: selectedCustomerId,
+    street,
+    city,
+    state,
+    postalCode,
+    lockbox
+  };
+
+  try {
+    const res = await fetch("/api/properties/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const raw = await res.text();
+    let data = {};
+
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new Error(`Invalid JSON from property create API: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.message || data.error || "Failed to create property.");
+    }
+
+    message.textContent = "Property created successfully.";
+
+    // Reload dropdown
+    await loadPropertiesForCustomer(selectedCustomerId);
+
+    // Auto-select new property
+    selectedPropertyId = String(data.propertyId);
+    document.getElementById("propertySelect").value = String(data.propertyId);
+
+    // Hide mini form
+    document.getElementById("addPropertyForm").classList.add("hidden");
+
+    // Clear fields
+    document.getElementById("addPropertyStreet").value = "";
+    document.getElementById("addPropertyCity").value = "";
+    document.getElementById("addPropertyState").value = "";
+    document.getElementById("addPropertyPostalCode").value = "";
+    document.getElementById("addPropertyLockbox").value = "";
+  } catch (err) {
+    console.error("Create property error:", err);
+    message.textContent = err.message || "Failed to create property.";
+  }
+}
 
 
 
