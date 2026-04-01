@@ -324,46 +324,73 @@ function filterWorkOrders() {
 
 
 
-
-  
-
-  
 function showWorkOrderDetails(w) {
+  // Normalize status (fixes case + whitespace issues)
   const statusValue = (w.Status || "New").trim();
-  
+
+  // Show workspace
   document.getElementById("emptyState").classList.add("hidden");
   document.getElementById("detailWorkspace").classList.remove("hidden");
 
+  // Header
   document.getElementById("selectedWorkOrderLabel").textContent =
     `Selected WO ${w.WorkOrderNumber || w.RowID}`;
 
+  // Overview fields
   document.getElementById("dRowId").textContent = w.RowID ?? "";
   document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
   document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
-  document.getElementById("dProperty").textContent = w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;;
+
+  document.getElementById("dProperty").textContent =
+    w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;
+
   document.getElementById("dStatus").textContent = statusValue;
-  document.getElementById("editStatus").textContent = statusValue;
   document.getElementById("dPriority").textContent = w.Priority ?? "";
+
   document.getElementById("dStartDate").textContent = formatDateOnly(w.StartDate);
   document.getElementById("dEndDate").textContent = formatDateOnly(w.EndDate);
+
   document.getElementById("dSubject").textContent = w.Subject ?? "";
   document.getElementById("dAddress").textContent = w.Address ?? "";
   document.getElementById("dNotes").textContent = w.Notes ?? "";
 
-  document.getElementById("editStatus").value = (w.Status || "New").Trim();
+  // --- EDITABLE FIELDS ---
+
+  // Status dropdown (fixed)
+  const statusDropdown = document.getElementById("editStatus");
+
+  if ([...statusDropdown.options].some(o => o.value === statusValue)) {
+    statusDropdown.value = statusValue;
+  } else {
+    statusDropdown.value = "New"; // fallback if mismatch
+  }
+
+  // Date inputs (must be YYYY-MM-DD)
   document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
   document.getElementById("editEndDate").value = toDateInputValue(w.EndDate);
-  document.getElementById("editScheduleNotes").value = w.Notes || "";
 
-  // Placeholder contact values for now until we wire the API
-  document.getElementById("dContactName").textContent = w.ContactName || "";
-  document.getElementById("dContactType").textContent = w.ContactType || "";
-  document.getElementById("dContactPhone").textContent = w.ContactPhone || "";
-  document.getElementById("dContactEmail").textContent = w.ContactEmail || "";
+  // Notes (used for scheduling notes in your UI)
+  document.getElementById("editScheduleNotes").value = w.Notes ?? "";
 
+  // Contact (placeholder until API is wired)
+  document.getElementById("dContactName").textContent = w.ContactName ?? "";
+  document.getElementById("dContactType").textContent = w.ContactType ?? "";
+  document.getElementById("dContactPhone").textContent = w.ContactPhone ?? "";
+  document.getElementById("dContactEmail").textContent = w.ContactEmail ?? "";
+
+  // Load photos for this work order
   loadPhotos();
 }
+  
 
+  
+
+
+
+
+
+
+  
 async function saveWorkOrderUpdates() {
   const message = document.getElementById("workOrderMessage");
 
