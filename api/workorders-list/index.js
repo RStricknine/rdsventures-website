@@ -70,8 +70,9 @@ ORDER BY w.RowID DESC;
     headers: { "Content-Type": "application/json" },
     body: {
       error: "Failed to load work orders",
-      message: error.message
+      message: error.message,
+      stack: error.stack
     }
   };
 }
-};
+
