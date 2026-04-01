@@ -302,7 +302,9 @@ function renderWorkOrderList(workOrders) {
 
 function filterWorkOrders() {
   const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
-  const statusValue = document.getElementById("statusFilter").value;
+  
+  const statusValue = (w.Status || "New").trim();
+    document.getElementById("editStatus").value = statuValue;
 
   return allWorkOrders.filter(w => {
     const matchesSearch =
