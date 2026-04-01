@@ -500,8 +500,11 @@ console.log("WORK ORDER OBJECT:", w);
 // New layout 
   document.getElementById("workflowWorkspace").classList.remove("hidden");
   document.getElementById("workflowEmptyState").classList.add("hidden");
- 
+  document.getElementById("newWorkOrderForm").classList.add("hidden");
 
+  
+//document.getElementById("emptyState").classList.add("hidden");
+//document.getElementById("detailWorkspace").classList.remove("hidden");
 
   
   // Header
@@ -996,6 +999,23 @@ document.addEventListener("DOMContentLoaded", () => {
   if (saveButton) {
     saveButton.addEventListener("click", createNewWorkOrder);
   }
+
+
+
+document.getElementById("newWorkOrderButtonTop").addEventListener("click", () => {
+  document.getElementById("emptyState").classList.add("hidden");
+  document.getElementById("detailWorkspace").classList.add("hidden");
+
+  document.getElementById("newWorkOrderForm").classList.remove("hidden");
+});
+
+document.getElementById("cancelNewWorkOrderButton").addEventListener("click", () => {
+  document.getElementById("newWorkOrderForm").classList.add("hidden");
+  document.getElementById("emptyState").classList.remove("hidden");
+});
+
+
+  
 });
 
 
