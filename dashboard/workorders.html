@@ -230,8 +230,8 @@ let selectedWorkOrder = null;
 function getStatusClass(status) {
   switch ((status || "").trim()) {
     case "New":
-      return "bg-gray-200 text-gray-800";
-
+      // --- return "bg-gray-200 text-gray-800";
+      return "bg-yellow-200 text-yellow-900";
     case "Need to Schedule":
       return "bg-yellow-200 text-yellow-900";
 
