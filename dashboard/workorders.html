@@ -341,7 +341,7 @@ function showWorkOrderDetails(w) {
   document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
   document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
   document.getElementById("dProperty").textContent = w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;;
-  document.getElementById("dStatus").textContent = statusValue;
+  document.getElementById("editStatus").textContent = statusValue;
   document.getElementById("dPriority").textContent = w.Priority ?? "";
   document.getElementById("dStartDate").textContent = formatDateOnly(w.StartDate);
   document.getElementById("dEndDate").textContent = formatDateOnly(w.EndDate);
