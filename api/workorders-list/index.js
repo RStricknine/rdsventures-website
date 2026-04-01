@@ -16,7 +16,11 @@ async function getPool() {
       trustServerCertificate: false
     },
 
-
+    pool: {
+      max: 5,
+      min: 0,
+      idleTimeoutMillis: 30000
+    }
 
     
   });
