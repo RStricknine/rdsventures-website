@@ -15,55 +15,135 @@
     <a href="/dashboard/servicerequests.html">Service Requests</a>
   </nav>
 
-  <main class="max-w-7xl mx-auto p-6">
 
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
-      <!-- LEFT: WORK ORDER LIST -->
-      <section class="xl:col-span-5 bg-white rounded-xl shadow p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-2xl font-bold">Work Orders</h2>
-           <button
-              id="newWorkOrderButton"
-              type="button"
-              class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-              New Work Order
+
+<main class="max-w-[1600px] mx-auto p-6">
+  <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+
+    <!-- LEFT: WORK ORDER LIST -->
+    <section class="xl:col-span-4 bg-white rounded-xl shadow p-6 xl:sticky xl:top-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold">Work Orders</h2>
+        <button
+          id="newWorkOrderButton"
+          type="button"
+          class="bg-slate-800 text-white px-4 py-2 rounded-lg"
+        >
+          New Work Order
+        </button>
+      </div>
+
+      <div class="space-y-3 mb-4">
+        <input
+          id="workOrderSearch"
+          type="text"
+          placeholder="Search work orders..."
+          class="w-full border rounded-lg px-3 py-2"
+        />
+
+        <select id="statusFilter" class="w-full border rounded-lg px-3 py-2">
+          <option value="">All Statuses</option>
+          <option value="New">New</option>
+          <option value="Need to Schedule">Need to Schedule</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Dispatched">Dispatched</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Billed">Billed</option>
+          <option value="Pending Invoice">Pending Invoice</option>
+          <option value="Warranty">Warranty</option>
+          <option value="Completed">Completed</option>
+          <option value="Canceled">Canceled</option>
+        </select>
+      </div>
+
+      <p id="workOrderListMessage" class="text-sm text-slate-500 mb-4"></p>
+
+      <div id="workOrderList" class="space-y-3 max-h-[75vh] overflow-y-auto pr-1"></div>
+    </section>
+
+    <!-- RIGHT -->
+    <section class="xl:col-span-8 space-y-6">
+
+      <!-- NEW WORK ORDER FORM -->
+      <section id="newWorkOrderForm" class="hidden bg-white rounded-xl shadow p-6">
+        <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Customer ID</label>
+            <input id="newCustomerId" type="text" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Property ID</label>
+            <input id="newPropertyId" type="number" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-1">Subject</label>
+            <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Status</label>
+            <select id="newStatus" class="w-full border rounded-lg px-3 py-2">
+              <option value="New">New</option>
+              <option value="Need to Schedule">Need to Schedule</option>
+              <option value="Scheduled">Scheduled</option>
+              <option value="Dispatched">Dispatched</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Billed">Billed</option>
+              <option value="Pending Invoice">Pending Invoice</option>
+              <option value="Warranty">Warranty</option>
+              <option value="Completed">Completed</option>
+              <option value="Canceled">Canceled</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Priority</label>
+            <select id="newPriority" class="w-full border rounded-lg px-3 py-2">
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+              <option value="Very High">Very High</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Start Date</label>
+            <input id="newStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">End Date</label>
+            <input id="newEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-1">Notes</label>
+            <textarea id="newNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
+          </div>
+        </div>
+
+        <div class="mt-4 flex gap-3">
+          <button id="saveNewWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+            Create Work Order
+          </button>
+          <button id="cancelNewWorkOrderButton" type="button" class="border px-4 py-2 rounded-lg">
+            Cancel
           </button>
         </div>
 
-        <div class="space-y-3 mb-4">
-          <input
-            id="workOrderSearch"
-            type="text"
-            placeholder="Search work orders..."
-            class="w-full border rounded-lg px-3 py-2"
-          />
-
-          <select id="statusFilter" class="w-full border rounded-lg px-3 py-2">
-            <option value="">All Statuses</option>
-            <option value="New">New</option>
-            <option value="Need to Schedule">Need to Schedule</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Dispatched">Dispatched</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Pending Invoice">Pending Invoice</option>
-            <option value="Warranty">Warranty</option>
-            <option value="Completed">Completed</option>
-            <option value="Billed">Billed</option>
-            <option value="Canceled">Canceled</option>
-          </select>
-        </div>
-
-        <p id="workOrderListMessage" class="text-sm text-slate-500 mb-4"></p>
-
-        <div id="workOrderList" class="space-y-3 max-h-[75vh] overflow-y-auto"></div>
+        <p id="newWorkOrderMessage" class="text-sm mt-3"></p>
       </section>
 
-      <!-- RIGHT: DETAIL WORKSPACE -->
-      <section class="xl:col-span-7 bg-white rounded-xl shadow p-6">
-        <div class="flex items-start justify-between gap-4 mb-6">
+      <!-- TOP RIGHT: OVERVIEW -->
+      <section class="bg-white rounded-xl shadow p-6">
+        <div class="flex items-start justify-between gap-4 mb-4">
           <div>
-            <h2 class="text-2xl font-bold">Work Order Workspace</h2>
+            <h2 class="text-2xl font-bold">Work Order Overview</h2>
             <p id="selectedWorkOrderLabel" class="text-sm text-slate-500 mt-1">
               No work order selected.
             </p>
@@ -74,105 +154,28 @@
           Select a work order from the left to view details.
         </div>
 
-        <div id="detailWorkspace" class="hidden space-y-6">
+        <div id="detailWorkspace" class="hidden">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><strong>RowID:</strong> <span id="dRowId"></span></div>
+            <div><strong>Work Order #:</strong> <span id="dWorkOrderNumber"></span></div>
+            <div><strong>Customer:</strong> <span id="dCustomer"></span></div>
+            <div><strong>Property:</strong> <span id="dProperty"></span></div>
+            <div><strong>Status:</strong> <span id="dStatus"></span></div>
+            <div><strong>Priority:</strong> <span id="dPriority"></span></div>
+            <div><strong>Start Date:</strong> <span id="dStartDate"></span></div>
+            <div><strong>End Date:</strong> <span id="dEndDate"></span></div>
+            <div class="md:col-span-2"><strong>Subject:</strong> <span id="dSubject"></span></div>
+            <div class="md:col-span-2"><strong>Address:</strong> <span id="dAddress"></span></div>
+          </div>
+        </div>
+      </section>
 
-          <!-- OVERVIEW -->
-          <section class="border rounded-xl p-4">
-            <h3 class="text-lg font-semibold mb-4">Overview</h3>
+      <!-- BOTTOM RIGHT: WORKFLOW AREA -->
+      <section class="bg-white rounded-xl shadow p-6">
+        <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div><strong>RowID:</strong> <span id="dRowId"></span></div>
-              <div><strong>Work Order #:</strong> <span id="dWorkOrderNumber"></span></div>
-              <div><strong>Customer:</strong> <span id="dCustomer"></span></div>
-              <div><strong>Property:</strong> <span id="dProperty"></span></div>
-              <div><strong>Status:</strong> <span id="dStatus"></span></div>
-              <div><strong>Priority:</strong> <span id="dPriority"></span></div>
-              <div><strong>Start Date:</strong> <span id="dStartDate"></span></div>
-              <div><strong>End Date:</strong> <span id="dEndDate"></span></div>
-              <div class="md:col-span-2"><strong>Subject:</strong> <span id="dSubject"></span></div>
-              <div class="md:col-span-2"><strong>Address:</strong> <span id="dAddress"></span></div>
-              <div class="md:col-span-2"><strong>Notes:</strong> <span id="dNotes"></span></div>
-            </div>
-          </section>
+        <div id="workflowWorkspace" class="hidden space-y-6">
 
-
-<section id="newWorkOrderForm" class="hidden border rounded-xl p-4 mb-6">
-  <h3 class="text-lg font-semibold mb-4">Create New Work Order</h3>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label class="block text-sm font-medium mb-1">Customer ID</label>
-      <input id="newCustomerId" type="text" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">Property ID</label>
-      <input id="newPropertyId" type="number" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div class="md:col-span-2">
-      <label class="block text-sm font-medium mb-1">Subject</label>
-      <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">Status</label>
-      <select id="newStatus" class="w-full border rounded-lg px-3 py-2">
-        <option value="New">New</option>
-        <option value="Need to Schedule">Need to Schedule</option>
-        <option value="Scheduled">Scheduled</option>
-        <option value="Dispatched">Dispatched</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Billed">Billed</option>
-        <option value="Pending Invoice">Pending Invoice</option>
-        <option value="Warranty">Warranty</option>
-        <option value="Completed">Completed</option>
-        <option value="Canceled">Canceled</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">Priority</label>
-      <select id="newPriority" class="w-full border rounded-lg px-3 py-2">
-        <option value="Low">Low</option>
-        <option value="Medium" selected>Medium</option>
-        <option value="High">High</option>
-        <option value="Very High">Very High</option>
-      </select>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">Start Date</label>
-      <input id="newStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">End Date</label>
-      <input id="newEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div class="md:col-span-2">
-      <label class="block text-sm font-medium mb-1">Notes</label>
-      <textarea id="newNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
-    </div>
-  </div>
-
-  <div class="mt-4 flex gap-3">
-    <button id="saveNewWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-      Create Work Order
-    </button>
-    <button id="cancelNewWorkOrderButton" type="button" class="border px-4 py-2 rounded-lg">
-      Cancel
-    </button>
-  </div>
-
-  <p id="newWorkOrderMessage" class="text-sm mt-3"></p>
-</section>
-
-
-
-
-          
           <!-- STATUS / SCHEDULE -->
           <section class="border rounded-xl p-4">
             <h3 class="text-lg font-semibold mb-4">Status & Schedule</h3>
@@ -186,10 +189,10 @@
                   <option value="Scheduled">Scheduled</option>
                   <option value="Dispatched">Dispatched</option>
                   <option value="In Progress">In Progress</option>
+                  <option value="Billed">Billed</option>
                   <option value="Pending Invoice">Pending Invoice</option>
                   <option value="Warranty">Warranty</option>
                   <option value="Completed">Completed</option>
-                  <option value="Billed">Billed</option>                  
                   <option value="Canceled">Canceled</option>
                 </select>
               </div>
@@ -206,7 +209,7 @@
 
               <div class="md:col-span-3">
                 <label class="block text-sm font-medium mb-1">Scheduling Notes</label>
-                <textarea id="editScheduleNotes" rows="3" class="w-full border rounded-lg px-3 py-2"></textarea>
+                <textarea id="editScheduleNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
               </div>
             </div>
 
@@ -214,9 +217,19 @@
               <button id="saveWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
                 Save Updates
               </button>
+
+              <button id="deleteWorkOrderButton" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                Delete Work Order
+              </button>
             </div>
 
             <p id="workOrderMessage" class="text-sm mt-3"></p>
+          </section>
+
+          <!-- NOTES -->
+          <section class="border rounded-xl p-4">
+            <h3 class="text-lg font-semibold mb-4">Notes</h3>
+            <div class="text-sm text-slate-700 whitespace-pre-wrap min-h-[80px]" id="dNotes"></div>
           </section>
 
           <!-- CONTACT -->
@@ -279,11 +292,22 @@
               </div>
             </div>
           </section>
+        </div>
 
+        <div id="workflowEmptyState" class="text-slate-500">
+          Select a work order to manage notes, schedule, contact info, and photos.
         </div>
       </section>
-    </div>
-  </main>
+    </section>
+  </div>
+</main>
+
+
+
+
+
+
+  
 
   <!-- IMAGE MODAL -->
   <div id="imageModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
@@ -467,7 +491,13 @@ function showWorkOrderDetails(w) {
   // Show workspace
   document.getElementById("emptyState").classList.add("hidden");
   document.getElementById("detailWorkspace").classList.remove("hidden");
+// New layout 
+  document.getElementById("workflowWorkspace").classList.remove("hidden");
+  document.getElementById("workflowEmptyState").classList.add("hidden");
 
+
+
+  
   // Header
   document.getElementById("selectedWorkOrderLabel").textContent =
     `Selected WO ${w.WorkOrderNumber || w.RowID}`;
