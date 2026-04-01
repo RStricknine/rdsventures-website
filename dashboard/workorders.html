@@ -608,7 +608,7 @@ function filterWorkOrders() {
 
   return allWorkOrders.filter(w => {
     const matchesSearch =
-      String(w.WorkOrderNumber || "").toLowerCase().includes(searchValue) ||
+      String(w.ExternalWorkOrderNumber || "").toLowerCase().includes(searchValue) ||
       String(w.CustomerName || "").toLowerCase().includes(searchValue) ||
       String(w.Subject || "").toLowerCase().includes(searchValue) ||
       String(w.Address || "").toLowerCase().includes(searchValue);
