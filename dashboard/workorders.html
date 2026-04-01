@@ -224,7 +224,7 @@
 
           <div id="detailWorkspace" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
             <div><strong>RowID:</strong> <span id="dRowId"></span></div>
-            <div><strong>Work Order #:</strong> <span id="dWorkOrderNumber"></span></div>
+            <div><strong>Work Order #:</strong> <span id="dExternalWorkOrderNumber"></span></div>
             <div><strong>Customer:</strong> <span id="dCustomer"></span></div>
             <div><strong>Property:</strong> <span id="dProperty"></span></div>
             <div><strong>Status:</strong> <span id="dStatus"></span></div>
@@ -644,7 +644,7 @@ function showWorkOrderDetails(w) {
 
   // Overview fields
   document.getElementById("dRowId").textContent = w.RowID ?? "";
-  document.getElementById("dWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
+  document.getElementById("dExternalWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
   document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
 
   document.getElementById("dProperty").textContent =
