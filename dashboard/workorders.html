@@ -105,6 +105,7 @@
                   <option value="Pending Invoice">Pending Invoice</option>
                   <option value="Warranty">Warranty</option>
                   <option value="Completed">Completed</option>
+                  <option value="Billed">Billed</option>                  
                   <option value="Canceled">Canceled</option>
                 </select>
               </div>
@@ -336,7 +337,7 @@ function showWorkOrderDetails(w) {
   document.getElementById("dAddress").textContent = w.Address ?? "";
   document.getElementById("dNotes").textContent = w.Notes ?? "";
 
-  document.getElementById("editStatus").value = w.Status || "New";
+  document.getElementById("editStatus").value = (w.Status || "New").Trim();
   document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
   document.getElementById("editEndDate").value = toDateInputValue(w.EndDate);
   document.getElementById("editScheduleNotes").value = w.Notes || "";
