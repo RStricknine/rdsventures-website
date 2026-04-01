@@ -644,7 +644,7 @@ function showWorkOrderDetails(w) {
 
   // Overview fields
   document.getElementById("dRowId").textContent = w.RowID ?? "";
-  document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
+  document.getElementById("dWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
   document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
 
   document.getElementById("dProperty").textContent =
