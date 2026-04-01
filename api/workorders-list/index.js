@@ -14,7 +14,7 @@ async function getPool() {
     options: {
       encrypt: true,
       trustServerCertificate: false
-    },
+    }, 
     pool: {
       max: 5,
       min: 0,
@@ -32,7 +32,7 @@ module.exports = async function (context, req) {
     const result = await db.request().query(`
       SELECT TOP 200
           w.RowID,
-          w.WorkOrderNumber,
+          w.ExternalWorkOrderNumber,
           w.CustomerId,
           c.Name AS CustomerName,
           w.PropertyId,
