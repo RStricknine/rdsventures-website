@@ -329,7 +329,7 @@ function filterWorkOrders() {
 
   
 function showWorkOrderDetails(w) {
-  const statusValue = (w.status || "New").trim();
+  const statusValue = (w.Status || "New").trim();
   
   document.getElementById("emptyState").classList.add("hidden");
   document.getElementById("detailWorkspace").classList.remove("hidden");
