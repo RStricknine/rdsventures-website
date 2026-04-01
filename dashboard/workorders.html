@@ -889,7 +889,54 @@ async function createNewWorkOrder() {
 
 
   
-document.addEventListener("DOMContentLoaded", loadWorkOrders);
+// --- document.addEventListener("DOMContentLoaded", loadWorkOrders);
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadWorkOrders();
+
+  const newButton = document.getElementById("newWorkOrderButton");
+  const cancelButton = document.getElementById("cancelNewWorkOrderButton");
+  const saveButton = document.getElementById("saveNewWorkOrderButton");
+  const form = document.getElementById("newWorkOrderForm");
+
+  console.log("newWorkOrderButton:", newButton);
+  console.log("newWorkOrderForm:", form);
+
+  if (newButton && form) {
+    newButton.addEventListener("click", () => {
+      form.classList.remove("hidden");
+    });
+  }
+
+  if (cancelButton && form) {
+    cancelButton.addEventListener("click", () => {
+      form.classList.add("hidden");
+      document.getElementById("newWorkOrderMessage").textContent = "";
+    });
+  }
+
+  if (saveButton) {
+    saveButton.addEventListener("click", createNewWorkOrder);
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 </script>
 </body>
 </html>
