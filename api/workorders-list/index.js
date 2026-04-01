@@ -45,7 +45,9 @@ module.exports = async function (context, req) {
           w.Subject,
           w.Status,
           w.Priority,
-          w.StartDate
+          w.StartDate,
+          w.EndDate,
+          w.Notes
       FROM dbo.stg_WorkOrders w
       LEFT JOIN dbo.Customers c
           ON w.CustomerId = c.CustomerId
