@@ -1084,11 +1084,22 @@ function renderPropertyResults(properties) {
 
         message.textContent = `Work order created successfully. RowID: ${data.rowId ?? ""}`;
 
-        resetNewWorkOrderForm();
+
+     
         document.getElementById("newWorkOrderForm").classList.add("hidden");
 
         await loadWorkOrders();
+        //showEmptyState();
+
+        if (created) {
+        selectedWorkOrder = created;
+        renderWorkOrderList(filterWorkOrders());
+        showWorkOrderDetails(created);
+        } else {
         showEmptyState();
+}
+
+
       } catch (err) {
         console.error(err);
         message.textContent = err.message || "Failed to create work order.";
