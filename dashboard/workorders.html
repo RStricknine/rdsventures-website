@@ -181,6 +181,11 @@
                 <p id="addPropertyMessage" class="text-sm mt-3"></p>
               </div>
 
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1">External WO # (optional)</label>
+                    <input id="newExternalWorkOrderNumber" type="text" class="w-full border rounded-lg px-3 py-2" placeholder="Enter external work order number" />
+                </div>
+
               <div class="md:col-span-2">
                 <label class="block text-sm font-medium mb-1">Subject</label>
                 <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
@@ -407,6 +412,7 @@
       const propertySelect = document.getElementById("propertySelect");
       propertySelect.innerHTML = '<option value="">Select a customer first</option>';
 
+      document.getElementById("newExternalWorkOrderNumber").value = "";
       document.getElementById("newSubject").value = "";
       document.getElementById("newStatus").value = "New";
       document.getElementById("newPriority").value = "Medium";
@@ -949,12 +955,13 @@
       const payload = {
         customerId: selectedCustomerId,
         propertyId: selectedPropertyId,
+        externalWorkOrderNumber: document.getElementById("newExternalWorkOrderNumber").value.trim() || null,
         subject: document.getElementById("newSubject").value.trim(),
         status: document.getElementById("newStatus").value,
         priority: document.getElementById("newPriority").value,
         startDate: document.getElementById("newStartDate").value || null,
         endDate: document.getElementById("newEndDate").value || null,
-        notes: document.getElementById("newNotes").value.trim()
+        notes: document.getElementById("newNotes").value.trim()        
       };
 
       if (!selectedCustomerId) {
