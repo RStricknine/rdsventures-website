@@ -1,24 +1,24 @@
 {
   "routes": [
     {
-      "route": "/api/service-request",
-      "allowedRoles": ["anonymous"]
-    },
-   {
-  "route": "/api/customers*",
-  "allowedRoles": ["authenticated"]
-    },
-    {
       "route": "/dashboard*",
       "allowedRoles": ["authenticated"]
     },
     {
-      "route": "/api/dashboard*",
+      "route": "/api/workorders*",
       "allowedRoles": ["authenticated"]
     },
     {
-      "route": "/api/me",
+      "route": "/api/customers*",
       "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/properties*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/service-request",
+      "allowedRoles": ["anonymous"]
     }
   ],
   "responseOverrides": {
