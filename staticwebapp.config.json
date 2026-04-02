@@ -1,19 +1,20 @@
+
 {
   "routes": [
     {
-      "route": "/dashboard*",
-      "allowedRoles": ["authenticated"]
+      "route": "/",
+      "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/workorders*",
-      "allowedRoles": ["authenticated"]
+      "route": "/service-request",
+      "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/customers*",
-      "allowedRoles": ["authenticated"]
+      "route": "/service-request/*",
+      "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/properties*",
+      "route": "/dashboard/*",
       "allowedRoles": ["authenticated"]
     },
     {
@@ -21,12 +22,20 @@
       "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/*",
-      "allowedRoles": ["authenticated"]   
+      "route": "/api/workorders/*",
+      "allowedRoles": ["authenticated"]
     },
     {
-      "route": "/",
-      "allowedRoles": ["anonymous"]
+      "route": "/api/customers/*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/properties/*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["authenticated"]
     }
   ],
   "responseOverrides": {
