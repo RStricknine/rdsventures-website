@@ -403,12 +403,21 @@
   </main>
 
   <!-- IMAGE MODAL -->
-  <div id="imageModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-    <div class="relative max-w-5xl w-full flex justify-center">
+<div id="imageModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+  <div class="relative max-w-6xl w-full flex items-center justify-center gap-4">
+    <button
+      id="prevImageButton"
+      type="button"
+      class="bg-white/90 text-slate-900 rounded-full px-4 py-2 text-sm font-medium shadow"
+    >
+      Prev
+    </button>
+
+    <div class="relative flex justify-center w-full">
       <button
         id="closeImageModal"
         type="button"
-        class="absolute top-2 right-2 bg-white text-slate-900 rounded-full px-3 py-1 text-sm font-medium shadow"
+        class="absolute top-2 right-2 bg-white text-slate-900 rounded-full px-3 py-1 text-sm font-medium shadow z-10"
       >
         Close
       </button>
@@ -420,7 +429,16 @@
         class="max-h-[90vh] max-w-full rounded-xl shadow-2xl"
       />
     </div>
+
+    <button
+      id="nextImageButton"
+      type="button"
+      class="bg-white/90 text-slate-900 rounded-full px-4 py-2 text-sm font-medium shadow"
+    >
+      Next
+    </button>
   </div>
+</div>
 
   <script>
     let allWorkOrders = [];
@@ -428,6 +446,11 @@
     let selectedCustomerId = null;
     let selectedPropertyId = null;
     let customerProperties = [];
+    let modalPhotos = [];
+    let modalPhotoIndex = 0;
+
+
+
 
     function showEmptyState() {
       document.getElementById("emptyState").classList.remove("hidden");
@@ -872,42 +895,53 @@ showWorkOrderDetails
       }
     }
 
-    function renderPhotoList(photos, container) {
-      container.innerHTML = "";
 
-      if (!photos.length) {
-        container.innerHTML = `<p class="text-sm text-slate-500">No photos found.</p>`;
-        return;
-      }
 
-      photos.forEach(photo => {
-        const card = document.createElement("div");
-        card.className = "rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shadow-sm";
 
-        card.innerHTML = `
-          <button type="button" class="photo-preview-button block w-full text-left">
-            <img
-              src="${photo.ImageUrl}"
-              alt="${photo.FileName || "Work order photo"}"
-              class="w-full h-56 object-cover bg-slate-200"
-            />
-          </button>
 
-          <div class="p-3 space-y-1">
-            <div class="font-medium text-sm text-slate-900">${photo.FileName || ""}</div>
-            <div class="text-xs text-slate-500">${photo.Caption || ""}</div>
-            <div class="text-xs text-slate-400">${formatDateTime(photo.UploadedAt)}</div>
-          </div>
-        `;
+   function renderPhotoList(photos, container) {
+  container.innerHTML = "";
 
-        const previewButton = card.querySelector(".photo-preview-button");
-        previewButton.addEventListener("click", () => {
-          openImageModal(photo.ImageUrl);
-        });
+  if (!photos.length) {
+    container.innerHTML = `<p class="text-sm text-slate-500">No photos found.</p>`;
+    return;
+  }
 
-        container.appendChild(card);
-      });
-    }
+  photos.forEach((photo, index) => {
+    const card = document.createElement("div");
+    card.className = "rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shadow-sm";
+
+    card.innerHTML = `
+      <button type="button" class="photo-preview-button block w-full text-left">
+        <img
+          src="${photo.ImageUrl}"
+          alt="${photo.FileName || "Work order photo"}"
+          class="w-full h-56 object-cover bg-slate-200"
+        />
+      </button>
+
+      <div class="p-3 space-y-1">
+        <div class="font-medium text-sm text-slate-900">${photo.FileName || ""}</div>
+        <div class="text-xs text-slate-500">${photo.Caption || ""}</div>
+        <div class="text-xs text-slate-400">${formatDateTime(photo.UploadedAt)}</div>
+      </div>
+    `;
+
+    const previewButton = card.querySelector(".photo-preview-button");
+    previewButton.addEventListener("click", () => {
+      openImageModalWithList(photos, index);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+
+
+
+
+
+
 
     async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
       return new Promise((resolve, reject) => {
@@ -958,10 +992,56 @@ showWorkOrderDetails
       return dt.toISOString().slice(0, 10);
     }
 
-    function openImageModal(imageUrl) {
-      document.getElementById("modalImage").src = imageUrl;
-      document.getElementById("imageModal").classList.remove("hidden");
-    }
+ function openImageModalWithList(photos, index) {
+  if (!photos.length) return;
+
+  modalPhotos = photos;
+  modalPhotoIndex = index;
+
+  updateModalImage();
+  document.getElementById("imageModal").classList.remove("hidden");
+}
+
+function updateModalImage() {
+  if (!modalPhotos.length) return;
+
+  const photo = modalPhotos[modalPhotoIndex];
+  document.getElementById("modalImage").src = photo.ImageUrl || "";
+
+  const prevButton = document.getElementById("prevImageButton");
+  const nextButton = document.getElementById("nextImageButton");
+
+  if (prevButton) {
+    prevButton.disabled = modalPhotoIndex === 0;
+    prevButton.classList.toggle("opacity-50", prevButton.disabled);
+  }
+
+  if (nextButton) {
+    nextButton.disabled = modalPhotoIndex === modalPhotos.length - 1;
+    nextButton.classList.toggle("opacity-50", nextButton.disabled);
+  }
+}
+
+function showPrevImage() {
+  if (modalPhotoIndex > 0) {
+    modalPhotoIndex--;
+    updateModalImage();
+  }
+}
+
+function showNextImage() {
+  if (modalPhotoIndex < modalPhotos.length - 1) {
+    modalPhotoIndex++;
+    updateModalImage();
+  }
+}
+
+function closeImageModal() {
+  document.getElementById("modalImage").src = "";
+  document.getElementById("imageModal").classList.add("hidden");
+  modalPhotos = [];
+  modalPhotoIndex = 0;
+}
 
     function closeImageModal() {
       document.getElementById("modalImage").src = "";
@@ -1477,7 +1557,15 @@ document.addEventListener("click", (e) => {
       });
 
     
+const prevImageButton = document.getElementById("prevImageButton");
+if (prevImageButton) {
+  prevImageButton.addEventListener("click", showPrevImage);
+}
 
+const nextImageButton = document.getElementById("nextImageButton");
+if (nextImageButton) {
+  nextImageButton.addEventListener("click", showNextImage);
+}
 
 
 const customerSelect = document.getElementById("customerSelect");
@@ -1521,6 +1609,23 @@ if (customerSelect) {
       });
 
       document.getElementById("savePropertyButton").addEventListener("click", saveProperty);
+
+document.addEventListener("keydown", (e) => {
+  const modal = document.getElementById("imageModal");
+  if (!modal || modal.classList.contains("hidden")) return;
+
+  if (e.key === "ArrowLeft") {
+    showPrevImage();
+  } else if (e.key === "ArrowRight") {
+    showNextImage();
+  } else if (e.key === "Escape") {
+    closeImageModal();
+  }
+});
+
+
+
+
     });
  
  
