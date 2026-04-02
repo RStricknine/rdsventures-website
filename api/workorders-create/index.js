@@ -80,6 +80,7 @@ module.exports = async function (context, req) {
       .input("City", sql.NVarChar(100), property.City || null)
       .input("State", sql.NVarChar(2), property.State || null)
       .input("PostalCode", sql.NVarChar(20), property.PostalCode || null)
+      .input("ExternalWorkOrderNumber", sql.NVarChar(100), externalWorkOrderNumber || null)
       .input("Subject", sql.NVarChar(sql.MAX), subject)
       .input("Status", sql.NVarChar(100), status || "New")
       .input("Priority", sql.NVarChar(100), priority || "Medium")
@@ -96,6 +97,7 @@ module.exports = async function (context, req) {
           City,
           State,
           PostalCode,
+          ExternalWorkOrderNumber,
           Subject,
           Status,
           Priority,
@@ -114,6 +116,7 @@ module.exports = async function (context, req) {
           @City,
           @State,
           @PostalCode,
+          @ExternalWorkOrderNumber,
           @Subject,
           @Status,
           @Priority,
@@ -123,6 +126,20 @@ module.exports = async function (context, req) {
           SYSUTCDATETIME()
         )
       `);
+
+
+const rowId = result.recordset[0].RowID;
+
+await db.request()
+  .input("RowID", sql.Int, rowId)
+  .query(`
+    UPDATE dbo.stg_WorkOrders
+    SET WorkOrderNumber = 'WO-' + RIGHT('000000' + CAST(RowID AS VARCHAR(6)), 6)
+    WHERE RowID = @RowID
+      AND WorkOrderNumber IS NULL
+  `);
+
+
 
     context.res = {
       status: 200,
