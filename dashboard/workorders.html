@@ -947,6 +947,8 @@ function resetNewWorkOrderForm() {
       throw new Error(`Invalid JSON from properties API: ${raw || "(empty response)"}`);
     }
 
+    console.log("saveProperty response:", data);
+
     if (!res.ok) {
       throw new Error("Failed to load properties.");
     }
@@ -1073,78 +1075,134 @@ function renderPropertyResults(properties) {
       }
     }
 
+
+
+
+
     async function saveProperty() {
-      const message = document.getElementById("addPropertyMessage");
+  const message = document.getElementById("addPropertyMessage");
 
-      if (!selectedCustomerId) {
-        message.textContent = "Select a customer first.";
-        return;
+  if (!selectedCustomerId) {
+    message.textContent = "Select a customer first.";
+    return;
+  }
+
+  const payload = {
+    customerId: selectedCustomerId,
+    street: document.getElementById("addPropertyStreet").value.trim(),
+    city: document.getElementById("addPropertyCity").value.trim(),
+    state: document.getElementById("addPropertyState").value.trim(),
+    postalCode: document.getElementById("addPropertyPostalCode").value.trim(),
+    lockbox: document.getElementById("addPropertyLockbox").value.trim()
+  };
+
+  if (!payload.street) {
+    message.textContent = "Street is required.";
+    return;
+  }
+
+  message.textContent = "Saving property...";
+
+  try {
+    const res = await fetch("/api/properties/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const raw = await res.text();
+    let data = {};
+
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new Error(`Invalid JSON from property create API: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.message || data.error || "Failed to save property.");
+    }
+
+    const newPropertyId = data.propertyId || data.PropertyId || data.id || null;
+
+    await loadPropertiesForCustomer(selectedCustomerId);
+console.log("customerProperties after reload:", customerProperties);
+
+    if (newPropertyId) {
+      const newProperty = customerProperties.find(
+        p => String(p.PropertyId) === String(newPropertyId)
+      );
+
+      if (newProperty) {
+        const addressText =
+          newProperty.Address ||
+          [newProperty.Street, newProperty.City, newProperty.State, newProperty.PostalCode]
+            .filter(Boolean)
+            .join(", ");
+
+        document.getElementById("propertySearch").value = addressText;
+        selectedPropertyId = newProperty.PropertyId;
       }
+    } else {
+      // fallback: try to find the newly added property by address
+      const newProperty = customerProperties.find(p => {
+        const street = String(p.Street || "").trim().toLowerCase();
+        const city = String(p.City || "").trim().toLowerCase();
+        const state = String(p.State || "").trim().toLowerCase();
+        const postalCode = String(p.PostalCode || "").trim().toLowerCase();
 
-      const payload = {
-        customerId: selectedCustomerId,
-        street: document.getElementById("addPropertyStreet").value.trim(),
-        city: document.getElementById("addPropertyCity").value.trim(),
-        state: document.getElementById("addPropertyState").value.trim(),
-        postalCode: document.getElementById("addPropertyPostalCode").value.trim(),
-        lockbox: document.getElementById("addPropertyLockbox").value.trim()
-      };
+        return (
+          street === payload.street.toLowerCase() &&
+          city === payload.city.toLowerCase() &&
+          state === payload.state.toLowerCase() &&
+          postalCode === payload.postalCode.toLowerCase()
+        );
+      });
 
-      if (!payload.street) {
-        message.textContent = "Street is required.";
-        return;
+      if (newProperty) {
+        const addressText =
+          newProperty.Address ||
+          [newProperty.Street, newProperty.City, newProperty.State, newProperty.PostalCode]
+            .filter(Boolean)
+            .join(", ");
+
+        document.getElementById("propertySearch").value = addressText;
+        selectedPropertyId = newProperty.PropertyId;
       }
+    }
 
-      message.textContent = "Saving property...";
-
-      try {
-        const res = await fetch("/api/properties/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const raw = await res.text();
-        let data = {};
-
-        try {
-          data = raw ? JSON.parse(raw) : {};
-        } catch {
-          throw new Error(`Invalid JSON from property create API: ${raw || "(empty response)"}`);
-        }
-
-        if (!res.ok) {
-          throw new Error(data.message || data.error || "Failed to save property.");
-        }
-
-        message.textContent = "Property saved successfully.";
-
-        await loadPropertiesForCustomer(selectedCustomerId);
-
-if (data.propertyId) {
-  const newProperty = customerProperties.find(
-    p => String(p.PropertyId) === String(data.propertyId)
-  );
-
-  if (newProperty) {
-    const addressText =
-      newProperty.Address ||
-      [newProperty.Street, newProperty.City, newProperty.State, newProperty.PostalCode]
-        .filter(Boolean)
-        .join(", ");
-
-    document.getElementById("propertySearch").value = addressText;
-    selectedPropertyId = newProperty.PropertyId;
+    document.getElementById("propertyResults").innerHTML = "";
     document.getElementById("propertyResults").classList.add("hidden");
+
+    document.getElementById("addPropertyForm").classList.add("hidden");
+    document.getElementById("addPropertyMessage").textContent = "";
+    document.getElementById("addPropertyStreet").value = "";
+    document.getElementById("addPropertyCity").value = "";
+    document.getElementById("addPropertyState").value = "";
+    document.getElementById("addPropertyPostalCode").value = "";
+    document.getElementById("addPropertyLockbox").value = "";
+
+    message.textContent = "Property saved successfully.";
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Failed to save property.";
   }
 }
 
-        document.getElementById("addPropertyForm").classList.add("hidden");
-      } catch (err) {
-        console.error(err);
-        message.textContent = err.message || "Failed to save property.";
-      }
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     document.addEventListener("DOMContentLoaded", () => {
       showEmptyState();
