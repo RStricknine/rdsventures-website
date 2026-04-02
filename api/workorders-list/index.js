@@ -33,6 +33,7 @@ module.exports = async function (context, req) {
       SELECT TOP 200
           w.RowID,
           w.ExternalWorkOrderNumber,
+          w.WorkOrderNumber,
           w.CustomerId,
           c.Name AS CustomerName,
           w.PropertyId,
