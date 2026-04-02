@@ -123,8 +123,9 @@
                   placeholder="Search customer..."
                   class="w-full border rounded-lg px-3 py-2"
                 />
-                <div id="customerResults" class="border rounded-lg mt-1 max-h-40 overflow-y-auto hidden bg-white"></div>
-              </div>
+                <select id="customerSelect" class="w-full border rounded-lg px-3 py-2">
+                <option value="">Select a customer</option>
+                </select>
 
               <!-- PROPERTY -->
               <div>
@@ -552,6 +553,34 @@
         return matchesSearch && matchesStatus;
       });
     }
+
+async function loadCustomers() {
+  const select = document.getElementById("customerSelect");
+
+  select.innerHTML = '<option value="">Loading customers...</option>';
+
+  try {
+    const res = await fetch("/api/customers/list"); // you may already have this
+    const customers = await res.json();
+
+    select.innerHTML = '<option value="">Select a customer</option>';
+
+    customers.forEach(c => {
+      if (c.IsDeleted) return; // safety
+
+      const opt = document.createElement("option");
+      opt.value = c.CustomerId;
+      opt.textContent = c.Name;
+
+      select.appendChild(opt);
+    });
+
+  } catch (err) {
+    console.error(err);
+    select.innerHTML = '<option value="">Failed to load customers</option>';
+  }
+}
+
 
     function showWorkOrderDetails(w) {
       const statusValue = (w.Status || "New").trim();
@@ -1077,6 +1106,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       showEmptyState();
       loadWorkOrders();
+      loadCustomers();
 
       document.getElementById("workOrderSearch").addEventListener("input", () => {
         renderWorkOrderList(filterWorkOrders());
@@ -1116,6 +1146,22 @@
       document.getElementById("propertySelect").addEventListener("change", function () {
         selectedPropertyId = this.value || null;
       });
+
+const customerSelect = document.getElementById("customerSelect");
+if (customerSelect) {
+  customerSelect.addEventListener("change", function () {
+    selectedCustomerId = this.value;
+
+    if (!selectedCustomerId) {
+      selectedPropertyId = null;
+      document.getElementById("propertySelect").innerHTML =
+        '<option value="">Select a customer first</option>';
+      return;
+    }
+
+    loadPropertiesForCustomer(selectedCustomerId);
+  });
+}
 
       document.getElementById("showAddPropertyButton").addEventListener("click", () => {
         const message = document.getElementById("addPropertyMessage");
