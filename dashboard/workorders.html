@@ -1148,6 +1148,11 @@ function renderPropertyResults(properties) {
         await loadWorkOrders();
         //showEmptyState();
 
+const created = allWorkOrders.find(
+      w => String(w.RowID) === String(data.rowId)
+    );
+
+
         if (created) {
         selectedWorkOrder = created;
         renderWorkOrderList(filterWorkOrders());
