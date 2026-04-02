@@ -117,8 +117,7 @@
     </div>
 
     <!-- NEW WORK ORDER FORM -->
-    <!-- <div id="newWorkOrderForm" class="hidden"> -->
-      <section id="newWorkOrderForm" class="hidden bg-white rounded-xl shadow p-6 w-full">
+    <section id="newWorkOrderForm" class="hidden bg-white rounded-xl shadow p-6 w-full">
         <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -141,6 +140,56 @@
           </button>
         </div>
 
+
+
+
+<div id="addPropertyForm" class="hidden md:col-span-2 border rounded-xl p-4 mt-2">
+  <h4 class="text-lg font-semibold mb-3">Add Property</h4>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="md:col-span-2">
+      <label class="block text-sm font-medium mb-1">Street</label>
+      <input id="addPropertyStreet" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">City</label>
+      <input id="addPropertyCity" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">State</label>
+      <input id="addPropertyState" type="text" maxlength="2" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Postal Code</label>
+      <input id="addPropertyPostalCode" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Lockbox</label>
+      <input id="addPropertyLockbox" type="text" class="w-full border rounded-lg px-3 py-2" />
+    </div>
+  </div>
+
+  <div class="mt-4 flex gap-3">
+    <button id="savePropertyButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+      Save Property
+    </button>
+    <button id="cancelAddPropertyButton" type="button" class="border px-4 py-2 rounded-lg">
+      Cancel
+    </button>
+  </div>
+
+  <p id="addPropertyMessage" class="text-sm mt-3"></p>
+</div>
+
+
+
+
+
+        
         <div class="md:col-span-2">
           <label class="block text-sm font-medium mb-1">Subject</label>
           <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
@@ -1088,7 +1137,7 @@ async function createProperty() {
     return;
   }
 
-  message.textContent = "Saving property...";
+  if (message) message.textContent = "Saving property...";
 
   const payload = {
     customerId: selectedCustomerId,
@@ -1121,7 +1170,7 @@ async function createProperty() {
       throw new Error(data.message || data.error || "Failed to create property.");
     }
 
-    message.textContent = "Property created successfully.";
+   if (message) message.textContent = "Property created successfully.";
 
     // Reload dropdown
     await loadPropertiesForCustomer(selectedCustomerId);
@@ -1141,7 +1190,7 @@ async function createProperty() {
     document.getElementById("addPropertyLockbox").value = "";
   } catch (err) {
     console.error("Create property error:", err);
-    message.textContent = err.message || "Failed to create property.";
+   if (message) message.textContent = err.message || "Failed to create property.";
   }
 }
 
