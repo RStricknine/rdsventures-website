@@ -30,6 +30,7 @@ module.exports = async function (context, req) {
     const {
       customerId,
       propertyId,
+      externalWorkOrderNumber
       subject,
       status,
       priority,
