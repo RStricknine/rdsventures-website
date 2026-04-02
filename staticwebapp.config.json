@@ -14,12 +14,12 @@
       "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/dashboard/*",
-      "allowedRoles": ["authenticated"]
-    },
-    {
       "route": "/api/service-request",
       "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/dashboard/*",
+      "allowedRoles": ["authenticated"]
     },
     {
       "route": "/api/workorders/*",
