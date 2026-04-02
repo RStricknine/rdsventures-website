@@ -19,6 +19,10 @@
     {
       "route": "/api/service-request",
       "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/*",
+      "allowedRoles": ["authenticated"]   
     }
   ],
   "responseOverrides": {
