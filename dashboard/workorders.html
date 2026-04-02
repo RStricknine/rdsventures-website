@@ -568,6 +568,9 @@
       throw new Error("Failed to load customers.");
     }
 
+    console.log("customers/list response:", customers);
+
+
     select.innerHTML = '<option value="">Select a customer</option>';
 
     customers
