@@ -114,18 +114,13 @@
             <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- CUSTOMER -->
-              <div>
-                <label class="block text-sm font-medium mb-1">Customer</label>
-                <input
-                  id="customerSearch"
-                  type="text"
-                  placeholder="Search customer..."
-                  class="w-full border rounded-lg px-3 py-2"
-                />
-                <select id="customerSelect" class="w-full border rounded-lg px-3 py-2">
-                <option value="">Select a customer</option>
-                </select>
+ <!-- CUSTOMER -->
+<div>
+  <label class="block text-sm font-medium mb-1">Customer</label>
+  <select id="customerSelect" class="w-full border rounded-lg px-3 py-2">
+    <option value="">Select a customer</option>
+  </select>
+</div>
 
               <!-- PROPERTY -->
               <div>
@@ -402,34 +397,32 @@
       document.getElementById("selectedWorkOrderLabel").textContent = "Creating new work order";
     }
 
-    function resetNewWorkOrderForm() {
-      selectedCustomerId = null;
-      selectedPropertyId = null;
+   function resetNewWorkOrderForm() {
+  selectedCustomerId = null;
+  selectedPropertyId = null;
 
-      document.getElementById("customerSearch").value = "";
-      document.getElementById("customerResults").innerHTML = "";
-      document.getElementById("customerResults").classList.add("hidden");
+  document.getElementById("customerSelect").value = "";
 
-      const propertySelect = document.getElementById("propertySelect");
-      propertySelect.innerHTML = '<option value="">Select a customer first</option>';
+  const propertySelect = document.getElementById("propertySelect");
+  propertySelect.innerHTML = '<option value="">Select a customer first</option>';
 
-      document.getElementById("newExternalWorkOrderNumber").value = "";
-      document.getElementById("newSubject").value = "";
-      document.getElementById("newStatus").value = "New";
-      document.getElementById("newPriority").value = "Medium";
-      document.getElementById("newStartDate").value = "";
-      document.getElementById("newEndDate").value = "";
-      document.getElementById("newNotes").value = "";
-      document.getElementById("newWorkOrderMessage").textContent = "";
+  document.getElementById("newExternalWorkOrderNumber").value = "";
+  document.getElementById("newSubject").value = "";
+  document.getElementById("newStatus").value = "New";
+  document.getElementById("newPriority").value = "Medium";
+  document.getElementById("newStartDate").value = "";
+  document.getElementById("newEndDate").value = "";
+  document.getElementById("newNotes").value = "";
+  document.getElementById("newWorkOrderMessage").textContent = "";
 
-      document.getElementById("addPropertyForm").classList.add("hidden");
-      document.getElementById("addPropertyMessage").textContent = "";
-      document.getElementById("addPropertyStreet").value = "";
-      document.getElementById("addPropertyCity").value = "";
-      document.getElementById("addPropertyState").value = "";
-      document.getElementById("addPropertyPostalCode").value = "";
-      document.getElementById("addPropertyLockbox").value = "";
-    }
+  document.getElementById("addPropertyForm").classList.add("hidden");
+  document.getElementById("addPropertyMessage").textContent = "";
+  document.getElementById("addPropertyStreet").value = "";
+  document.getElementById("addPropertyCity").value = "";
+  document.getElementById("addPropertyState").value = "";
+  document.getElementById("addPropertyPostalCode").value = "";
+  document.getElementById("addPropertyLockbox").value = "";
+}
 
     function getStatusClass(status) {
       switch ((status || "").trim()) {
@@ -554,32 +547,45 @@
       });
     }
 
-async function loadCustomers() {
+    async function loadCustomers() {
   const select = document.getElementById("customerSelect");
+  if (!select) return;
 
   select.innerHTML = '<option value="">Loading customers...</option>';
 
   try {
-    const res = await fetch("/api/customers/list"); // you may already have this
-    const customers = await res.json();
+    const res = await fetch("/api/customers/list");
+    const raw = await res.text();
+
+    let customers = [];
+    try {
+      customers = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from /api/customers/list: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error("Failed to load customers.");
+    }
 
     select.innerHTML = '<option value="">Select a customer</option>';
 
-    customers.forEach(c => {
-      if (c.IsDeleted) return; // safety
-
-      const opt = document.createElement("option");
-      opt.value = c.CustomerId;
-      opt.textContent = c.Name;
-
-      select.appendChild(opt);
-    });
+    customers
+      .filter(c => !c.IsDeleted)
+      .sort((a, b) => String(a.Name || "").localeCompare(String(b.Name || "")))
+      .forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c.CustomerId;
+        opt.textContent = c.Name;
+        select.appendChild(opt);
+      });
 
   } catch (err) {
-    console.error(err);
+    console.error("loadCustomers error:", err);
     select.innerHTML = '<option value="">Failed to load customers</option>';
   }
 }
+
 
 
     function showWorkOrderDetails(w) {
@@ -927,57 +933,7 @@ async function loadCustomers() {
       }
     }
 
-    async function customerSearchInputHandler() {
-      const query = this.value.trim();
-      const results = document.getElementById("customerResults");
-
-      if (query.length < 2) {
-        results.classList.add("hidden");
-        results.innerHTML = "";
-        return;
-      }
-
-      try {
-        const res = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}`);
-        const raw = await res.text();
-
-        let customers = [];
-        try {
-          customers = raw ? JSON.parse(raw) : [];
-        } catch {
-          throw new Error(`Invalid JSON from customer search API: ${raw || "(empty response)"}`);
-        }
-
-        if (!res.ok) {
-          throw new Error("Failed to search customers.");
-        }
-
-        results.innerHTML = "";
-
-        customers.forEach(c => {
-          const div = document.createElement("div");
-          div.className = "px-3 py-2 hover:bg-slate-100 cursor-pointer";
-          div.textContent = c.Name;
-
-          div.addEventListener("click", () => {
-            document.getElementById("customerSearch").value = c.Name;
-            selectedCustomerId = c.CustomerId;
-            selectedPropertyId = null;
-            results.classList.add("hidden");
-            loadPropertiesForCustomer(c.CustomerId);
-          });
-
-          results.appendChild(div);
-        });
-
-        results.classList.toggle("hidden", customers.length === 0);
-      } catch (err) {
-        console.error(err);
-        results.innerHTML = '<div class="px-3 py-2 text-sm text-red-600">Customer search failed.</div>';
-        results.classList.remove("hidden");
-      }
-    }
-
+    
     async function createNewWorkOrder() {
       const message = document.getElementById("newWorkOrderMessage");
 
@@ -1106,7 +1062,7 @@ async function loadCustomers() {
     document.addEventListener("DOMContentLoaded", () => {
       showEmptyState();
       loadWorkOrders();
-      loadCustomers();
+   
 
       document.getElementById("workOrderSearch").addEventListener("input", () => {
         renderWorkOrderList(filterWorkOrders());
@@ -1141,10 +1097,13 @@ async function loadCustomers() {
         if (e.target.id === "imageModal") closeImageModal();
       });
 
-      document.getElementById("customerSearch").addEventListener("input", customerSearchInputHandler);
+    
 
       document.getElementById("propertySelect").addEventListener("change", function () {
         selectedPropertyId = this.value || null;
+
+   loadCustomers();
+
       });
 
 const customerSelect = document.getElementById("customerSelect");
