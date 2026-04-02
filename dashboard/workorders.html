@@ -967,7 +967,7 @@ document.getElementById("editExternalWorkOrderNumber").value =
       throw new Error(`Invalid JSON from properties API: ${raw || "(empty response)"}`);
     }
 
-    console.log("saveProperty response:", data);
+    console.log("saveProperty response:", properties);
 
     if (!res.ok) {
       throw new Error("Failed to load properties.");
