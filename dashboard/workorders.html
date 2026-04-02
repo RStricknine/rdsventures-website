@@ -41,17 +41,7 @@
 
           <select id="statusFilter" class="w-full border rounded-lg px-3 py-2">
             <option value="">All Statuses</option>
-            <option value="New">New</option>
-            <option value="Need to Schedule">Need to Schedule</option>
-            <option value="Scheduled">Scheduled</option>
-            <option value="Dispatched">Dispatched</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Billed">Billed</option>
-            <option value="Pending Invoice">Pending Invoice</option>
-            <option value="Warranty">Warranty</option>
-            <option value="Completed">Completed</option>
-            <option value="Canceled">Canceled</option>
-          </select>
+           </select>
         </div>
 
         <p id="workOrderListMessage" class="text-sm text-slate-500 mb-4"></p>
@@ -199,18 +189,7 @@
 
               <div>
                 <label class="block text-sm font-medium mb-1">Status</label>
-                <select id="newStatus" class="w-full border rounded-lg px-3 py-2">
-                  <option value="New">New</option>
-                  <option value="Need to Schedule">Need to Schedule</option>
-                  <option value="Scheduled">Scheduled</option>
-                  <option value="Dispatched">Dispatched</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Pending Invoice">Pending Invoice</option>
-                  <option value="Billed">Billed</option>
-                  <option value="Warranty">Warranty</option>
-                  <option value="Completed">Completed</option>
-                  <option value="Canceled">Canceled</option>
-                </select>
+                <select id="newStatus" class="w-full border rounded-lg px-3 py-2"></select>
               </div>
 
               <div>
@@ -316,18 +295,7 @@
 
             <div>
               <label class="block text-sm font-medium mb-1">Status</label>
-              <select id="editStatus" class="w-full border rounded-lg px-3 py-2">
-                <option value="New">New</option>
-                <option value="Need to Schedule">Need to Schedule</option>
-                <option value="Scheduled">Scheduled</option>
-                <option value="Dispatched">Dispatched</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Pending Invoice">Pending Invoice</option>
-                <option value="Billed">Billed</option>
-                <option value="Warranty">Warranty</option>
-                <option value="Completed">Completed</option>
-                <option value="Canceled">Canceled</option>
-              </select>
+              <select id="editStatus" class="w-full border rounded-lg px-3 py-2"></select>
             </div>
 
             <div>
@@ -1322,11 +1290,94 @@ function activateWorkflowTab(tabId) {
 
 
 
+
+
+async function loadStatuses() {
+  try {
+    const res = await fetch("/api/workorders/statuses");
+    const raw = await res.text();
+
+    let statuses = [];
+    try {
+      statuses = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from /api/workorders/statuses: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error("Failed to load work order statuses.");
+    }
+
+    const newStatus = document.getElementById("newStatus");
+    const editStatus = document.getElementById("editStatus");
+    const statusFilter = document.getElementById("statusFilter");
+
+    const currentFilterValue = statusFilter ? statusFilter.value : "";
+
+    if (newStatus) {
+      newStatus.innerHTML = "";
+    }
+
+    if (editStatus) {
+      editStatus.innerHTML = "";
+    }
+
+    if (statusFilter) {
+      statusFilter.innerHTML = '<option value="">All Statuses</option>';
+    }
+
+    statuses.forEach(s => {
+      if (newStatus) {
+        const opt = document.createElement("option");
+        opt.value = s.StatusName;
+        opt.textContent = s.StatusName;
+        newStatus.appendChild(opt);
+      }
+
+      if (editStatus) {
+        const opt = document.createElement("option");
+        opt.value = s.StatusName;
+        opt.textContent = s.StatusName;
+        editStatus.appendChild(opt);
+      }
+
+      if (statusFilter) {
+        const opt = document.createElement("option");
+        opt.value = s.StatusName;
+        opt.textContent = s.StatusName;
+        statusFilter.appendChild(opt);
+      }
+    });
+
+    if (newStatus && newStatus.options.length > 0) {
+      const hasNeedToSchedule = [...newStatus.options].some(o => o.value === "Need to schedule");
+      const hasNew = [...newStatus.options].some(o => o.value === "New");
+
+      if (hasNeedToSchedule) {
+        newStatus.value = "Need to schedule";
+      } else if (hasNew) {
+        newStatus.value = "New";
+      }
+    }
+
+    if (statusFilter && currentFilterValue) {
+      const exists = [...statusFilter.options].some(o => o.value === currentFilterValue);
+      statusFilter.value = exists ? currentFilterValue : "";
+    }
+  } catch (err) {
+    console.error("loadStatuses error:", err);
+  }
+}
+
+
+
+
+
     document.addEventListener("DOMContentLoaded", () => {
       showEmptyState();
       loadWorkOrders();
       loadCustomers();
-
+      loadStatuses();
 
 const propertySearch = document.getElementById("propertySearch");
 const propertyResults = document.getElementById("propertyResults");
