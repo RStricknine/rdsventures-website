@@ -282,6 +282,9 @@
     </div>
   </div>
 
+
+
+
 <script>
 let allWorkOrders = [];
 let selectedWorkOrder = null;
@@ -341,12 +344,6 @@ async function loadPropertiesForCustomer(customerId) {
   });
 }
 
-
-
-
-
-
-  
   // --- Helper function
 function getStatusClass(status) {
   switch ((status || "").trim()) {
@@ -385,12 +382,6 @@ function getStatusClass(status) {
   }
 }
 
-
-
-
-
-
-  
 async function loadWorkOrders() {
   const listMessage = document.getElementById("workOrderListMessage");
   listMessage.textContent = "Loading work orders...";
@@ -417,8 +408,6 @@ try {
   listMessage.textContent = err.message || "Failed to load work orders.";
 }
 }
-
-
 
 function renderWorkOrderList(workOrders) {
   const list = document.getElementById("workOrderList");
@@ -470,11 +459,6 @@ function renderWorkOrderList(workOrders) {
   });
 }
 
-
-  
-
-  
-
 function filterWorkOrders() {
   const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
   const selectedStatus = document.getElementById("statusFilter").value;
@@ -493,11 +477,29 @@ function filterWorkOrders() {
   });
 }
 
-
-
-
-
 function showWorkOrderDetails(w) {
+
+
+const statusDropdown = document.getElementById("editStatus");
+if (statusDropdown) {
+  if ([...statusDropdown.options].some(o => o.value === statusValue)) {
+    statusDropdown.value = statusValue;
+  } else {
+    statusDropdown.value = "New";
+  }
+}
+
+const editStartDate = document.getElementById("editStartDate");
+if (editStartDate) editStartDate.value = toDateInputValue(w.StartDate);
+
+const editEndDate = document.getElementById("editEndDate");
+if (editEndDate) editEndDate.value = toDateInputValue(w.EndDate);
+
+const editScheduleNotes = document.getElementById("editScheduleNotes");
+if (editScheduleNotes) editScheduleNotes.value = w.Notes ?? "";
+
+
+
 
 
 
@@ -517,7 +519,7 @@ console.log("WORK ORDER OBJECT:", w);
   
  
   // Header
-  document.getElementById("selectedWorkOrderLabel").textContent = w.ExternalWorkOrderNumber ?? "";
+  
 
 
   // Overview fields
@@ -565,16 +567,7 @@ console.log("WORK ORDER OBJECT:", w);
   // Load photos for this work order
   loadPhotos();
 }
-  
-
-  
-
-
-
-
-
-
-  
+   
 async function saveWorkOrderUpdates() {
   const message = document.getElementById("workOrderMessage");
 
@@ -739,12 +732,7 @@ async function loadPhotos() {
     message.textContent = err.message || "Failed to load photos.";
   }
 }
-
-
-
-
-
-  
+ 
 function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
@@ -849,13 +837,35 @@ document.getElementById("statusFilter").addEventListener("change", () => {
   renderWorkOrderList(filterWorkOrders());
 });
 
-document.getElementById("saveWorkOrderButton").addEventListener("click", saveWorkOrderUpdates);
-document.getElementById("uploadPhotoButton").addEventListener("click", uploadPhoto);
-document.getElementById("loadPhotosButton").addEventListener("click", loadPhotos);
-document.getElementById("closeImageModal").addEventListener("click", closeImageModal);
-document.getElementById("imageModal").addEventListener("click", (e) => {
-  if (e.target.id === "imageModal") closeImageModal();
-});
+
+const saveWorkOrderButton = document.getElementById("saveWorkOrderButton");
+if (saveWorkOrderButton) {
+  saveWorkOrderButton.addEventListener("click", saveWorkOrderUpdates);
+}
+
+const uploadPhotoButton = document.getElementById("uploadPhotoButton");
+if (uploadPhotoButton) {
+  uploadPhotoButton.addEventListener("click", uploadPhoto);
+}
+
+const loadPhotosButton = document.getElementById("loadPhotosButton");
+if (loadPhotosButton) {
+  loadPhotosButton.addEventListener("click", loadPhotos);
+}
+
+const closeImageModalButton = document.getElementById("closeImageModal");
+if (closeImageModalButton) {
+  closeImageModalButton.addEventListener("click", closeImageModal);
+}
+
+const imageModal = document.getElementById("imageModal");
+if (imageModal) {
+  imageModal.addEventListener("click", (e) => {
+    if (e.target.id === "imageModal") closeImageModal();
+  });
+}
+
+
 
 // -- Added to create a button for adding a property
 document.getElementById("showAddPropertyButton").addEventListener("click", () => {
@@ -871,25 +881,35 @@ document.getElementById("showAddPropertyButton").addEventListener("click", () =>
   document.getElementById("addPropertyForm").classList.remove("hidden");
 });
 
-document.getElementById("cancelAddPropertyButton").addEventListener("click", () => {
+  document.getElementById("cancelAddPropertyButton").addEventListener("click", () => {
   document.getElementById("addPropertyForm").classList.add("hidden");
   document.getElementById("addPropertyMessage").textContent = "";
 });
 // -- End of Button Add
 
 
-document.getElementById("newWorkOrderButtonTop").addEventListener("click", () => {
-  document.getElementById("emptyState").classList.add("hidden");
-  document.getElementById("detailWorkspace").classList.add("hidden");
-  document.getElementById("newWorkOrderForm").classList.remove("hidden");
-});
+
+const newWorkOrderButtonTop = document.getElementById("newWorkOrderButtonTop");
+if (newWorkOrderButtonTop) {
+  newWorkOrderButtonTop.addEventListener("click", () => {
+    document.getElementById("emptyState").classList.add("hidden");
+    document.getElementById("detailWorkspace").classList.add("hidden");
+    document.getElementById("newWorkOrderForm").classList.remove("hidden");
+  });
+}
+
+const cancelNewWorkOrderButton = document.getElementById("cancelNewWorkOrderButton");
+if (cancelNewWorkOrderButton) {
+  cancelNewWorkOrderButton.addEventListener("click", () => {
+    document.getElementById("newWorkOrderForm").classList.add("hidden");
+    document.getElementById("newWorkOrderMessage").textContent = "";
+    document.getElementById("emptyState").classList.remove("hidden");
+  });
+}
 
 
-document.getElementById("cancelNewWorkOrderButton").addEventListener("click", () => {
-  document.getElementById("newWorkOrderForm").classList.add("hidden");
-  document.getElementById("newWorkOrderMessage").textContent = "";
-  document.getelementbyid("emptyState").classList.remove("hidden");
-});
+
+
 
 document.getElementById("saveNewWorkOrderButton").addEventListener("click", createNewWorkOrder);
 
@@ -976,50 +996,19 @@ if (!selectedPropertyId) {
 
 
   
-document.addEventListener("DOMContentLoaded", () => {
-  loadWorkOrders();
+document.addEventListener("DOMContentLoaded",() => {
+loadWorkOrders();
 
+const propertySelect = document.getElementById("propertySelect");
+if (propertySelect) {
+  propertySelect.addEventListener("change", function) {
 
-  const cancelButton = document.getElementById("cancelNewWorkOrderButton");
-  const saveButton = document.getElementById("saveNewWorkOrderButton");
-  const form = document.getElementById("newWorkOrderForm");
-  
-  document.getElementById("propertySelect").addEventListener("change", function () {
-  selectedPropertyId = this.value;
-});
-
-  document.getElementById("cancelNewWorkOrderButton").addEventListener("click", () => {
-  document.getElementById("newWorkOrderForm").classList.add("hidden");
-  document.getelementbyid("newWorkOrderMessage").textContent = "";
-  document.getElementById("emptyState").classList.remove("hidden");
-
-
-
-  console.log("newWorkOrderButton:", newButton);
-  console.log("newWorkOrderForm:", form);
-
-  if (newButton && form) {
-    newButton.addEventListener("click", () => {
-      form.classList.remove("hidden");
-    });
-  }
-
-  if (cancelButton && form) {
-    cancelButton.addEventListener("click", () => {
-      form.classList.add("hidden");
-      document.getElementById("newWorkOrderMessage").textContent = "";
-    });
-  }
-
-  if (saveButton) {
-    saveButton.addEventListener("click", createNewWorkOrder);
-  }
- 
+    selectedPropertyId = this.value;
+  });
+}
 });
 
 
-  
-});
 
 
 // CUSTOMER SEARCH
@@ -1161,5 +1150,8 @@ async function createProperty() {
 
   
 </script>
+
+
+
 </body>
 </html>
