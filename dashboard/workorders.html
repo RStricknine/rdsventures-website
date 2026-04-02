@@ -1062,7 +1062,7 @@
     document.addEventListener("DOMContentLoaded", () => {
       showEmptyState();
       loadWorkOrders();
-   
+      loadCustomers();
 
       document.getElementById("workOrderSearch").addEventListener("input", () => {
         renderWorkOrderList(filterWorkOrders());
@@ -1102,7 +1102,7 @@
       document.getElementById("propertySelect").addEventListener("change", function () {
         selectedPropertyId = this.value || null;
 
-   loadCustomers();
+
 
       });
 
