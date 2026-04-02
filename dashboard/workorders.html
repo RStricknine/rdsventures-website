@@ -530,12 +530,8 @@ console.log("WORK ORDER OBJECT:", w);
 
   
  
-  // Header
-  
-
-
   // Overview fields
-  document.getElementById("dRowId").textContent = w.RowID ?? "";
+  //document.getElementById("dRowId").textContent = w.RowID ?? "";
   document.getElementById("dExternalWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
   document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
 
@@ -554,7 +550,14 @@ console.log("WORK ORDER OBJECT:", w);
 
   // --- EDITABLE FIELDS ---
 
-  
+  // Status dropdown (fixed)
+  const statusDropdown = document.getElementById("editStatus");
+
+  if ([...statusDropdown.options].some(o => o.value === statusValue)) {
+    statusDropdown.value = statusValue;
+  } else {
+    statusDropdown.value = "New"; // fallback if mismatch
+  }
 
   // Date inputs (must be YYYY-MM-DD)
   document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
