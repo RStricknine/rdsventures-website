@@ -189,7 +189,7 @@
   </section>
 <!--END OF NEW WORK ORDER FORM SECTION --> 
 
-  <!-- 🔹 BOTTOM PANEL (SCROLLABLE) -->
+<!-- 🔹 BOTTOM PANEL (SCROLLABLE) -->
   <div class="bg-white rounded-xl shadow p-6 flex-1 overflow-y-auto">
 
     <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
@@ -505,10 +505,7 @@ console.log("WORK ORDER OBJECT:", w);
   document.getElementById("newWorkOrderForm").classList.add("hidden");
 
   
-//document.getElementById("emptyState").classList.add("hidden");
-//document.getElementById("detailWorkspace").classList.remove("hidden");
-
-  
+ 
   // Header
   document.getElementById("selectedWorkOrderLabel").textContent = w.ExternalWorkOrderNumber ?? "";
 
@@ -870,13 +867,23 @@ document.getElementById("cancelAddPropertyButton").addEventListener("click", () 
 });
 // -- End of Button Add
 
-document.getElementById("newWorkOrderButton").addEventListener("click", () => {
+//
+//document.getElementById("newWorkOrderButton").addEventListener("click", () => {
+//  document.getElementById("newWorkOrderForm").classList.remove("hidden");
+//});
+//
+
+document.getElementById("newWorkOrderButtonTop").addEventListener("click", () => {
+  document.getElementById("emptyState").classList.add("hidden");
+  document.getElementById("detailWorkspace").classList.add("hidden");
   document.getElementById("newWorkOrderForm").classList.remove("hidden");
 });
+
 
 document.getElementById("cancelNewWorkOrderButton").addEventListener("click", () => {
   document.getElementById("newWorkOrderForm").classList.add("hidden");
   document.getElementById("newWorkOrderMessage").textContent = "";
+  document.getelementbyid("emptyState").classList.remove("hidden");
 });
 
 document.getElementById("saveNewWorkOrderButton").addEventListener("click", createNewWorkOrder);
@@ -972,7 +979,7 @@ if (!selectedPropertyId) {
 document.addEventListener("DOMContentLoaded", () => {
   loadWorkOrders();
 
-  const newButton = document.getElementById("newWorkOrderButton");
+//  const newButton = document.getElementById("newWorkOrderButton");
   const cancelButton = document.getElementById("cancelNewWorkOrderButton");
   const saveButton = document.getElementById("saveNewWorkOrderButton");
   const form = document.getElementById("newWorkOrderForm");
