@@ -23,6 +23,10 @@
     {
       "route": "/*",
       "allowedRoles": ["authenticated"]   
+    },
+    {
+      "route": "/",
+      "allowedRoles": ["anonymous"]
     }
   ],
   "responseOverrides": {
