@@ -266,6 +266,16 @@
             <section>
               <h3 class="text-lg font-semibold mb-3">Update Work Order</h3>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">External WO #</label>
+                    <input
+                    id="editExternalWorkOrderNumber"
+                    type="text"
+                    class="w-full border rounded-lg px-3 py-2"
+                    />
+                </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium mb-1">Status</label>
@@ -648,6 +658,9 @@ function resetNewWorkOrderForm() {
       document.getElementById("dContactPhone").textContent = w.ContactPhone ?? "";
       document.getElementById("dContactEmail").textContent = w.ContactEmail ?? "";
 
+document.getElementById("editExternalWorkOrderNumber").value =
+  w.ExternalWorkOrderNumber ?? "";
+
       const statusDropdown = document.getElementById("editStatus");
       if ([...statusDropdown.options].some(o => o.value === statusValue)) {
         statusDropdown.value = statusValue;
@@ -674,6 +687,7 @@ function resetNewWorkOrderForm() {
 
       const payload = {
         rowId: selectedWorkOrder.RowID,
+        externalWorkOrderNumber: document.getElementById("editExternalWorkOrderNumber").value.trim() || null,
         status: document.getElementById("editStatus").value,
         startDate: document.getElementById("editStartDate").value || null,
         endDate: document.getElementById("editEndDate").value || null,

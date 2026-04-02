@@ -22,7 +22,14 @@ async function getPool() {
 
 module.exports = async function (context, req) {
   try {
-    const { rowId, status, startDate, endDate, notes } = req.body || {};
+    const {
+      rowId,
+      externalWorkOrderNumber,
+      status,
+      startDate,
+      endDate,
+      notes
+    } = req.body || {};
 
     if (!rowId) {
       context.res = {
@@ -35,7 +42,8 @@ module.exports = async function (context, req) {
     const db = await getPool();
 
     await db.request()
-      .input("RowID", sql.Int, rowId)
+      .input("RowID", sql.Int, parseInt(rowId, 10))
+      .input("ExternalWorkOrderNumber", sql.NVarChar(100), externalWorkOrderNumber || null)
       .input("Status", sql.NVarChar(200), status || null)
       .input("StartDate", sql.DateTime2, startDate || null)
       .input("EndDate", sql.DateTime2, endDate || null)
@@ -43,6 +51,7 @@ module.exports = async function (context, req) {
       .query(`
         UPDATE dbo.stg_WorkOrders
         SET
+          ExternalWorkOrderNumber = @ExternalWorkOrderNumber,
           Status = @Status,
           StartDate = @StartDate,
           EndDate = @EndDate,
