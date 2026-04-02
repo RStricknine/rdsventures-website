@@ -30,7 +30,7 @@ module.exports = async function (context, req) {
     const db = await getPool();
 
     const result = await db.request().query(`
-      SELECT TOP 200
+      SELECT TOP 1500
           w.RowID,
           w.ExternalWorkOrderNumber,
           w.WorkOrderNumber,
