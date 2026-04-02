@@ -124,10 +124,20 @@
 
               <!-- PROPERTY -->
               <div>
-                <label class="block text-sm font-medium mb-1">Property</label>
-                <select id="propertySelect" class="w-full border rounded-lg px-3 py-2">
-                  <option value="">Select a customer first</option>
-                </select>
+  <label class="block text-sm font-medium mb-1">Property</label>
+
+  <input
+    id="propertySearch"
+    type="text"
+    placeholder="Select a customer first"
+    class="w-full border rounded-lg px-3 py-2"
+    autocomplete="off"
+    disabled
+  />
+
+  <div id="propertyResults"
+    class="border rounded-lg mt-1 max-h-48 overflow-y-auto hidden bg-white"
+  ></div>
 
                 <button id="showAddPropertyButton" type="button" class="mt-2 text-sm underline">
                   Add Property
@@ -376,6 +386,7 @@
     let selectedWorkOrder = null;
     let selectedCustomerId = null;
     let selectedPropertyId = null;
+    let customerProperties = [];
 
     function showEmptyState() {
       document.getElementById("emptyState").classList.remove("hidden");
@@ -397,14 +408,26 @@
       document.getElementById("selectedWorkOrderLabel").textContent = "Creating new work order";
     }
 
-   function resetNewWorkOrderForm() {
+
+
+
+
+
+function resetNewWorkOrderForm() {
   selectedCustomerId = null;
   selectedPropertyId = null;
+  customerProperties = [];
 
   document.getElementById("customerSelect").value = "";
 
-  const propertySelect = document.getElementById("propertySelect");
-  propertySelect.innerHTML = '<option value="">Select a customer first</option>';
+  const propertySearch = document.getElementById("propertySearch");
+  propertySearch.value = "";
+  propertySearch.disabled = true;
+  propertySearch.placeholder = "Select a customer first";
+
+  const propertyResults = document.getElementById("propertyResults");
+  propertyResults.innerHTML = "";
+  propertyResults.classList.add("hidden");
 
   document.getElementById("newExternalWorkOrderNumber").value = "";
   document.getElementById("newSubject").value = "";
@@ -423,6 +446,9 @@
   document.getElementById("addPropertyPostalCode").value = "";
   document.getElementById("addPropertyLockbox").value = "";
 }
+
+
+
 
     function getStatusClass(status) {
       switch ((status || "").trim()) {
@@ -897,44 +923,89 @@
       document.getElementById("imageModal").classList.add("hidden");
     }
 
-    async function loadPropertiesForCustomer(customerId) {
-      const select = document.getElementById("propertySelect");
-      select.innerHTML = '<option value="">Loading properties...</option>';
-      selectedPropertyId = null;
+  async function loadPropertiesForCustomer(customerId) {
+  const propertySearch = document.getElementById("propertySearch");
+  const propertyResults = document.getElementById("propertyResults");
 
-      try {
-        const res = await fetch(`/api/properties/byCustomer?customerId=${encodeURIComponent(customerId)}`);
-        const raw = await res.text();
+  selectedPropertyId = null;
+  customerProperties = [];
 
-        let properties = [];
-        try {
-          properties = raw ? JSON.parse(raw) : [];
-        } catch {
-          throw new Error(`Invalid JSON from properties API: ${raw || "(empty response)"}`);
-        }
+  propertySearch.value = "";
+  propertySearch.disabled = true;
+  propertySearch.placeholder = "Loading properties...";
+  propertyResults.innerHTML = "";
+  propertyResults.classList.add("hidden");
 
-        if (!res.ok) {
-          throw new Error("Failed to load properties.");
-        }
+  try {
+    const res = await fetch(`/api/properties/byCustomer?customerId=${encodeURIComponent(customerId)}`);
+    const raw = await res.text();
 
-        select.innerHTML = '<option value="">Select property</option>';
-
-        if (!Array.isArray(properties) || !properties.length) {
-          select.innerHTML = '<option value="">No properties found</option>';
-          return;
-        }
-
-        properties.forEach(p => {
-          const opt = document.createElement("option");
-          opt.value = p.PropertyId;
-          opt.textContent = p.Address || [p.Street, p.City, p.State, p.PostalCode].filter(Boolean).join(", ");
-          select.appendChild(opt);
-        });
-      } catch (err) {
-        console.error(err);
-        select.innerHTML = '<option value="">Failed to load properties</option>';
-      }
+    let properties = [];
+    try {
+      properties = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from properties API: ${raw || "(empty response)"}`);
     }
+
+    if (!res.ok) {
+      throw new Error("Failed to load properties.");
+    }
+
+    customerProperties = Array.isArray(properties) ? properties : [];
+
+    propertySearch.disabled = false;
+    propertySearch.placeholder = customerProperties.length
+      ? "Search property address..."
+      : "No properties found for this customer";
+
+    renderPropertyResults(customerProperties);
+  } catch (err) {
+    console.error(err);
+    propertySearch.disabled = false;
+    propertySearch.placeholder = "Failed to load properties";
+    propertyResults.innerHTML = "";
+    propertyResults.classList.add("hidden");
+  }
+}
+
+
+function renderPropertyResults(properties) {
+  const propertyResults = document.getElementById("propertyResults");
+  propertyResults.innerHTML = "";
+
+  if (!properties.length) {
+    propertyResults.innerHTML = `
+      <div class="px-3 py-2 text-sm text-slate-500">
+        No matching properties found.
+      </div>
+    `;
+    propertyResults.classList.remove("hidden");
+    return;
+  }
+
+  properties.forEach(p => {
+    const div = document.createElement("div");
+    div.className = "px-3 py-2 hover:bg-slate-100 cursor-pointer";
+
+    const addressText =
+      p.Address ||
+      [p.Street, p.City, p.State, p.PostalCode].filter(Boolean).join(", ");
+
+    div.textContent = addressText || `Property ${p.PropertyId}`;
+
+    div.addEventListener("click", () => {
+      document.getElementById("propertySearch").value = div.textContent;
+      selectedPropertyId = p.PropertyId;
+      propertyResults.classList.add("hidden");
+    });
+
+    propertyResults.appendChild(div);
+  });
+
+  propertyResults.classList.remove("hidden");
+}
+
+
 
     
     async function createNewWorkOrder() {
@@ -1050,10 +1121,23 @@
 
         await loadPropertiesForCustomer(selectedCustomerId);
 
-        if (data.propertyId) {
-          document.getElementById("propertySelect").value = String(data.propertyId);
-          selectedPropertyId = String(data.propertyId);
-        }
+if (data.propertyId) {
+  const newProperty = customerProperties.find(
+    p => String(p.PropertyId) === String(data.propertyId)
+  );
+
+  if (newProperty) {
+    const addressText =
+      newProperty.Address ||
+      [newProperty.Street, newProperty.City, newProperty.State, newProperty.PostalCode]
+        .filter(Boolean)
+        .join(", ");
+
+    document.getElementById("propertySearch").value = addressText;
+    selectedPropertyId = newProperty.PropertyId;
+    document.getElementById("propertyResults").classList.add("hidden");
+  }
+}
 
         document.getElementById("addPropertyForm").classList.add("hidden");
       } catch (err) {
@@ -1066,6 +1150,55 @@
       showEmptyState();
       loadWorkOrders();
       loadCustomers();
+
+
+const propertySearch = document.getElementById("propertySearch");
+const propertyResults = document.getElementById("propertyResults");
+
+if (propertySearch) {
+  propertySearch.addEventListener("input", function () {
+    const query = this.value.toLowerCase().trim();
+
+    selectedPropertyId = null;
+
+    const filtered = customerProperties.filter(p => {
+      const addressText = (
+        p.Address ||
+        [p.Street, p.City, p.State, p.PostalCode].filter(Boolean).join(", ")
+      ).toLowerCase();
+
+      return addressText.includes(query);
+    });
+
+    renderPropertyResults(filtered);
+  });
+
+  propertySearch.addEventListener("focus", function () {
+    if (customerProperties.length) {
+      renderPropertyResults(customerProperties);
+    }
+  });
+}
+
+document.addEventListener("click", (e) => {
+  const propertySearch = document.getElementById("propertySearch");
+  const propertyResults = document.getElementById("propertyResults");
+
+  if (!propertySearch || !propertyResults) return;
+
+  if (
+    e.target !== propertySearch &&
+    !propertyResults.contains(e.target)
+  ) {
+    propertyResults.classList.add("hidden");
+  }
+});
+
+
+
+
+
+
 
       document.getElementById("workOrderSearch").addEventListener("input", () => {
         renderWorkOrderList(filterWorkOrders());
