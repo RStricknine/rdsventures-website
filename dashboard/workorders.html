@@ -87,9 +87,12 @@
     </div>
 
     <!-- EMPTY STATE -->
-    <div id="emptyState" class="text-slate-500">
-      Select a work order or click "New Work Order".
-    </div>
+    <div id="emptyState" class="text-slate-500">Select a work order or click "New Work Order".</div>
+    <!-- END EMPTY STATE -->
+
+
+
+
 
     <!-- OVERVIEW -->
     <div id="detailWorkspace" class="hidden">
@@ -185,9 +188,15 @@
 
       <p id="newWorkOrderMessage" class="text-sm mt-2"></p>
     </div>
-
+<!-- WHERE AM I -->
   </section>
 <!--END OF NEW WORK ORDER FORM SECTION --> 
+
+
+
+
+
+
 
 <!-- 🔹 BOTTOM PANEL (SCROLLABLE) -->
   <div class="bg-white rounded-xl shadow p-6 flex-1 overflow-y-auto">
@@ -229,11 +238,9 @@
 
     
 <!-- END OF RIGHT SIDE PANEL (BOTH TOP AND BOTTOM -->
-          </div>
-        </section>
+  
 
-      </div>
-    </section>
+
 
   </div>
 </main>
@@ -870,11 +877,6 @@ document.getElementById("cancelAddPropertyButton").addEventListener("click", () 
 });
 // -- End of Button Add
 
-//
-//document.getElementById("newWorkOrderButton").addEventListener("click", () => {
-//  document.getElementById("newWorkOrderForm").classList.remove("hidden");
-//});
-//
 
 document.getElementById("newWorkOrderButtonTop").addEventListener("click", () => {
   document.getElementById("emptyState").classList.add("hidden");
@@ -974,24 +976,25 @@ if (!selectedPropertyId) {
 
 
   
-// --- document.addEventListener("DOMContentLoaded", loadWorkOrders);
-
-
-
-
 document.addEventListener("DOMContentLoaded", () => {
   loadWorkOrders();
 
-//  const newButton = document.getElementById("newWorkOrderButton");
+
   const cancelButton = document.getElementById("cancelNewWorkOrderButton");
   const saveButton = document.getElementById("saveNewWorkOrderButton");
   const form = document.getElementById("newWorkOrderForm");
   
   document.getElementById("propertySelect").addEventListener("change", function () {
   selectedPropertyId = this.value;
-
-    
 });
+
+  document.getElementById("cancelNewWorkOrderButton").addEventListener("click", () => {
+  document.getElementById("newWorkOrderForm").classList.add("hidden");
+  document.getelementbyid("newWorkOrderMessage").textContent = "";
+  document.getElementById("emptyState").classList.remove("hidden");
+
+
+
   console.log("newWorkOrderButton:", newButton);
   console.log("newWorkOrderForm:", form);
 
@@ -1011,19 +1014,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (saveButton) {
     saveButton.addEventListener("click", createNewWorkOrder);
   }
-
-
-
-document.getElementById("newWorkOrderButtonTop").addEventListener("click", () => {
-  document.getElementById("emptyState").classList.add("hidden");
-  document.getElementById("detailWorkspace").classList.add("hidden");
-
-  document.getElementById("newWorkOrderForm").classList.remove("hidden");
-});
-
-document.getElementById("cancelNewWorkOrderButton").addEventListener("click", () => {
-  document.getElementById("newWorkOrderForm").classList.add("hidden");
-  document.getElementById("emptyState").classList.remove("hidden");
+ 
 });
 
 
