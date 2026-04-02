@@ -8,14 +8,30 @@
       "route": "/servicerequest.html",
       "allowedRoles": ["anonymous"]
     },
+
+   
     {
       "route": "/api/service-request",
       "allowedRoles": ["anonymous"]
     },
+
+    
+    {
+      "route": "/api/service-request-list",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/service-request-convert",
+      "allowedRoles": ["authenticated"]
+    },
+
+  
     {
       "route": "/dashboard/*",
       "allowedRoles": ["authenticated"]
     },
+
+  
     {
       "route": "/*",
       "allowedRoles": ["authenticated"]
@@ -28,3 +44,4 @@
     }
   }
 }
+``
