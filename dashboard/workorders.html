@@ -923,7 +923,7 @@ function resetNewWorkOrderForm() {
       document.getElementById("imageModal").classList.add("hidden");
     }
 
-  async function loadPropertiesForCustomer(customerId) {
+ async function loadPropertiesForCustomer(customerId) {
   const propertySearch = document.getElementById("propertySearch");
   const propertyResults = document.getElementById("propertyResults");
 
@@ -1235,22 +1235,23 @@ document.addEventListener("click", (e) => {
 
     
 
-      document.getElementById("propertySelect").addEventListener("change", function () {
-        selectedPropertyId = this.value || null;
 
-
-
-      });
 
 const customerSelect = document.getElementById("customerSelect");
 if (customerSelect) {
   customerSelect.addEventListener("change", function () {
-    selectedCustomerId = this.value;
+    selectedCustomerId = this.value || null;
 
     if (!selectedCustomerId) {
       selectedPropertyId = null;
-      document.getElementById("propertySelect").innerHTML =
-        '<option value="">Select a customer first</option>';
+      customerProperties = [];
+
+      document.getElementById("propertySearch").value = "";
+      document.getElementById("propertySearch").disabled = true;
+      document.getElementById("propertySearch").placeholder = "Select a customer first";
+
+      document.getElementById("propertyResults").innerHTML = "";
+      document.getElementById("propertyResults").classList.add("hidden");
       return;
     }
 
