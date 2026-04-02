@@ -15,267 +15,340 @@
     <a href="/dashboard/servicerequests.html">Service Requests</a>
   </nav>
 
-<main class="max-w-[1600px] mx-auto p-6 h-[calc(100vh-72px)] overflow-hidden">
-  <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start h-full overflow-hidden">
+  <main class="max-w-[1600px] mx-auto p-6 h-[calc(100vh-72px)] overflow-hidden">
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start h-full overflow-hidden">
 
-    <!-- LEFT: WORK ORDER LIST -->
-    <section class="xl:col-span-4 bg-white rounded-xl shadow p-6 h-full overflow-hidden flex flex-col">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold">Work Orders</h2>
-        <button
-          id="newWorkOrderButton"
-          type="button"
-          class="bg-slate-800 text-white px-4 py-2 rounded-lg"
-        >
-          New Work Order
-        </button>
-      </div>
-
-      <div class="space-y-3 mb-4">
-        <input
-          id="workOrderSearch"
-          type="text"
-          placeholder="Search work orders..."
-          class="w-full border rounded-lg px-3 py-2"
-        />
-
-        <select id="statusFilter" class="w-full border rounded-lg px-3 py-2">
-          <option value="">All Statuses</option>
-          <option value="New">New</option>
-          <option value="Need to Schedule">Need to Schedule</option>
-          <option value="Scheduled">Scheduled</option>
-          <option value="Dispatched">Dispatched</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Billed">Billed</option>
-          <option value="Pending Invoice">Pending Invoice</option>
-          <option value="Warranty">Warranty</option>
-          <option value="Completed">Completed</option>
-          <option value="Canceled">Canceled</option>
-        </select>
-      </div>
-
-      <p id="workOrderListMessage" class="text-sm text-slate-500 mb-4"></p>
-
-      <div id="workOrderList" class="space-y-3 flex-1 overflow-y-auto pr-1"></div>
-    </section>
-
-    
-<!-- RIGHT SIDE PANEL -->
-<section class="xl:col-span-8 h-full flex flex-col overflow-hidden">
-
-  <!-- 🔹 TOP PANEL (STATIONARY) -->
-  <div class="bg-white rounded-xl shadow p-6 mb-6 min-h-[260px]">
-
-    <div class="flex items-center justify-between mb-4">
-      <h2 class="text-2xl font-bold">Work Order</h2>
-
-      <button
-        id="newWorkOrderButtonTop"
-        type="button"
-        class="bg-slate-800 text-white px-4 py-2 rounded-lg"
-      >
-        New Work Order
-      </button>
-    </div>
-
-    <!-- EMPTY STATE -->
-    <div id="emptyState" class="text-slate-500">Select a work order or click "New Work Order".</div>
-    <!-- END EMPTY STATE -->
-
-    <!-- OVERVIEW -->
-    <div id="detailWorkspace" class="hidden">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm">
-
-        <div><strong>WO # (Internal):</strong> <span id="dWorkOrderNumber"></span></div>
-        <div><strong>WO # (External):</strong> <span id="dExternalWorkOrderNumber"></span></div>
-
-        <div><strong>Customer:</strong> <span id="dCustomer"></span></div>
-        <div><strong>Property:</strong> <span id="dProperty"></span></div>
-
-        <div><strong>Status:</strong> <span id="dStatus"></span></div>
-        <div><strong>Priority:</strong> <span id="dPriority"></span></div>
-
-        <div><strong>Start Date:</strong> <span id="dStartDate"></span></div>
-        <div><strong>End Date:</strong> <span id="dEndDate"></span></div>
-
-        <div class="md:col-span-2"><strong>Subject:</strong> <span id="dSubject"></span></div>
-        <div class="md:col-span-2"><strong>Address:</strong> <span id="dAddress"></span></div>
-
-      </div>
-    </div>
-
-    <!-- NEW WORK ORDER FORM -->
-    <section id="newWorkOrderForm" class="hidden bg-white rounded-xl shadow p-6 w-full">
-        <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        <!-- CUSTOMER -->
-        <div>
-          <label class="block text-sm font-medium mb-1">Customer</label>
-          <input id="customerSearch" type="text" class="w-full border rounded-lg px-3 py-2" />
-          <div id="customerResults" class="border rounded-lg mt-1 max-h-40 overflow-y-auto hidden bg-white"></div>
-        </div>
-
-        <!-- PROPERTY -->
-        <div>
-          <label class="block text-sm font-medium mb-1">Property</label>
-          <select id="propertySelect" class="w-full border rounded-lg px-3 py-2">
-            <option value="">Select a customer first</option>
-          </select>
-
-          <button id="showAddPropertyButton" type="button" class="mt-2 text-sm underline">
-            Add Property
+      <!-- LEFT: WORK ORDER LIST -->
+      <section class="xl:col-span-4 bg-white rounded-xl shadow p-6 h-full overflow-hidden flex flex-col">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold">Work Orders</h2>
+          <button
+            id="newWorkOrderButton"
+            type="button"
+            class="bg-slate-800 text-white px-4 py-2 rounded-lg"
+          >
+            New Work Order
           </button>
         </div>
 
+        <div class="space-y-3 mb-4">
+          <input
+            id="workOrderSearch"
+            type="text"
+            placeholder="Search work orders..."
+            class="w-full border rounded-lg px-3 py-2"
+          />
 
-
-
-<div id="addPropertyForm" class="hidden md:col-span-2 border rounded-xl p-4 mt-2">
-  <h4 class="text-lg font-semibold mb-3">Add Property</h4>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="md:col-span-2">
-      <label class="block text-sm font-medium mb-1">Street</label>
-      <input id="addPropertyStreet" type="text" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">City</label>
-      <input id="addPropertyCity" type="text" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">State</label>
-      <input id="addPropertyState" type="text" maxlength="2" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">Postal Code</label>
-      <input id="addPropertyPostalCode" type="text" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">Lockbox</label>
-      <input id="addPropertyLockbox" type="text" class="w-full border rounded-lg px-3 py-2" />
-    </div>
-  </div>
-
-  <div class="mt-4 flex gap-3">
-    <button id="savePropertyButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-      Save Property
-    </button>
-    <button id="cancelAddPropertyButton" type="button" class="border px-4 py-2 rounded-lg">
-      Cancel
-    </button>
-  </div>
-
-  <p id="addPropertyMessage" class="text-sm mt-3"></p>
-</div>
-
-
-
-
-
-        
-        <div class="md:col-span-2">
-          <label class="block text-sm font-medium mb-1">Subject</label>
-          <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">Status</label>
-          <select id="newStatus" class="w-full border rounded-lg px-3 py-2">
+          <select id="statusFilter" class="w-full border rounded-lg px-3 py-2">
+            <option value="">All Statuses</option>
             <option value="New">New</option>
+            <option value="Need to Schedule">Need to Schedule</option>
+            <option value="Scheduled">Scheduled</option>
             <option value="Dispatched">Dispatched</option>
+            <option value="In Progress">In Progress</option>
             <option value="Billed">Billed</option>
+            <option value="Pending Invoice">Pending Invoice</option>
+            <option value="Warranty">Warranty</option>
+            <option value="Completed">Completed</option>
+            <option value="Canceled">Canceled</option>
           </select>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium mb-1">Priority</label>
-          <select id="newPriority" class="w-full border rounded-lg px-3 py-2">
-            <option value="Low">Low</option>
-            <option value="Medium" selected>Medium</option>
-            <option value="High">High</option>
-          </select>
+        <p id="workOrderListMessage" class="text-sm text-slate-500 mb-4"></p>
+        <div id="workOrderList" class="space-y-3 flex-1 overflow-y-auto pr-1"></div>
+      </section>
+
+      <!-- RIGHT SIDE -->
+      <section class="xl:col-span-8 h-full overflow-hidden flex flex-col gap-6">
+
+        <!-- TOP PANEL -->
+        <div class="bg-white rounded-xl shadow p-6 shrink-0">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-2xl font-bold">Work Order</h2>
+              <p id="selectedWorkOrderLabel" class="text-sm text-slate-500 mt-1">No work order selected.</p>
+            </div>
+
+            <button
+              id="newWorkOrderButtonTop"
+              type="button"
+              class="bg-slate-800 text-white px-4 py-2 rounded-lg"
+            >
+              New Work Order
+            </button>
+          </div>
+
+          <!-- EMPTY STATE -->
+          <div id="emptyState" class="text-slate-500">
+            Select a work order or click "New Work Order".
+          </div>
+
+          <!-- DETAIL WORKSPACE -->
+          <div id="detailWorkspace" class="hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+              <div><strong>WO # (Internal):</strong> <span id="dWorkOrderNumber"></span></div>
+              <div><strong>WO # (External):</strong> <span id="dExternalWorkOrderNumber"></span></div>
+
+              <div><strong>Customer:</strong> <span id="dCustomer"></span></div>
+              <div><strong>Property:</strong> <span id="dProperty"></span></div>
+
+              <div><strong>Status:</strong> <span id="dStatus"></span></div>
+              <div><strong>Priority:</strong> <span id="dPriority"></span></div>
+
+              <div><strong>Start Date:</strong> <span id="dStartDate"></span></div>
+              <div><strong>End Date:</strong> <span id="dEndDate"></span></div>
+
+              <div class="md:col-span-2"><strong>Subject:</strong> <span id="dSubject"></span></div>
+              <div class="md:col-span-2"><strong>Address:</strong> <span id="dAddress"></span></div>
+              <div class="md:col-span-2"><strong>Notes:</strong> <span id="dNotes"></span></div>
+
+              <div><strong>Contact Name:</strong> <span id="dContactName"></span></div>
+              <div><strong>Contact Type:</strong> <span id="dContactType"></span></div>
+              <div><strong>Contact Phone:</strong> <span id="dContactPhone"></span></div>
+              <div><strong>Contact Email:</strong> <span id="dContactEmail"></span></div>
+            </div>
+          </div>
+
+          <!-- NEW WORK ORDER FORM -->
+          <section id="newWorkOrderForm" class="hidden">
+            <h3 class="text-xl font-semibold mb-4">Create New Work Order</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- CUSTOMER -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Customer</label>
+                <input
+                  id="customerSearch"
+                  type="text"
+                  placeholder="Search customer..."
+                  class="w-full border rounded-lg px-3 py-2"
+                />
+                <div id="customerResults" class="border rounded-lg mt-1 max-h-40 overflow-y-auto hidden bg-white"></div>
+              </div>
+
+              <!-- PROPERTY -->
+              <div>
+                <label class="block text-sm font-medium mb-1">Property</label>
+                <select id="propertySelect" class="w-full border rounded-lg px-3 py-2">
+                  <option value="">Select a customer first</option>
+                </select>
+
+                <button id="showAddPropertyButton" type="button" class="mt-2 text-sm underline">
+                  Add Property
+                </button>
+              </div>
+
+              <!-- ADD PROPERTY FORM -->
+              <div id="addPropertyForm" class="hidden md:col-span-2 border rounded-xl p-4 mt-2">
+                <h4 class="text-lg font-semibold mb-3">Add Property</h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-medium mb-1">Street</label>
+                    <input id="addPropertyStreet" type="text" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium mb-1">City</label>
+                    <input id="addPropertyCity" type="text" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium mb-1">State</label>
+                    <input id="addPropertyState" type="text" maxlength="2" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium mb-1">Postal Code</label>
+                    <input id="addPropertyPostalCode" type="text" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium mb-1">Lockbox</label>
+                    <input id="addPropertyLockbox" type="text" class="w-full border rounded-lg px-3 py-2" />
+                  </div>
+                </div>
+
+                <div class="mt-4 flex gap-3">
+                  <button id="savePropertyButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+                    Save Property
+                  </button>
+                  <button id="cancelAddPropertyButton" type="button" class="border px-4 py-2 rounded-lg">
+                    Cancel
+                  </button>
+                </div>
+
+                <p id="addPropertyMessage" class="text-sm mt-3"></p>
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-1">Subject</label>
+                <input id="newSubject" type="text" class="w-full border rounded-lg px-3 py-2" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-1">Status</label>
+                <select id="newStatus" class="w-full border rounded-lg px-3 py-2">
+                  <option value="New">New</option>
+                  <option value="Need to Schedule">Need to Schedule</option>
+                  <option value="Scheduled">Scheduled</option>
+                  <option value="Dispatched">Dispatched</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Pending Invoice">Pending Invoice</option>
+                  <option value="Billed">Billed</option>
+                  <option value="Warranty">Warranty</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Canceled">Canceled</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-1">Priority</label>
+                <select id="newPriority" class="w-full border rounded-lg px-3 py-2">
+                  <option value="Low">Low</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="High">High</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-1">Start Date</label>
+                <input id="newStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium mb-1">End Date</label>
+                <input id="newEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+              </div>
+
+              <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-1">Notes</label>
+                <textarea id="newNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
+              </div>
+            </div>
+
+            <div class="mt-4 flex gap-3">
+              <button id="saveNewWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+                Create Work Order
+              </button>
+
+              <button id="cancelNewWorkOrderButton" type="button" class="border px-4 py-2 rounded-lg">
+                Cancel
+              </button>
+            </div>
+
+            <p id="newWorkOrderMessage" class="text-sm mt-2"></p>
+          </section>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium mb-1">Start Date</label>
-          <input id="newStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+        <!-- BOTTOM PANEL -->
+        <div class="bg-white rounded-xl shadow p-6 flex-1 min-h-0 overflow-y-auto">
+          <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
+
+          <div id="workflowEmptyState" class="text-slate-500">
+            Select a work order to manage workflow.
+          </div>
+
+          <div id="workflowWorkspace" class="hidden space-y-8">
+
+            <!-- EDIT WORK ORDER -->
+            <section>
+              <h3 class="text-lg font-semibold mb-3">Update Work Order</h3>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-1">Status</label>
+                  <select id="editStatus" class="w-full border rounded-lg px-3 py-2">
+                    <option value="New">New</option>
+                    <option value="Need to Schedule">Need to Schedule</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Dispatched">Dispatched</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Pending Invoice">Pending Invoice</option>
+                    <option value="Billed">Billed</option>
+                    <option value="Warranty">Warranty</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Canceled">Canceled</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium mb-1">Start Date</label>
+                  <input id="editStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium mb-1">End Date</label>
+                  <input id="editEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
+                </div>
+
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium mb-1">Schedule / Notes</label>
+                  <textarea id="editScheduleNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <button id="saveWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+                  Save Changes
+                </button>
+              </div>
+
+              <p id="workOrderMessage" class="text-sm mt-2"></p>
+            </section>
+
+            <!-- PHOTO UPLOAD -->
+            <section>
+              <h3 class="text-lg font-semibold mb-3">Photos</h3>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm font-medium mb-1">Photo Type</label>
+                  <select id="photoType" class="w-full border rounded-lg px-3 py-2">
+                    <option value="Before">Before</option>
+                    <option value="After">After</option>
+                  </select>
+                </div>
+
+                <div class="md:col-span-2">
+                  <label class="block text-sm font-medium mb-1">Caption</label>
+                  <input id="caption" type="text" class="w-full border rounded-lg px-3 py-2" />
+                </div>
+
+                <div class="md:col-span-3">
+                  <label class="block text-sm font-medium mb-1">Choose Photo(s)</label>
+                  <input id="photoFile" type="file" accept="image/*" multiple class="w-full border rounded-lg px-3 py-2 bg-white" />
+                </div>
+              </div>
+
+              <div class="mt-4 flex gap-3">
+                <button id="uploadPhotoButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+                  Upload Photo(s)
+                </button>
+                <button id="loadPhotosButton" type="button" class="border px-4 py-2 rounded-lg">
+                  Refresh Photos
+                </button>
+              </div>
+
+              <p id="photoMessage" class="text-sm mt-2"></p>
+
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <h4 class="text-md font-semibold mb-3">Before Photos</h4>
+                  <div id="beforePhotoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                </div>
+
+                <div>
+                  <h4 class="text-md font-semibold mb-3">After Photos</h4>
+                  <div id="afterPhotoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">End Date</label>
-          <input id="newEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-        </div>
-
-      </div>
-
-      <div class="mt-4 flex gap-3">
-        <button id="saveNewWorkOrderButton" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-          Create Work Order
-        </button>
-
-        <button id="cancelNewWorkOrderButton" class="border px-4 py-2 rounded-lg">
-          Cancel
-        </button>
-      </div>
-
-      <p id="newWorkOrderMessage" class="text-sm mt-2"></p>
+      </section>
     </div>
-<!-- WHERE AM I -->
-
-
-
-
-
-
-<!-- 🔹 BOTTOM PANEL (SCROLLABLE) -->
- <section class="xl:col-span-8 h-full flex flex-col overflow-hidden">
-
-
-  <div class="bg-white rounded-xl shadow p-6 mb-6 min-h-[300px]">
-
-    <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
-
-    <div id="workflowEmptyState" class="text-slate-500">
-      Select a work order to manage workflow.
-    </div>
-
-    <div id="workflowWorkspace" class="hidden">
-      <!-- your existing workflow UI stays here -->
-    </div>
-
-  </div>
-
-</section>
-
-
-</section>
-<!--END OF NEW WORK ORDER FORM SECTION --> 
-
-
-
-
-
-
-
-
-
-   
-
-
-  
-<!-- END OF RIGHT SIDE PANEL (BOTH TOP AND BOTTOM -->
-  
-
-
-
-  </div>
-</main>
-
+  </main>
 
   <!-- IMAGE MODAL -->
   <div id="imageModal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
@@ -297,870 +370,764 @@
     </div>
   </div>
 
-<script>
-let allWorkOrders = [];
-let selectedWorkOrder = null;
-let selectedCustomerId = null;
-let selectedPropertyId = null;
+  <script>
+    let allWorkOrders = [];
+    let selectedWorkOrder = null;
+    let selectedCustomerId = null;
+    let selectedPropertyId = null;
 
-document.getElementById("customerSearch").addEventListener("input", async function () {
-  const query = this.value.trim();
-
-  if (query.length < 2) {
-    document.getElementById("customerResults").classList.add("hidden");
-    return;
-  }
-
-  const res = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}`);
-  const customers = await res.json();
-
-  const results = document.getElementById("customerResults");
-  results.innerHTML = "";
-
-  customers.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "px-3 py-2 hover:bg-slate-100 cursor-pointer";
-    div.textContent = c.Name;
-
-    div.addEventListener("click", () => {
-      document.getElementById("customerSearch").value = c.Name;
-      selectedCustomerId = c.CustomerId;
-      results.classList.add("hidden");
-
-      loadPropertiesForCustomer(c.CustomerId);
-    });
-
-    results.appendChild(div);
-  });
-
-  results.classList.remove("hidden");
-});
-
-
-
-async function loadPropertiesForCustomer(customerId) {
-  const res = await fetch(`/api/properties/byCustomer?customerId=${customerId}`);
-  const properties = await res.json();
-
-  const select = document.getElementById("propertySelect");
-  select.innerHTML = '<option value="">Select property</option>';
-
-
-
-  
-  properties.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p.PropertyId;
-    opt.textContent = p.Address;
-    select.appendChild(opt);
-  });
-}
-
-  // --- Helper function
-function getStatusClass(status) {
-  switch ((status || "").trim()) {
-    case "New":
-      // --- return "bg-gray-200 text-gray-800";
-      return "bg-yellow-200 text-yellow-900";
-    case "Need to Schedule":
-      return "bg-yellow-200 text-yellow-900";
-
-    case "Scheduled":
-      return "bg-blue-200 text-blue-900";
-
-    case "Dispatched":
-      return "bg-purple-200 text-purple-900";
-
-    case "In Progress":
-      return "bg-indigo-200 text-indigo-900";
-
-    case "Pending Invoice":
-      return "bg-orange-200 text-orange-900";
-
-    case "Billed":
-      return "bg-green-200 text-green-900";
-
-    case "Completed":
-      return "bg-green-100 text-green-800";
-
-    case "Warranty":
-      return "bg-teal-200 text-teal-900";
-
-    case "Canceled":
-      return "bg-red-200 text-red-900";
-
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-}
-
-async function loadWorkOrders() {
-  const listMessage = document.getElementById("workOrderListMessage");
-  listMessage.textContent = "Loading work orders...";
-
-try {
-  const res = await fetch("/api/workorders/list");
-  const raw = await res.text();
-
-  let data = [];
-  try {
-    data = raw ? JSON.parse(raw) : [];
-  } catch {
-    throw new Error(`Invalid JSON from /api/workorders/list: ${raw || "(empty response)"}`);
-  }
-
-  if (!res.ok) {
-    throw new Error(data.message || data.error || "Failed to load work orders");
-  }
-
-  allWorkOrders = Array.isArray(data) ? data : [];
-  renderWorkOrderList(allWorkOrders);
-} catch (err) {
-  console.error(err);
-  listMessage.textContent = err.message || "Failed to load work orders.";
-}
-}
-
-function renderWorkOrderList(workOrders) {
-  const list = document.getElementById("workOrderList");
-  const listMessage = document.getElementById("workOrderListMessage");
-
-  list.innerHTML = "";
-
-  if (!workOrders.length) {
-    listMessage.textContent = "No work orders found.";
-    return;
-  }
-
-  listMessage.textContent = `${workOrders.length} work order(s)`;
-
-  workOrders.forEach(w => {
-    const card = document.createElement("button");
-    card.type = "button";
-    card.className = "block w-full text-left border rounded-xl p-4 hover:bg-slate-50";
-
-    const isSelected = selectedWorkOrder && selectedWorkOrder.RowID === w.RowID;
-    if (isSelected) {
-      card.classList.add("ring-2", "ring-slate-400", "bg-slate-50");
+    function showEmptyState() {
+      document.getElementById("emptyState").classList.remove("hidden");
+      document.getElementById("detailWorkspace").classList.add("hidden");
+      document.getElementById("newWorkOrderForm").classList.add("hidden");
+      document.getElementById("workflowWorkspace").classList.add("hidden");
+      document.getElementById("workflowEmptyState").classList.remove("hidden");
+      document.getElementById("selectedWorkOrderLabel").textContent = "No work order selected.";
     }
 
-    card.innerHTML = `
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <div class="font-semibold text-slate-900">${w.ExternalWorkOrderNumber ?? "No WO #"}</div>
-          <div class="text-sm text-slate-600">${w.Subject ?? ""}</div>
-          <div class="text-sm text-slate-500 mt-1">${w.CustomerName ?? ""}</div>
-          <div class="text-xs text-slate-500 mt-1">${w.PropertyAddress || w.Address || ""}</div>
-        </div>
-        <div class="text-right">
-          <div class="text-xs rounded-full px-2 py-1 inline-block ${getStatusClass(w.Status)}">
-            ${w.Status ?? ""}
-          </div>
-          <div class="text-xs text-slate-500 mt-2">${formatDateOnly(w.StartDate)}</div>
-        </div>
-      </div>
-    `;
-
-    card.addEventListener("click", () => {
-      selectedWorkOrder = w;
+    function showNewWorkOrderForm() {
+      selectedWorkOrder = null;
       renderWorkOrderList(filterWorkOrders());
-      showWorkOrderDetails(w);
-    });
-
-    list.appendChild(card);
-  });
-}
-
-function filterWorkOrders() {
-  const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
-  const selectedStatus = document.getElementById("statusFilter").value;
-
-  return allWorkOrders.filter(w => {
-    const matchesSearch =
-      String(w.ExternalWorkOrderNumber || "").toLowerCase().includes(searchValue) ||
-      String(w.CustomerName || "").toLowerCase().includes(searchValue) ||
-      String(w.Subject || "").toLowerCase().includes(searchValue) ||
-      String(w.Address || "").toLowerCase().includes(searchValue);
-
-    const matchesStatus =
-      !selectedStatus || (w.Status || "").trim() === selectedStatus;
-
-    return matchesSearch && matchesStatus;
-  });
-}
-
-function showWorkOrderDetails(w) {
-
-
-const statusDropdown = document.getElementById("editStatus");
-if (statusDropdown) {
-  if ([...statusDropdown.options].some(o => o.value === statusValue)) {
-    statusDropdown.value = statusValue;
-  } else {
-    statusDropdown.value = "New";
-  }
-}
-
-const editStartDate = document.getElementById("editStartDate");
-if (editStartDate) editStartDate.value = toDateInputValue(w.StartDate);
-
-const editEndDate = document.getElementById("editEndDate");
-if (editEndDate) editEndDate.value = toDateInputValue(w.EndDate);
-
-const editScheduleNotes = document.getElementById("editScheduleNotes");
-if (editScheduleNotes) editScheduleNotes.value = w.Notes ?? "";
-
-
-
-
-
-
-console.log("WORK ORDER OBJECT:", w);
-  
-  // Normalize status (fixes case + whitespace issues)
-  const statusValue = (w.Status || "New").trim();
-
-  // Show workspace
-  document.getElementById("emptyState").classList.add("hidden");
-  document.getElementById("detailWorkspace").classList.remove("hidden");
-// New layout 
-  document.getElementById("workflowWorkspace").classList.remove("hidden");
-  document.getElementById("workflowEmptyState").classList.add("hidden");
-  document.getElementById("newWorkOrderForm").classList.add("hidden");
-
-  
- 
-  // Overview fields
-  //document.getElementById("dRowId").textContent = w.RowID ?? "";
-  document.getElementById("dExternalWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
-  document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
-
-  document.getElementById("dProperty").textContent =
-    w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;
-
-  document.getElementById("dStatus").textContent = statusValue;
-  document.getElementById("dPriority").textContent = w.Priority ?? "";
-
-  document.getElementById("dStartDate").textContent = formatDateOnly(w.StartDate);
-  document.getElementById("dEndDate").textContent = formatDateOnly(w.EndDate);
-
-  document.getElementById("dSubject").textContent = w.Subject ?? "";
-  document.getElementById("dAddress").textContent = w.Address ?? "";
-  document.getElementById("dNotes").textContent = w.Notes ?? "";
-
-  // --- EDITABLE FIELDS ---
-
-  // Status dropdown (fixed)
-  const statusDropdown = document.getElementById("editStatus");
-
-  if ([...statusDropdown.options].some(o => o.value === statusValue)) {
-    statusDropdown.value = statusValue;
-  } else {
-    statusDropdown.value = "New"; // fallback if mismatch
-  }
-
-  // Date inputs (must be YYYY-MM-DD)
-  document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
-  document.getElementById("editEndDate").value = toDateInputValue(w.EndDate);
-
-  // Notes (used for scheduling notes in your UI)
-  document.getElementById("editScheduleNotes").value = w.Notes ?? "";
-
-  // Contact (placeholder until API is wired)
-  document.getElementById("dContactName").textContent = w.ContactName ?? "";
-  document.getElementById("dContactType").textContent = w.ContactType ?? "";
-  document.getElementById("dContactPhone").textContent = w.ContactPhone ?? "";
-  document.getElementById("dContactEmail").textContent = w.ContactEmail ?? "";
-
-  // Load photos for this work order
-  loadPhotos();
-}
-   
-async function saveWorkOrderUpdates() {
-  const message = document.getElementById("workOrderMessage");
-
-  if (!selectedWorkOrder) {
-    message.textContent = "Select a work order first.";
-    return;
-  }
-
-  message.textContent = "Saving...";
-
-  const payload = {
-    rowId: selectedWorkOrder.RowID,
-    status: document.getElementById("editStatus").value,
-    startDate: document.getElementById("editStartDate").value || null,
-    endDate: document.getElementById("editEndDate").value || null,
-    notes: document.getElementById("editScheduleNotes").value.trim()
-  };
-
-  try {
-    const res = await fetch("/api/workorders/update", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const raw = await res.text();
-    let data = {};
-
-    try {
-      data = raw ? JSON.parse(raw) : {};
-    } catch {
-      throw new Error(`Invalid JSON from update API: ${raw || "(empty response)"}`);
+      document.getElementById("emptyState").classList.add("hidden");
+      document.getElementById("detailWorkspace").classList.add("hidden");
+      document.getElementById("newWorkOrderForm").classList.remove("hidden");
+      document.getElementById("workflowWorkspace").classList.add("hidden");
+      document.getElementById("workflowEmptyState").classList.remove("hidden");
+      document.getElementById("selectedWorkOrderLabel").textContent = "Creating new work order";
     }
 
-    if (!res.ok) {
-      throw new Error(data.error || "Failed to save work order.");
+    function resetNewWorkOrderForm() {
+      selectedCustomerId = null;
+      selectedPropertyId = null;
+
+      document.getElementById("customerSearch").value = "";
+      document.getElementById("customerResults").innerHTML = "";
+      document.getElementById("customerResults").classList.add("hidden");
+
+      const propertySelect = document.getElementById("propertySelect");
+      propertySelect.innerHTML = '<option value="">Select a customer first</option>';
+
+      document.getElementById("newSubject").value = "";
+      document.getElementById("newStatus").value = "New";
+      document.getElementById("newPriority").value = "Medium";
+      document.getElementById("newStartDate").value = "";
+      document.getElementById("newEndDate").value = "";
+      document.getElementById("newNotes").value = "";
+      document.getElementById("newWorkOrderMessage").textContent = "";
+
+      document.getElementById("addPropertyForm").classList.add("hidden");
+      document.getElementById("addPropertyMessage").textContent = "";
+      document.getElementById("addPropertyStreet").value = "";
+      document.getElementById("addPropertyCity").value = "";
+      document.getElementById("addPropertyState").value = "";
+      document.getElementById("addPropertyPostalCode").value = "";
+      document.getElementById("addPropertyLockbox").value = "";
     }
 
-    message.textContent = "Work order updated successfully.";
-
-    await loadWorkOrders();
-
-    const updated = allWorkOrders.find(x => x.RowID === selectedWorkOrder.RowID);
-    if (updated) {
-      selectedWorkOrder = updated;
-      renderWorkOrderList(filterWorkOrders());
-      showWorkOrderDetails(updated);
+    function getStatusClass(status) {
+      switch ((status || "").trim()) {
+        case "New":
+        case "Need to Schedule":
+          return "bg-yellow-200 text-yellow-900";
+        case "Scheduled":
+          return "bg-blue-200 text-blue-900";
+        case "Dispatched":
+          return "bg-purple-200 text-purple-900";
+        case "In Progress":
+          return "bg-indigo-200 text-indigo-900";
+        case "Pending Invoice":
+          return "bg-orange-200 text-orange-900";
+        case "Billed":
+          return "bg-green-200 text-green-900";
+        case "Completed":
+          return "bg-green-100 text-green-800";
+        case "Warranty":
+          return "bg-teal-200 text-teal-900";
+        case "Canceled":
+          return "bg-red-200 text-red-900";
+        default:
+          return "bg-gray-100 text-gray-700";
+      }
     }
-  } catch (err) {
-    console.error(err);
-    message.textContent = err.message || "Failed to save work order.";
-  }
-}
 
-async function uploadPhoto() {
-  const message = document.getElementById("photoMessage");
-  message.textContent = "Uploading...";
-
-  if (!selectedWorkOrder) {
-    message.textContent = "Select a work order first.";
-    return;
-  }
-
-  const photoType = document.getElementById("photoType").value;
-  const caption = document.getElementById("caption").value.trim();
-  const fileInput = document.getElementById("photoFile");
-  const files = Array.from(fileInput.files || []);
-
-  if (!files.length) {
-    message.textContent = "Please choose one or more photos.";
-    return;
-  }
-
-  try {
-    let successCount = 0;
-
-    for (const file of files) {
-      const contentBase64 = await resizeImage(file);
-
-      const payload = {
-        workOrderRowId: parseInt(selectedWorkOrder.RowID, 10),
-        photoType,
-        fileName: file.name,
-        contentBase64,
-        caption,
-        uploadedBy: "dashboard-user"
-      };
-
-      const res = await fetch("/api/workorders/photos/upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const raw = await res.text();
-      let data = {};
+    async function loadWorkOrders() {
+      const listMessage = document.getElementById("workOrderListMessage");
+      listMessage.textContent = "Loading work orders...";
 
       try {
-        data = raw ? JSON.parse(raw) : {};
-      } catch {
-        throw new Error(`Invalid JSON from upload API: ${raw || "(empty response)"}`);
+        const res = await fetch("/api/workorders/list");
+        const raw = await res.text();
+
+        let data = [];
+        try {
+          data = raw ? JSON.parse(raw) : [];
+        } catch {
+          throw new Error(`Invalid JSON from /api/workorders/list: ${raw || "(empty response)"}`);
+        }
+
+        if (!res.ok) {
+          throw new Error(data.message || data.error || "Failed to load work orders");
+        }
+
+        allWorkOrders = Array.isArray(data) ? data : [];
+        renderWorkOrderList(filterWorkOrders());
+      } catch (err) {
+        console.error(err);
+        listMessage.textContent = err.message || "Failed to load work orders.";
+      }
+    }
+
+    function renderWorkOrderList(workOrders) {
+      const list = document.getElementById("workOrderList");
+      const listMessage = document.getElementById("workOrderListMessage");
+
+      list.innerHTML = "";
+
+      if (!workOrders.length) {
+        listMessage.textContent = "No work orders found.";
+        return;
       }
 
-      if (!res.ok) {
-        throw new Error(data.error || `Upload failed for ${file.name}`);
+      listMessage.textContent = `${workOrders.length} work order(s)`;
+
+      workOrders.forEach(w => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "block w-full text-left border rounded-xl p-4 hover:bg-slate-50";
+
+        const isSelected = selectedWorkOrder && selectedWorkOrder.RowID === w.RowID;
+        if (isSelected) {
+          card.classList.add("ring-2", "ring-slate-400", "bg-slate-50");
+        }
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <div class="font-semibold text-slate-900">${w.ExternalWorkOrderNumber ?? "No WO #"}</div>
+              <div class="text-sm text-slate-600">${w.Subject ?? ""}</div>
+              <div class="text-sm text-slate-500 mt-1">${w.CustomerName ?? ""}</div>
+              <div class="text-xs text-slate-500 mt-1">${w.PropertyAddress || w.Address || ""}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs rounded-full px-2 py-1 inline-block ${getStatusClass(w.Status)}">
+                ${w.Status ?? ""}
+              </div>
+              <div class="text-xs text-slate-500 mt-2">${formatDateOnly(w.StartDate)}</div>
+            </div>
+          </div>
+        `;
+
+        card.addEventListener("click", () => {
+          selectedWorkOrder = w;
+          renderWorkOrderList(filterWorkOrders());
+          showWorkOrderDetails(w);
+        });
+
+        list.appendChild(card);
+      });
+    }
+
+    function filterWorkOrders() {
+      const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
+      const selectedStatus = document.getElementById("statusFilter").value;
+
+      return allWorkOrders.filter(w => {
+        const matchesSearch =
+          String(w.ExternalWorkOrderNumber || "").toLowerCase().includes(searchValue) ||
+          String(w.WorkOrderNumber || "").toLowerCase().includes(searchValue) ||
+          String(w.CustomerName || "").toLowerCase().includes(searchValue) ||
+          String(w.Subject || "").toLowerCase().includes(searchValue) ||
+          String(w.PropertyAddress || "").toLowerCase().includes(searchValue) ||
+          String(w.Address || "").toLowerCase().includes(searchValue);
+
+        const matchesStatus =
+          !selectedStatus || (w.Status || "").trim() === selectedStatus;
+
+        return matchesSearch && matchesStatus;
+      });
+    }
+
+    function showWorkOrderDetails(w) {
+      const statusValue = (w.Status || "New").trim();
+
+      document.getElementById("emptyState").classList.add("hidden");
+      document.getElementById("newWorkOrderForm").classList.add("hidden");
+      document.getElementById("detailWorkspace").classList.remove("hidden");
+      document.getElementById("workflowWorkspace").classList.remove("hidden");
+      document.getElementById("workflowEmptyState").classList.add("hidden");
+
+      document.getElementById("selectedWorkOrderLabel").textContent =
+        `Selected WO ${w.ExternalWorkOrderNumber || w.WorkOrderNumber || w.RowID || ""}`;
+
+      document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
+      document.getElementById("dExternalWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
+      document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
+      document.getElementById("dProperty").textContent =
+        w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;
+      document.getElementById("dStatus").textContent = statusValue;
+      document.getElementById("dPriority").textContent = w.Priority ?? "";
+      document.getElementById("dStartDate").textContent = formatDateOnly(w.StartDate);
+      document.getElementById("dEndDate").textContent = formatDateOnly(w.EndDate);
+      document.getElementById("dSubject").textContent = w.Subject ?? "";
+      document.getElementById("dAddress").textContent = w.Address ?? "";
+      document.getElementById("dNotes").textContent = w.Notes ?? "";
+      document.getElementById("dContactName").textContent = w.ContactName ?? "";
+      document.getElementById("dContactType").textContent = w.ContactType ?? "";
+      document.getElementById("dContactPhone").textContent = w.ContactPhone ?? "";
+      document.getElementById("dContactEmail").textContent = w.ContactEmail ?? "";
+
+      const statusDropdown = document.getElementById("editStatus");
+      if ([...statusDropdown.options].some(o => o.value === statusValue)) {
+        statusDropdown.value = statusValue;
+      } else {
+        statusDropdown.value = "New";
       }
 
-      successCount++;
-      message.textContent = `Uploaded ${successCount} of ${files.length}...`;
+      document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
+      document.getElementById("editEndDate").value = toDateInputValue(w.EndDate);
+      document.getElementById("editScheduleNotes").value = w.Notes ?? "";
+
+      loadPhotos();
     }
 
-    message.textContent = `${successCount} photo(s) uploaded successfully.`;
-    document.getElementById("photoFile").value = "";
-    document.getElementById("caption").value = "";
+    async function saveWorkOrderUpdates() {
+      const message = document.getElementById("workOrderMessage");
 
-    await loadPhotos();
-  } catch (err) {
-    console.error(err);
-    message.textContent = err.message || "Upload failed.";
-  }
-}
+      if (!selectedWorkOrder) {
+        message.textContent = "Select a work order first.";
+        return;
+      }
 
-async function loadPhotos() {
-  const beforeList = document.getElementById("beforePhotoList");
-  const afterList = document.getElementById("afterPhotoList");
-  const message = document.getElementById("photoMessage");
+      message.textContent = "Saving...";
 
-  beforeList.innerHTML = "";
-  afterList.innerHTML = "";
+      const payload = {
+        rowId: selectedWorkOrder.RowID,
+        status: document.getElementById("editStatus").value,
+        startDate: document.getElementById("editStartDate").value || null,
+        endDate: document.getElementById("editEndDate").value || null,
+        notes: document.getElementById("editScheduleNotes").value.trim()
+      };
 
-  if (!selectedWorkOrder) {
-    message.textContent = "Select a work order to load photos.";
-    return;
-  }
+      try {
+        const res = await fetch("/api/workorders/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
-  message.textContent = "Loading photos...";
+        const raw = await res.text();
+        let data = {};
 
-  try {
-    const res = await fetch(`/api/workorders/photos/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`);
-    const raw = await res.text();
-    let data = [];
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch {
+          throw new Error(`Invalid JSON from update API: ${raw || "(empty response)"}`);
+        }
 
-    try {
-      data = raw ? JSON.parse(raw) : [];
-    } catch {
-      throw new Error(`Invalid JSON from photo list API: ${raw || "(empty response)"}`);
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to save work order.");
+        }
+
+        message.textContent = "Work order updated successfully.";
+
+        await loadWorkOrders();
+
+        const updated = allWorkOrders.find(x => x.RowID === selectedWorkOrder.RowID);
+        if (updated) {
+          selectedWorkOrder = updated;
+          renderWorkOrderList(filterWorkOrders());
+          showWorkOrderDetails(updated);
+        }
+      } catch (err) {
+        console.error(err);
+        message.textContent = err.message || "Failed to save work order.";
+      }
     }
 
-    if (!res.ok) {
-      throw new Error(data.error || "Failed to load photos.");
+    async function uploadPhoto() {
+      const message = document.getElementById("photoMessage");
+      message.textContent = "Uploading...";
+
+      if (!selectedWorkOrder) {
+        message.textContent = "Select a work order first.";
+        return;
+      }
+
+      const photoType = document.getElementById("photoType").value;
+      const caption = document.getElementById("caption").value.trim();
+      const fileInput = document.getElementById("photoFile");
+      const files = Array.from(fileInput.files || []);
+
+      if (!files.length) {
+        message.textContent = "Please choose one or more photos.";
+        return;
+      }
+
+      try {
+        let successCount = 0;
+
+        for (const file of files) {
+          const contentBase64 = await resizeImage(file);
+
+          const payload = {
+            workOrderRowId: parseInt(selectedWorkOrder.RowID, 10),
+            photoType,
+            fileName: file.name,
+            contentBase64,
+            caption,
+            uploadedBy: "dashboard-user"
+          };
+
+          const res = await fetch("/api/workorders/photos/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const raw = await res.text();
+          let data = {};
+
+          try {
+            data = raw ? JSON.parse(raw) : {};
+          } catch {
+            throw new Error(`Invalid JSON from upload API: ${raw || "(empty response)"}`);
+          }
+
+          if (!res.ok) {
+            throw new Error(data.error || `Upload failed for ${file.name}`);
+          }
+
+          successCount++;
+          message.textContent = `Uploaded ${successCount} of ${files.length}...`;
+        }
+
+        message.textContent = `${successCount} photo(s) uploaded successfully.`;
+        document.getElementById("photoFile").value = "";
+        document.getElementById("caption").value = "";
+
+        await loadPhotos();
+      } catch (err) {
+        console.error(err);
+        message.textContent = err.message || "Upload failed.";
+      }
     }
 
-    const beforePhotos = data.filter(p => p.PhotoType === "Before");
-    const afterPhotos = data.filter(p => p.PhotoType === "After");
+    async function loadPhotos() {
+      const beforeList = document.getElementById("beforePhotoList");
+      const afterList = document.getElementById("afterPhotoList");
+      const message = document.getElementById("photoMessage");
 
-    renderPhotoList(beforePhotos, beforeList);
-    renderPhotoList(afterPhotos, afterList);
+      beforeList.innerHTML = "";
+      afterList.innerHTML = "";
 
-    message.textContent = `${data.length} photo(s) loaded.`;
-  } catch (err) {
-    console.error(err);
-    message.textContent = err.message || "Failed to load photos.";
-  }
-}
- 
-function renderPhotoList(photos, container) {
-  container.innerHTML = "";
+      if (!selectedWorkOrder) {
+        message.textContent = "Select a work order to load photos.";
+        return;
+      }
 
-  if (!photos.length) {
-    container.innerHTML = `<p class="text-sm text-slate-500">No photos found.</p>`;
-    return;
-  }
+      message.textContent = "Loading photos...";
 
-  photos.forEach(photo => {
-    const card = document.createElement("div");
-    card.className = "rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shadow-sm";
+      try {
+        const res = await fetch(`/api/workorders/photos/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`);
+        const raw = await res.text();
+        let data = [];
 
-    card.innerHTML = `
-      <button type="button" class="photo-preview-button block w-full text-left">
-        <img
-          src="${photo.ImageUrl}"
-          alt="${photo.FileName || "Work order photo"}"
-          class="w-full h-56 object-cover bg-slate-200"
-        />
-      </button>
+        try {
+          data = raw ? JSON.parse(raw) : [];
+        } catch {
+          throw new Error(`Invalid JSON from photo list API: ${raw || "(empty response)"}`);
+        }
 
-      <div class="p-3 space-y-1">
-        <div class="font-medium text-sm text-slate-900">${photo.FileName || ""}</div>
-        <div class="text-xs text-slate-500">${photo.Caption || ""}</div>
-        <div class="text-xs text-slate-400">${formatDateTime(photo.UploadedAt)}</div>
-      </div>
-    `;
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to load photos.");
+        }
 
-    const previewButton = card.querySelector(".photo-preview-button");
-    previewButton.addEventListener("click", () => {
-      openImageModal(photo.ImageUrl);
+        const beforePhotos = data.filter(p => p.PhotoType === "Before");
+        const afterPhotos = data.filter(p => p.PhotoType === "After");
+
+        renderPhotoList(beforePhotos, beforeList);
+        renderPhotoList(afterPhotos, afterList);
+
+        message.textContent = `${data.length} photo(s) loaded.`;
+      } catch (err) {
+        console.error(err);
+        message.textContent = err.message || "Failed to load photos.";
+      }
+    }
+
+    function renderPhotoList(photos, container) {
+      container.innerHTML = "";
+
+      if (!photos.length) {
+        container.innerHTML = `<p class="text-sm text-slate-500">No photos found.</p>`;
+        return;
+      }
+
+      photos.forEach(photo => {
+        const card = document.createElement("div");
+        card.className = "rounded-xl border border-slate-200 bg-slate-50 overflow-hidden shadow-sm";
+
+        card.innerHTML = `
+          <button type="button" class="photo-preview-button block w-full text-left">
+            <img
+              src="${photo.ImageUrl}"
+              alt="${photo.FileName || "Work order photo"}"
+              class="w-full h-56 object-cover bg-slate-200"
+            />
+          </button>
+
+          <div class="p-3 space-y-1">
+            <div class="font-medium text-sm text-slate-900">${photo.FileName || ""}</div>
+            <div class="text-xs text-slate-500">${photo.Caption || ""}</div>
+            <div class="text-xs text-slate-400">${formatDateTime(photo.UploadedAt)}</div>
+          </div>
+        `;
+
+        const previewButton = card.querySelector(".photo-preview-button");
+        previewButton.addEventListener("click", () => {
+          openImageModal(photo.ImageUrl);
+        });
+
+        container.appendChild(card);
+      });
+    }
+
+    async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+
+        reader.onload = e => {
+          img.src = e.target.result;
+        };
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const scale = Math.min(maxWidth / img.width, 1);
+
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          const base64 = canvas.toDataURL("image/jpeg", quality).split(",")[1];
+          resolve(base64);
+        };
+
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function formatDateOnly(value) {
+      if (!value) return "";
+      const dt = new Date(value);
+      if (Number.isNaN(dt.getTime())) return value;
+      return dt.toLocaleDateString();
+    }
+
+    function formatDateTime(value) {
+      if (!value) return "";
+      const dt = new Date(value);
+      if (Number.isNaN(dt.getTime())) return value;
+      return dt.toLocaleString();
+    }
+
+    function toDateInputValue(value) {
+      if (!value) return "";
+      const dt = new Date(value);
+      if (Number.isNaN(dt.getTime())) return "";
+      return dt.toISOString().slice(0, 10);
+    }
+
+    function openImageModal(imageUrl) {
+      document.getElementById("modalImage").src = imageUrl;
+      document.getElementById("imageModal").classList.remove("hidden");
+    }
+
+    function closeImageModal() {
+      document.getElementById("modalImage").src = "";
+      document.getElementById("imageModal").classList.add("hidden");
+    }
+
+    async function loadPropertiesForCustomer(customerId) {
+      const select = document.getElementById("propertySelect");
+      select.innerHTML = '<option value="">Loading properties...</option>';
+      selectedPropertyId = null;
+
+      try {
+        const res = await fetch(`/api/properties/byCustomer?customerId=${encodeURIComponent(customerId)}`);
+        const raw = await res.text();
+
+        let properties = [];
+        try {
+          properties = raw ? JSON.parse(raw) : [];
+        } catch {
+          throw new Error(`Invalid JSON from properties API: ${raw || "(empty response)"}`);
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to load properties.");
+        }
+
+        select.innerHTML = '<option value="">Select property</option>';
+
+        if (!Array.isArray(properties) || !properties.length) {
+          select.innerHTML = '<option value="">No properties found</option>';
+          return;
+        }
+
+        properties.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.PropertyId;
+          opt.textContent = p.Address || [p.Street, p.City, p.State, p.PostalCode].filter(Boolean).join(", ");
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        console.error(err);
+        select.innerHTML = '<option value="">Failed to load properties</option>';
+      }
+    }
+
+    async function customerSearchInputHandler() {
+      const query = this.value.trim();
+      const results = document.getElementById("customerResults");
+
+      if (query.length < 2) {
+        results.classList.add("hidden");
+        results.innerHTML = "";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}`);
+        const raw = await res.text();
+
+        let customers = [];
+        try {
+          customers = raw ? JSON.parse(raw) : [];
+        } catch {
+          throw new Error(`Invalid JSON from customer search API: ${raw || "(empty response)"}`);
+        }
+
+        if (!res.ok) {
+          throw new Error("Failed to search customers.");
+        }
+
+        results.innerHTML = "";
+
+        customers.forEach(c => {
+          const div = document.createElement("div");
+          div.className = "px-3 py-2 hover:bg-slate-100 cursor-pointer";
+          div.textContent = c.Name;
+
+          div.addEventListener("click", () => {
+            document.getElementById("customerSearch").value = c.Name;
+            selectedCustomerId = c.CustomerId;
+            selectedPropertyId = null;
+            results.classList.add("hidden");
+            loadPropertiesForCustomer(c.CustomerId);
+          });
+
+          results.appendChild(div);
+        });
+
+        results.classList.toggle("hidden", customers.length === 0);
+      } catch (err) {
+        console.error(err);
+        results.innerHTML = '<div class="px-3 py-2 text-sm text-red-600">Customer search failed.</div>';
+        results.classList.remove("hidden");
+      }
+    }
+
+    async function createNewWorkOrder() {
+      const message = document.getElementById("newWorkOrderMessage");
+
+      const payload = {
+        customerId: selectedCustomerId,
+        propertyId: selectedPropertyId,
+        subject: document.getElementById("newSubject").value.trim(),
+        status: document.getElementById("newStatus").value,
+        priority: document.getElementById("newPriority").value,
+        startDate: document.getElementById("newStartDate").value || null,
+        endDate: document.getElementById("newEndDate").value || null,
+        notes: document.getElementById("newNotes").value.trim()
+      };
+
+      if (!selectedCustomerId) {
+        message.textContent = "Select a customer.";
+        return;
+      }
+
+      if (!selectedPropertyId) {
+        message.textContent = "Select a property.";
+        return;
+      }
+
+      if (!payload.subject) {
+        message.textContent = "Subject is required.";
+        return;
+      }
+
+      message.textContent = "Creating...";
+
+      try {
+        const res = await fetch("/api/workorders/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const raw = await res.text();
+        let data = {};
+
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch {
+          throw new Error(`Invalid JSON from create API: ${raw || "(empty response)"}`);
+        }
+
+        if (!res.ok) {
+          throw new Error(data.message || data.error || "Failed to create work order.");
+        }
+
+        message.textContent = `Work order created successfully. RowID: ${data.rowId ?? ""}`;
+
+        resetNewWorkOrderForm();
+        document.getElementById("newWorkOrderForm").classList.add("hidden");
+
+        await loadWorkOrders();
+        showEmptyState();
+      } catch (err) {
+        console.error(err);
+        message.textContent = err.message || "Failed to create work order.";
+      }
+    }
+
+    async function saveProperty() {
+      const message = document.getElementById("addPropertyMessage");
+
+      if (!selectedCustomerId) {
+        message.textContent = "Select a customer first.";
+        return;
+      }
+
+      const payload = {
+        customerId: selectedCustomerId,
+        street: document.getElementById("addPropertyStreet").value.trim(),
+        city: document.getElementById("addPropertyCity").value.trim(),
+        state: document.getElementById("addPropertyState").value.trim(),
+        postalCode: document.getElementById("addPropertyPostalCode").value.trim(),
+        lockbox: document.getElementById("addPropertyLockbox").value.trim()
+      };
+
+      if (!payload.street) {
+        message.textContent = "Street is required.";
+        return;
+      }
+
+      message.textContent = "Saving property...";
+
+      try {
+        const res = await fetch("/api/properties/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const raw = await res.text();
+        let data = {};
+
+        try {
+          data = raw ? JSON.parse(raw) : {};
+        } catch {
+          throw new Error(`Invalid JSON from property create API: ${raw || "(empty response)"}`);
+        }
+
+        if (!res.ok) {
+          throw new Error(data.message || data.error || "Failed to save property.");
+        }
+
+        message.textContent = "Property saved successfully.";
+
+        await loadPropertiesForCustomer(selectedCustomerId);
+
+        if (data.propertyId) {
+          document.getElementById("propertySelect").value = String(data.propertyId);
+          selectedPropertyId = String(data.propertyId);
+        }
+
+        document.getElementById("addPropertyForm").classList.add("hidden");
+      } catch (err) {
+        console.error(err);
+        message.textContent = err.message || "Failed to save property.";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      showEmptyState();
+      loadWorkOrders();
+
+      document.getElementById("workOrderSearch").addEventListener("input", () => {
+        renderWorkOrderList(filterWorkOrders());
+      });
+
+      document.getElementById("statusFilter").addEventListener("change", () => {
+        renderWorkOrderList(filterWorkOrders());
+      });
+
+      document.getElementById("newWorkOrderButton").addEventListener("click", () => {
+        resetNewWorkOrderForm();
+        showNewWorkOrderForm();
+      });
+
+      document.getElementById("newWorkOrderButtonTop").addEventListener("click", () => {
+        resetNewWorkOrderForm();
+        showNewWorkOrderForm();
+      });
+
+      document.getElementById("cancelNewWorkOrderButton").addEventListener("click", () => {
+        resetNewWorkOrderForm();
+        showEmptyState();
+      });
+
+      document.getElementById("saveNewWorkOrderButton").addEventListener("click", createNewWorkOrder);
+      document.getElementById("saveWorkOrderButton").addEventListener("click", saveWorkOrderUpdates);
+      document.getElementById("uploadPhotoButton").addEventListener("click", uploadPhoto);
+      document.getElementById("loadPhotosButton").addEventListener("click", loadPhotos);
+      document.getElementById("closeImageModal").addEventListener("click", closeImageModal);
+
+      document.getElementById("imageModal").addEventListener("click", (e) => {
+        if (e.target.id === "imageModal") closeImageModal();
+      });
+
+      document.getElementById("customerSearch").addEventListener("input", customerSearchInputHandler);
+
+      document.getElementById("propertySelect").addEventListener("change", function () {
+        selectedPropertyId = this.value || null;
+      });
+
+      document.getElementById("showAddPropertyButton").addEventListener("click", () => {
+        const message = document.getElementById("addPropertyMessage");
+
+        if (!selectedCustomerId) {
+          message.textContent = "Select a customer first.";
+          document.getElementById("addPropertyForm").classList.remove("hidden");
+          return;
+        }
+
+        message.textContent = "";
+        document.getElementById("addPropertyForm").classList.remove("hidden");
+      });
+
+      document.getElementById("cancelAddPropertyButton").addEventListener("click", () => {
+        document.getElementById("addPropertyForm").classList.add("hidden");
+        document.getElementById("addPropertyMessage").textContent = "";
+      });
+
+      document.getElementById("savePropertyButton").addEventListener("click", saveProperty);
     });
-
-    container.appendChild(card);
-  });
-}
-
-async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = e => {
-      img.src = e.target.result;
-    };
-
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const scale = Math.min(maxWidth / img.width, 1);
-
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      const base64 = canvas.toDataURL("image/jpeg", quality).split(",")[1];
-      resolve(base64);
-    };
-
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function formatDateOnly(value) {
-  if (!value) return "";
-  const dt = new Date(value);
-  if (Number.isNaN(dt.getTime())) return value;
-  return dt.toLocaleDateString();
-}
-
-function formatDateTime(value) {
-  if (!value) return "";
-  const dt = new Date(value);
-  if (Number.isNaN(dt.getTime())) return value;
-  return dt.toLocaleString();
-}
-
-function toDateInputValue(value) {
-  if (!value) return "";
-  const dt = new Date(value);
-  if (Number.isNaN(dt.getTime())) return "";
-  return dt.toISOString().slice(0, 10);
-}
-
-function openImageModal(imageUrl) {
-  document.getElementById("modalImage").src = imageUrl;
-  document.getElementById("imageModal").classList.remove("hidden");
-}
-
-function closeImageModal() {
-  document.getElementById("modalImage").src = "";
-  document.getElementById("imageModal").classList.add("hidden");
-}
-
-document.getElementById("workOrderSearch").addEventListener("input", () => {
-  renderWorkOrderList(filterWorkOrders());
-});
-
-document.getElementById("statusFilter").addEventListener("change", () => {
-  renderWorkOrderList(filterWorkOrders());
-});
-
-
-const saveWorkOrderButton = document.getElementById("saveWorkOrderButton");
-if (saveWorkOrderButton) {
-  saveWorkOrderButton.addEventListener("click", saveWorkOrderUpdates);
-}
-
-const uploadPhotoButton = document.getElementById("uploadPhotoButton");
-if (uploadPhotoButton) {
-  uploadPhotoButton.addEventListener("click", uploadPhoto);
-}
-
-const loadPhotosButton = document.getElementById("loadPhotosButton");
-if (loadPhotosButton) {
-  loadPhotosButton.addEventListener("click", loadPhotos);
-}
-
-const closeImageModalButton = document.getElementById("closeImageModal");
-if (closeImageModalButton) {
-  closeImageModalButton.addEventListener("click", closeImageModal);
-}
-
-const imageModal = document.getElementById("imageModal");
-if (imageModal) {
-  imageModal.addEventListener("click", (e) => {
-    if (e.target.id === "imageModal") closeImageModal();
-  });
-}
-
-
-
-// -- Added to create a button for adding a property
-document.getElementById("showAddPropertyButton").addEventListener("click", () => {
-  const message = document.getElementById("addPropertyMessage");
-
-  if (!selectedCustomerId) {
-    message.textContent = "Select a customer first.";
-    document.getElementById("addPropertyForm").classList.remove("hidden");
-    return;
-  }
-
-  message.textContent = "";
-  document.getElementById("addPropertyForm").classList.remove("hidden");
-});
-
-  document.getElementById("cancelAddPropertyButton").addEventListener("click", () => {
-  document.getElementById("addPropertyForm").classList.add("hidden");
-  document.getElementById("addPropertyMessage").textContent = "";
-});
-// -- End of Button Add
-
-
-
-const newWorkOrderButtonTop = document.getElementById("newWorkOrderButtonTop");
-if (newWorkOrderButtonTop) {
-  newWorkOrderButtonTop.addEventListener("click", () => {
-    document.getElementById("emptyState").classList.add("hidden");
-    document.getElementById("detailWorkspace").classList.add("hidden");
-    document.getElementById("newWorkOrderForm").classList.remove("hidden");
-  });
-}
-
-const cancelNewWorkOrderButton = document.getElementById("cancelNewWorkOrderButton");
-if (cancelNewWorkOrderButton) {
-  cancelNewWorkOrderButton.addEventListener("click", () => {
-    document.getElementById("newWorkOrderForm").classList.add("hidden");
-    document.getElementById("newWorkOrderMessage").textContent = "";
-    document.getElementById("emptyState").classList.remove("hidden");
-  });
-}
-
-
-
-
-
-document.getElementById("saveNewWorkOrderButton").addEventListener("click", createNewWorkOrder);
-
-async function createNewWorkOrder() {
-  const message = document.getElementById("newWorkOrderMessage");
-
-  const payload = {
-   // customerId: document.getElementById("newCustomerId").value.trim(),
-   // propertyId: document.getElementById("newPropertyId").value.trim(),
-
-customerId: selectedCustomerId,
-propertyId: selectedPropertyId,
-    
-    subject: document.getElementById("newSubject").value.trim(),
-    status: document.getElementById("newStatus").value,
-    priority: document.getElementById("newPriority").value,
-    startDate: document.getElementById("newStartDate").value || null,
-    endDate: document.getElementById("newEndDate").value || null,
-    notes: document.getElementById("newNotes").value.trim()
-  };
-
-
-if (!selectedCustomerId) {
-  message.textContent = "Select a customer.";
-  return;
-}
-
-if (!selectedPropertyId) {
-  message.textContent = "Select a property.";
-  return;
-}
-
-
-
-  
-  if (!payload.customerId) {
-    message.textContent = "CustomerId is required.";
-    return;
-  }
-
-  if (!payload.propertyId) {
-    message.textContent = "PropertyId is required.";
-    return;
-  }
-
-  if (!payload.subject) {
-    message.textContent = "Subject is required.";
-    return;
-  }
-
-  message.textContent = "Creating...";
-
-  try {
-    const res = await fetch("/api/workorders/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    const raw = await res.text();
-    let data = {};
-
-    try {
-      data = raw ? JSON.parse(raw) : {};
-    } catch {
-      throw new Error(`Invalid JSON from create API: ${raw || "(empty response)"}`);
-    }
-
-    if (!res.ok) {
-      throw new Error(data.message || data.error || "Failed to create work order.");
-    }
-
-    message.textContent = `Work order created successfully. RowID: ${data.rowId}`;
-
-    document.getElementById("newWorkOrderForm").classList.add("hidden");
-
-    await loadWorkOrders();
-  } catch (err) {
-    console.error(err);
-    message.textContent = err.message || "Failed to create work order.";
-  }
-}
-
-
-
-  
-document.addEventListener("DOMContentLoaded",() => {
-loadWorkOrders();
-
-const propertySelect = document.getElementById("propertySelect");
-if (propertySelect) {
-  propertySelect.addEventListener("change", function (){
-
-    selectedPropertyId = this.value;
-  });
-}
-
-});
-
-//Fixed another formating issue
-
-
-
-
-// CUSTOMER SEARCH
-document.getElementById("customerSearch").addEventListener("input", async function () {
-  const query = this.value.trim();
-
-  if (query.length < 2) {
-    document.getElementById("customerResults").classList.add("hidden");
-    return;
-  }
-
-  const res = await fetch(`/api/customers/search?q=${encodeURIComponent(query)}`);
-  const customers = await res.json();
-
-  const results = document.getElementById("customerResults");
-  results.innerHTML = "";
-
-  customers.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "px-3 py-2 hover:bg-slate-100 cursor-pointer";
-    div.textContent = c.Name;
-
-    div.addEventListener("click", () => {
-      document.getElementById("customerSearch").value = c.Name;
-      selectedCustomerId = c.CustomerId;
-      results.classList.add("hidden");
-
-      loadPropertiesForCustomer(c.CustomerId);
-    });
-
-    results.appendChild(div);
-  });
-
-  results.classList.remove("hidden");
-});
-
-
-// LOAD PROPERTIES FUNCTION
-async function loadPropertiesForCustomer(customerId) {
-  const res = await fetch(`/api/properties/byCustomer?customerId=${customerId}`);
-  const properties = await res.json();
-
-  const select = document.getElementById("propertySelect");
-  select.innerHTML = '<option value="">Select property</option>';
-  
-// -- Line below added 
-  selectedPropertyId = null;
-// --
-  properties.forEach(p => {
-    const opt = document.createElement("option");
-    opt.value = p.PropertyId;
-    opt.textContent = p.Address;
-    select.appendChild(opt);
-  });
-}
-
-
-// -- Added for Step 4 of save property
-document.getElementById("savePropertyButton").addEventListener("click", createProperty);
-
-async function createProperty() {
-  const message = document.getElementById("addPropertyMessage");
-
-  if (!selectedCustomerId) {
-    message.textContent = "Select a customer first.";
-    return;
-  }
-
-  const street = document.getElementById("addPropertyStreet").value.trim();
-  const city = document.getElementById("addPropertyCity").value.trim();
-  const state = document.getElementById("addPropertyState").value.trim().toUpperCase();
-  const postalCode = document.getElementById("addPropertyPostalCode").value.trim();
-  const lockbox = document.getElementById("addPropertyLockbox").value.trim();
-
-  if (!street || !city || !state || !postalCode) {
-    message.textContent = "Street, City, State, and Postal Code are required.";
-    return;
-  }
-
-  if (message) message.textContent = "Saving property...";
-
-  const payload = {
-    customerId: selectedCustomerId,
-    street,
-    city,
-    state,
-    postalCode,
-    lockbox
-  };
-
-  try {
-    const res = await fetch("/api/properties/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const raw = await res.text();
-    let data = {};
-
-    try {
-      data = raw ? JSON.parse(raw) : {};
-    } catch {
-      throw new Error(`Invalid JSON from property create API: ${raw || "(empty response)"}`);
-    }
-
-    if (!res.ok) {
-      throw new Error(data.message || data.error || "Failed to create property.");
-    }
-
-   if (message) message.textContent = "Property created successfully.";
-
-    // Reload dropdown
-    await loadPropertiesForCustomer(selectedCustomerId);
-
-    // Auto-select new property
-    selectedPropertyId = String(data.propertyId);
-    document.getElementById("propertySelect").value = String(data.propertyId);
-
-    // Hide mini form
-    document.getElementById("addPropertyForm").classList.add("hidden");
-
-    // Clear fields
-    document.getElementById("addPropertyStreet").value = "";
-    document.getElementById("addPropertyCity").value = "";
-    document.getElementById("addPropertyState").value = "";
-    document.getElementById("addPropertyPostalCode").value = "";
-    document.getElementById("addPropertyLockbox").value = "";
-  } catch (err) {
-    console.error("Create property error:", err);
-   if (message) message.textContent = err.message || "Failed to create property.";
-  }
-}
-
-
-
-
-  
-</script>
-
+  </script>
 </body>
 </html>
