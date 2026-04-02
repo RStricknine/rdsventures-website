@@ -559,6 +559,8 @@
       document.getElementById("selectedWorkOrderLabel").textContent =
         `Selected WO ${w.ExternalWorkOrderNumber || w.WorkOrderNumber || w.RowID || ""}`;
 
+      document.getElementById("dWorkOrderNumber").textContent =
+        w.WorkOrderNumber ?? w.InternalWorkOrderNumber ?? "";  
       document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
       document.getElementById("dExternalWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
       document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
