@@ -233,7 +233,7 @@
       <p id="newWorkOrderMessage" class="text-sm mt-2"></p>
     </div>
 <!-- WHERE AM I -->
-  </section>
+</section>
 <!--END OF NEW WORK ORDER FORM SECTION --> 
 
 
@@ -243,6 +243,7 @@
 
 
 <!-- 🔹 BOTTOM PANEL (SCROLLABLE) -->
+ <section class="xl:col-span-8 h-full flex flex-col overflow-hidden">
   <div class="bg-white rounded-xl shadow p-6 flex-1 overflow-y-hidden">
 
     <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
@@ -1006,13 +1007,13 @@ if (!selectedPropertyId) {
 document.addEventListener("DOMContentLoaded",() => {
 loadWorkOrders();
 
-//const propertySelect = document.getElementById("propertySelect");
-//if (propertySelect) {
-//  propertySelect.addEventListener("change", function (){
+const propertySelect = document.getElementById("propertySelect");
+if (propertySelect) {
+  propertySelect.addEventListener("change", function (){
 
-//    selectedPropertyId = this.value;
-//  });
-//}
+    selectedPropertyId = this.value;
+  });
+}
 
 });
 
