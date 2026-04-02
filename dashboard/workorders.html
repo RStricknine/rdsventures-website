@@ -253,126 +253,183 @@
         </div>
 
         <!-- BOTTOM PANEL -->
-        <div class="bg-white rounded-xl shadow p-6 flex-1 min-h-0 overflow-y-auto">
-          <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
+ <div class="bg-white rounded-xl shadow p-6 flex-1 min-h-0 overflow-hidden">
+  <h2 class="text-2xl font-bold mb-4">Workflow & Notes</h2>
 
-          <div id="workflowEmptyState" class="text-slate-500">
-            Select a work order to manage workflow.
+  <div id="workflowEmptyState" class="text-slate-500">
+    Select a work order to manage workflow.
+  </div>
+
+  <div id="workflowWorkspace" class="hidden h-full min-h-0 flex flex-col">
+    <!-- Tabs -->
+    <div class="border-b mb-4 flex gap-2 shrink-0">
+      <button
+        type="button"
+        class="workflow-tab px-4 py-2 border-b-2 border-slate-800 font-medium text-slate-900"
+        data-tab="tab-details"
+      >
+        Details
+      </button>
+
+      <button
+        type="button"
+        class="workflow-tab px-4 py-2 border-b-2 border-transparent text-slate-500"
+        data-tab="tab-notes"
+      >
+        Notes
+      </button>
+
+      <button
+        type="button"
+        class="workflow-tab px-4 py-2 border-b-2 border-transparent text-slate-500"
+        data-tab="tab-photos"
+      >
+        Photos
+      </button>
+    </div>
+
+    <!-- Tab Panels -->
+    <div class="flex-1 min-h-0 overflow-y-auto">
+      <!-- DETAILS TAB -->
+      <div id="tab-details" class="workflow-tab-panel">
+        <section>
+          <h3 class="text-lg font-semibold mb-3">Update Work Order</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">External WO #</label>
+              <input
+                id="editExternalWorkOrderNumber"
+                type="text"
+                class="w-full border rounded-lg px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">Start Date</label>
+              <input
+                id="editStartDate"
+                type="date"
+                class="w-full border rounded-lg px-3 py-2"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">Status</label>
+              <select id="editStatus" class="w-full border rounded-lg px-3 py-2">
+                <option value="New">New</option>
+                <option value="Need to Schedule">Need to Schedule</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Dispatched">Dispatched</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Pending Invoice">Pending Invoice</option>
+                <option value="Billed">Billed</option>
+                <option value="Warranty">Warranty</option>
+                <option value="Completed">Completed</option>
+                <option value="Canceled">Canceled</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-1">End Date</label>
+              <input
+                id="editEndDate"
+                type="date"
+                class="w-full border rounded-lg px-3 py-2"
+              />
+            </div>
           </div>
 
-          <div id="workflowWorkspace" class="hidden space-y-8">
-
-
-
-
-
-            <!-- EDIT WORK ORDER -->
-            <section>
-              <h3 class="text-lg font-semibold mb-3">Update Work Order</h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium mb-1">External WO #</label>
-                    <input
-                    id="editExternalWorkOrderNumber"
-                    type="text"
-                    class="w-full border rounded-lg px-3 py-2"
-                    />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-1">Start Date</label>
-                  <input id="editStartDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-                </div>
-
-               <!-- <div class="grid grid-cols-1 md:grid-cols-2 gap-4">--> 
-                <div class="grid grid-cols-1></div>
-                    <div>
-                    <label class="block text-sm font-medium mb-1">Status</label>
-                    <select id="editStatus" class="w-full border rounded-lg px-3 py-2">
-                        <option value="New">New</option>
-                        <option value="Need to Schedule">Need to Schedule</option>
-                        <option value="Scheduled">Scheduled</option>
-                        <option value="Dispatched">Dispatched</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Pending Invoice">Pending Invoice</option>
-                        <option value="Billed">Billed</option>
-                        <option value="Warranty">Warranty</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Canceled">Canceled</option>
-                    </select>
-                    </div>
-
-
-
-                <div>
-                  <label class="block text-sm font-medium mb-1">End Date</label>
-                  <input id="editEndDate" type="date" class="w-full border rounded-lg px-3 py-2" />
-                </div>
-
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-medium mb-1">Schedule / Notes</label>
-                  <textarea id="editScheduleNotes" rows="4" class="w-full border rounded-lg px-3 py-2"></textarea>
-                </div>
-              </div>
-
-              <div class="mt-4">
-                <button id="saveWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-                  Save Changes
-                </button>
-              </div>
-
-              <p id="workOrderMessage" class="text-sm mt-2"></p>
-            </section>
-
-            <!-- PHOTO UPLOAD -->
-            <section>
-              <h3 class="text-lg font-semibold mb-3">Photos</h3>
-
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-sm font-medium mb-1">Photo Type</label>
-                  <select id="photoType" class="w-full border rounded-lg px-3 py-2">
-                    <option value="Before">Before</option>
-                    <option value="After">After</option>
-                  </select>
-                </div>
-
-                <div class="md:col-span-2">
-                  <label class="block text-sm font-medium mb-1">Caption</label>
-                  <input id="caption" type="text" class="w-full border rounded-lg px-3 py-2" />
-                </div>
-
-                <div class="md:col-span-3">
-                  <label class="block text-sm font-medium mb-1">Choose Photo(s)</label>
-                  <input id="photoFile" type="file" accept="image/*" multiple class="w-full border rounded-lg px-3 py-2 bg-white" />
-                </div>
-              </div>
-
-              <div class="mt-4 flex gap-3">
-                <button id="uploadPhotoButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-                  Upload Photo(s)
-                </button>
-                <button id="loadPhotosButton" type="button" class="border px-4 py-2 rounded-lg">
-                  Refresh Photos
-                </button>
-              </div>
-
-              <p id="photoMessage" class="text-sm mt-2"></p>
-
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                <div>
-                  <h4 class="text-md font-semibold mb-3">Before Photos</h4>
-                  <div id="beforePhotoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-                </div>
-
-                <div>
-                  <h4 class="text-md font-semibold mb-3">After Photos</h4>
-                  <div id="afterPhotoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-                </div>
-              </div>
-            </section>
+          <div class="mt-4">
+            <button id="saveWorkOrderButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+              Save Changes
+            </button>
           </div>
-        </div>
+
+          <p id="workOrderMessage" class="text-sm mt-2"></p>
+        </section>
+      </div>
+
+      <!-- NOTES TAB -->
+      <div id="tab-notes" class="workflow-tab-panel hidden">
+        <section>
+          <h3 class="text-lg font-semibold mb-3">Notes</h3>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">Schedule / Notes</label>
+            <textarea
+              id="editScheduleNotes"
+              rows="8"
+              class="w-full border rounded-lg px-3 py-2"
+            ></textarea>
+          </div>
+
+          <div class="mt-4">
+            <button id="saveNotesButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+              Save Notes
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- PHOTOS TAB -->
+      <div id="tab-photos" class="workflow-tab-panel hidden">
+        <section>
+          <h3 class="text-lg font-semibold mb-3">Photos</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Photo Type</label>
+              <select id="photoType" class="w-full border rounded-lg px-3 py-2">
+                <option value="Before">Before</option>
+                <option value="After">After</option>
+              </select>
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="block text-sm font-medium mb-1">Caption</label>
+              <input id="caption" type="text" class="w-full border rounded-lg px-3 py-2" />
+            </div>
+
+            <div class="md:col-span-3">
+              <label class="block text-sm font-medium mb-1">Choose Photo(s)</label>
+              <input
+                id="photoFile"
+                type="file"
+                accept="image/*"
+                multiple
+                class="w-full border rounded-lg px-3 py-2 bg-white"
+              />
+            </div>
+          </div>
+
+          <div class="mt-4 flex gap-3">
+            <button id="uploadPhotoButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+              Upload Photo(s)
+            </button>
+            <button id="loadPhotosButton" type="button" class="border px-4 py-2 rounded-lg">
+              Refresh Photos
+            </button>
+          </div>
+
+          <p id="photoMessage" class="text-sm mt-2"></p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div>
+              <h4 class="text-md font-semibold mb-3">Before Photos</h4>
+              <div id="beforePhotoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div>
+              <h4 class="text-md font-semibold mb-3">After Photos</h4>
+              <div id="afterPhotoList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
       </section>
     </div>
   </main>
@@ -664,8 +721,8 @@ function resetNewWorkOrderForm() {
       document.getElementById("dContactPhone").textContent = w.ContactPhone ?? "";
       document.getElementById("dContactEmail").textContent = w.ContactEmail ?? "";
 
-document.getElementById("editExternalWorkOrderNumber").value =
-  w.ExternalWorkOrderNumber ?? "";
+        document.getElementById("editExternalWorkOrderNumber").value =
+        w.ExternalWorkOrderNumber ?? "";
 
       const statusDropdown = document.getElementById("editStatus");
       if ([...statusDropdown.options].some(o => o.value === statusValue)) {
@@ -677,7 +734,7 @@ document.getElementById("editExternalWorkOrderNumber").value =
       document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
       document.getElementById("editEndDate").value = toDateInputValue(w.EndDate);
       document.getElementById("editScheduleNotes").value = w.Notes ?? "";
-
+showWorkOrderDetails
       loadPhotos();
     }
 
@@ -1225,7 +1282,27 @@ console.log("customerProperties after reload:", customerProperties);
 
 
 
+function activateWorkflowTab(tabId) {
+  document.querySelectorAll(".workflow-tab-panel").forEach(panel => {
+    panel.classList.add("hidden");
+  });
 
+  document.querySelectorAll(".workflow-tab").forEach(tab => {
+    tab.classList.remove("border-slate-800", "font-medium", "text-slate-900");
+    tab.classList.add("border-transparent", "text-slate-500");
+  });
+
+  const activePanel = document.getElementById(tabId);
+  if (activePanel) {
+    activePanel.classList.remove("hidden");
+  }
+
+  const activeTab = document.querySelector(`.workflow-tab[data-tab="${tabId}"]`);
+  if (activeTab) {
+    activeTab.classList.remove("border-transparent", "text-slate-500");
+    activeTab.classList.add("border-slate-800", "font-medium", "text-slate-900");
+  }
+}
 
 
 
@@ -1243,7 +1320,12 @@ console.log("customerProperties after reload:", customerProperties);
 
 const propertySearch = document.getElementById("propertySearch");
 const propertyResults = document.getElementById("propertyResults");
+const saveNotesButton = document.getElementById("saveNotesButton");
 
+
+if (saveNotesButton) {
+  saveNotesButton.addEventListener("click", saveWorkOrderUpdates);
+}
 if (propertySearch) {
   propertySearch.addEventListener("input", function () {
     const query = this.value.toLowerCase().trim();
@@ -1261,6 +1343,17 @@ if (propertySearch) {
 
     renderPropertyResults(filtered);
   });
+
+
+document.querySelectorAll(".workflow-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    activateWorkflowTab(tab.dataset.tab);
+  });
+});
+
+activateWorkflowTab("tab-details");
+
+
 
   propertySearch.addEventListener("focus", function () {
     if (customerProperties.length) {
@@ -1368,6 +1461,16 @@ if (customerSelect) {
 
       document.getElementById("savePropertyButton").addEventListener("click", saveProperty);
     });
-  </script>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ </script>
 </body>
 </html>
