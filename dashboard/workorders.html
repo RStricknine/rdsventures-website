@@ -795,7 +795,8 @@
 
       document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
       document.getElementById("editEndDate").value = toDateInputValue(w.EndDate);
-      document.getElementById("editScheduleNotes").value = w.Notes ?? "";      
+
+}
       loadPhotos();
     }
 
@@ -1492,7 +1493,7 @@ console.log("customerProperties after reload:", customerProperties);
   }
 
   message.textContent = "Loading notes...";
-
+console.log("Loading note for RowID:", selectedWorkOrder?.RowID);
   try {
     const res = await fetch(`/api/workorders/notes/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`);
     const raw = await res.text();
@@ -1590,7 +1591,7 @@ console.log("customerProperties after reload:", customerProperties);
   try {
     console.log({workOrderRowId: selectedWorkOrder?.RowID,noteSource,noteType,noteText,contactName,contactPhone,contactEmail});
 
-
+console.log("Saving note for RowID:", selectedWorkOrder?.RowID);
     const res = await fetch("/api/workorders/notes/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
