@@ -647,7 +647,10 @@
       workOrders.forEach(w => {
         const card = document.createElement("button");
         card.type = "button";
-        card.className = "block w-full text-left border rounded-xl p-4 hover:bg-slate-50";
+        //card.className = "block w-full text-left border rounded-xl p-4 hover:bg-slate-50";
+
+        card.className = `rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition cursor-pointer ${selectedWorkOrder?.RowID === w.RowID ? 'ring-2 ring-slate-400' : ''}`;  
+
 
         const isSelected = selectedWorkOrder && selectedWorkOrder.RowID === w.RowID;
         if (isSelected) {
