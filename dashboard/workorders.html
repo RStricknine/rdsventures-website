@@ -448,7 +448,19 @@
     let customerProperties = [];
     let modalPhotos = [];
     let modalPhotoIndex = 0;
+    let selectedStatus = "all";
+    let searchTerm = "";
 
+
+    
+    const openStatuses = ["Warranty", "Dispatched"];
+    const params = new URLSearchParams(window.location.search);
+    const filter = params.get("filter");
+
+
+    if (filter === "open") {
+      selectedStatus = "open";
+    }
 
 
 
@@ -472,12 +484,7 @@
       document.getElementById("selectedWorkOrderLabel").textContent = "Creating new work order";
     }
 
-
-
-
-
-
-function resetNewWorkOrderForm() {
+    function resetNewWorkOrderForm() {
   selectedCustomerId = null;
   selectedPropertyId = null;
   customerProperties = [];
@@ -510,9 +517,6 @@ function resetNewWorkOrderForm() {
   document.getElementById("addPropertyPostalCode").value = "";
   document.getElementById("addPropertyLockbox").value = "";
 }
-
-
-
 
     function getStatusClass(status) {
       switch ((status || "").trim()) {
@@ -619,8 +623,10 @@ function resetNewWorkOrderForm() {
 
     function filterWorkOrders() {
       const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
-      const selectedStatus = document.getElementById("statusFilter").value;
+      const dropdownStatus = document.getElementById("statusFilter").value;
+      const activeStatus = dropdownStatus || selectedStatus;
 
+      
       return allWorkOrders.filter(w => {
         const matchesSearch =
           String(w.ExternalWorkOrderNumber || "").toLowerCase().includes(searchValue) ||
@@ -630,8 +636,15 @@ function resetNewWorkOrderForm() {
           String(w.PropertyAddress || "").toLowerCase().includes(searchValue) ||
           String(w.Address || "").toLowerCase().includes(searchValue);
 
-        const matchesStatus =
-          !selectedStatus || (w.Status || "").trim() === selectedStatus;
+          let matchesStatus = true;
+        
+
+        if (activeStatus === "open") {
+          matchesStatus = openStatuses.includes((w.Status || "").trim());
+        } else if (activeStatus && activeStatus !== "all" ) {
+          matchesStatus = (w.Status || "").trim() === activeStatus;
+        }
+
 
         return matchesSearch && matchesStatus;
       });
@@ -678,8 +691,6 @@ function resetNewWorkOrderForm() {
     select.innerHTML = '<option value="">Failed to load customers</option>';
   }
 }
-
-
 
     function showWorkOrderDetails(w) {
       const statusValue = (w.Status || "New").trim();
@@ -895,10 +906,6 @@ showWorkOrderDetails
       }
     }
 
-
-
-
-
    function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
@@ -935,13 +942,6 @@ showWorkOrderDetails
     container.appendChild(card);
   });
 }
-
-
-
-
-
-
-
 
     async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
       return new Promise((resolve, reject) => {
@@ -992,7 +992,7 @@ showWorkOrderDetails
       return dt.toISOString().slice(0, 10);
     }
 
- function openImageModalWithList(photos, index) {
+    function openImageModalWithList(photos, index) {
   if (!photos.length) return;
 
   modalPhotos = photos;
@@ -1002,7 +1002,7 @@ showWorkOrderDetails
   document.getElementById("imageModal").classList.remove("hidden");
 }
 
-function updateModalImage() {
+    function updateModalImage() {
   if (!modalPhotos.length) return;
 
   const photo = modalPhotos[modalPhotoIndex];
@@ -1022,21 +1022,21 @@ function updateModalImage() {
   }
 }
 
-function showPrevImage() {
+    function showPrevImage() {
   if (modalPhotoIndex > 0) {
     modalPhotoIndex--;
     updateModalImage();
   }
 }
 
-function showNextImage() {
+    function showNextImage() {
   if (modalPhotoIndex < modalPhotos.length - 1) {
     modalPhotoIndex++;
     updateModalImage();
   }
 }
 
-function closeImageModal() {
+    function closeImageModal() {
   document.getElementById("modalImage").src = "";
   document.getElementById("imageModal").classList.add("hidden");
   modalPhotos = [];
@@ -1048,7 +1048,7 @@ function closeImageModal() {
       document.getElementById("imageModal").classList.add("hidden");
     }
 
- async function loadPropertiesForCustomer(customerId) {
+    async function loadPropertiesForCustomer(customerId) {
   const propertySearch = document.getElementById("propertySearch");
   const propertyResults = document.getElementById("propertyResults");
 
@@ -1095,8 +1095,7 @@ function closeImageModal() {
   }
 }
 
-
-function renderPropertyResults(properties) {
+    function renderPropertyResults(properties) {
   const propertyResults = document.getElementById("propertyResults");
   propertyResults.innerHTML = "";
 
@@ -1132,9 +1131,6 @@ function renderPropertyResults(properties) {
   propertyResults.classList.remove("hidden");
 }
 
-
-
-    
     async function createNewWorkOrder() {
       const message = document.getElementById("newWorkOrderMessage");
 
@@ -1220,10 +1216,6 @@ const created = allWorkOrders.find(
         message.textContent = err.message || "Failed to create work order.";
       }
     }
-
-
-
-
 
     async function saveProperty() {
   const message = document.getElementById("addPropertyMessage");
@@ -1335,12 +1327,7 @@ console.log("customerProperties after reload:", customerProperties);
   }
 }
 
-
-
-
-
-
-function activateWorkflowTab(tabId) {
+    function activateWorkflowTab(tabId) {
   document.querySelectorAll(".workflow-tab-panel").forEach(panel => {
     panel.classList.add("hidden");
   });
@@ -1362,17 +1349,7 @@ function activateWorkflowTab(tabId) {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-async function loadStatuses() {
+    async function loadStatuses() {
   try {
     const res = await fetch("/api/workorders/statuses");
     const raw = await res.text();
@@ -1627,16 +1604,7 @@ document.addEventListener("keydown", (e) => {
 
 
     });
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- </script>
+
+ /script>
 </body>
 </html>
