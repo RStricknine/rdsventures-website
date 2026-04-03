@@ -453,7 +453,21 @@
 
 
     
-    const openStatuses = ["Warranty", "Dispatched"];
+    const openStatuses = [
+  "New",
+  "Need to Schedule",
+  "Scheduled",
+  "Dispatched",
+  "In Progress",
+  "Pending Invoice",
+  "Approved",
+  "Awaiting third party",
+  "In review",
+  "On hold",
+  "Pending estimate",
+  "Pending quality check",
+  "Warranty"
+];
     const params = new URLSearchParams(window.location.search);
     const filter = params.get("filter");
 
@@ -564,6 +578,8 @@
         }
 
         allWorkOrders = Array.isArray(data) ? data : [];
+          console.log("ALL:", allWorkOrders);
+          console.log("FILTERED:", filterWorkOrders());
         renderWorkOrderList(filterWorkOrders());
       } catch (err) {
         console.error(err);
@@ -622,8 +638,13 @@
     }
 
     function filterWorkOrders() {
-      const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
-      const dropdownStatus = document.getElementById("statusFilter").value;
+
+
+      const searchInput = document.getElementById("workOrderSearch");
+      const statusInput = document.getElementById("statusFilter");
+
+      const searchValue = (searchInput?.value || "").toLowerCase().trim();
+      const dropdownStatus = statusInput?.value || "";
       const activeStatus = dropdownStatus || selectedStatus;
 
       
@@ -701,16 +722,11 @@
       document.getElementById("workflowWorkspace").classList.remove("hidden");
       document.getElementById("workflowEmptyState").classList.add("hidden");
 
-      document.getElementById("selectedWorkOrderLabel").textContent =
-        `Selected WO ${w.ExternalWorkOrderNumber || w.WorkOrderNumber || w.RowID || ""}`;
-
-      document.getElementById("dWorkOrderNumber").textContent =
-        w.WorkOrderNumber ?? w.InternalWorkOrderNumber ?? "";  
-      document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? "";
+      document.getElementById("selectedWorkOrderLabel").textContent = `Selected WO ${w.ExternalWorkOrderNumber || w.WorkOrderNumber || w.RowID || ""}`;
+      document.getElementById("dWorkOrderNumber").textContent = w.WorkOrderNumber ?? w.InternalWorkOrderNumber ?? "";  
       document.getElementById("dExternalWorkOrderNumber").textContent = w.ExternalWorkOrderNumber ?? "";
       document.getElementById("dCustomer").textContent = w.CustomerName ?? "";
-      document.getElementById("dProperty").textContent =
-        w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;
+      document.getElementById("dProperty").textContent = w.PropertyAddress || `(PropertyId: ${w.PropertyId || "None"})`;
       document.getElementById("dStatus").textContent = statusValue;
       document.getElementById("dPriority").textContent = w.Priority ?? "";
       document.getElementById("dStartDate").textContent = formatDateOnly(w.StartDate);
@@ -735,8 +751,7 @@
 
       document.getElementById("editStartDate").value = toDateInputValue(w.StartDate);
       document.getElementById("editEndDate").value = toDateInputValue(w.EndDate);
-      document.getElementById("editScheduleNotes").value = w.Notes ?? "";
-showWorkOrderDetails
+      document.getElementById("editScheduleNotes").value = w.Notes ?? "";      
       loadPhotos();
     }
 
@@ -1042,11 +1057,6 @@ showWorkOrderDetails
   modalPhotos = [];
   modalPhotoIndex = 0;
 }
-
-    function closeImageModal() {
-      document.getElementById("modalImage").src = "";
-      document.getElementById("imageModal").classList.add("hidden");
-    }
 
     async function loadPropertiesForCustomer(customerId) {
   const propertySearch = document.getElementById("propertySearch");
