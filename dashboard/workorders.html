@@ -693,41 +693,32 @@ card.innerHTML = `
       });
     }
 
-    function filterWorkOrders() {
+   function filterWorkOrders() {
+  const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
+  const dropdownStatus = document.getElementById("statusFilter").value;
 
+  return allWorkOrders.filter(w => {
+    const matchesSearch =
+      String(w.ExternalWorkOrderNumber || "").toLowerCase().includes(searchValue) ||
+      String(w.WorkOrderNumber || "").toLowerCase().includes(searchValue) ||
+      String(w.CustomerName || "").toLowerCase().includes(searchValue) ||
+      String(w.Subject || "").toLowerCase().includes(searchValue) ||
+      String(w.PropertyAddress || "").toLowerCase().includes(searchValue) ||
+      String(w.Address || "").toLowerCase().includes(searchValue);
 
-      const searchInput = document.getElementById("workOrderSearch");
-      const statusInput = document.getElementById("statusFilter");
+    let matchesStatus = true;
 
-      const searchValue = (searchInput?.value || "").toLowerCase().trim();
-      const dropdownStatus = statusInput?.value || "";
-      const activeStatus = dropdownStatus || selectedStatus;
-
-      
-      return allWorkOrders.filter(w => {
-        const matchesSearch =
-          String(w.ExternalWorkOrderNumber || "").toLowerCase().includes(searchValue) ||
-          String(w.WorkOrderNumber || "").toLowerCase().includes(searchValue) ||
-          String(w.CustomerName || "").toLowerCase().includes(searchValue) ||
-          String(w.Subject || "").toLowerCase().includes(searchValue) ||
-          String(w.PropertyAddress || "").toLowerCase().includes(searchValue) ||
-          String(w.Address || "").toLowerCase().includes(searchValue);
-
-          let matchesStatus = true;
-        
-
-        if (activeStatus === "open") {
-          matchesStatus = OPEN_STATUSES.includes((w.Status || "").trim());
-        } else if (activeStatus && activeStatus !== "all" ) {
-          matchesStatus = (w.Status || "").trim() === activeStatus;
-        }
-
-
-        return matchesSearch && matchesStatus;
-      });
+    if (dropdownStatus === "open") {
+      matchesStatus = openStatuses.includes((w.Status || "").trim());
+    } else if (dropdownStatus && dropdownStatus !== "all") {
+      matchesStatus = (w.Status || "").trim() === dropdownStatus;
     }
 
-    async function loadCustomers() {
+    return matchesSearch && matchesStatus;
+  });
+}
+   
+async function loadCustomers() {
   const select = document.getElementById("customerSelect");
   if (!select) return;
 
