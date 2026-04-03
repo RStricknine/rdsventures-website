@@ -655,9 +655,9 @@
         }
 
 card.innerHTML = `
-  <div class="font-semibold text-slate-900">
-    ${w.ExternalWorkOrderNumber || "No WO #"}
-  </div>
+<div class="font-semibold text-slate-900">
+  ${w.ExternalWorkOrderNumber || w.WorkOrderNumber || w.InternalWorkOrderNumber || "No WO #"}
+</div>
 
   <div class="text-sm text-slate-500">
     ${w.Subject || ""}
