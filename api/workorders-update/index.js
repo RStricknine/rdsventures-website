@@ -67,7 +67,61 @@ module.exports = async function (context, req) {
           Notes = @Notes
         WHERE RowID = @RowID
       `);
+// Add automatic note if status changed (SAFE VERSION)
+try {
+  const parsedRowId = parseInt(rowId, 10);
 
+  // Get the updated status (after update)
+  const result = await db.request()
+    .input("RowID", sql.Int, parsedRowId)
+    .query(`
+      SELECT Status
+      FROM dbo.stg_WorkOrders
+      WHERE RowID = @RowID
+    `);
+
+  const updatedStatus = String(result.recordset[0]?.Status || "").trim();
+
+  const noteText = `Status changed to ${updatedStatus || "Blank"}.`;
+
+  await db.request()
+    .input("WorkOrderRowId", sql.Int, parsedRowId)
+    .input("NoteSource", sql.NVarChar(50), "System")
+    .input("NoteType", sql.NVarChar(50), "Update")
+    .input("Visibility", sql.NVarChar(50), "Internal")
+    .input("NoteText", sql.NVarChar(sql.MAX), noteText)
+    .input("CreatedBy", sql.NVarChar(100), "system")
+    .input("ContactName", sql.NVarChar(200), null)
+    .input("ContactPhone", sql.NVarChar(50), null)
+    .input("ContactEmail", sql.NVarChar(255), null)
+    .query(`
+      INSERT INTO dbo.WorkOrderNotes (
+        WorkOrderRowId,
+        NoteSource,
+        NoteType,
+        Visibility,
+        NoteText,
+        CreatedBy,
+        ContactName,
+        ContactPhone,
+        ContactEmail
+      )
+      VALUES (
+        @WorkOrderRowId,
+        @NoteSource,
+        @NoteType,
+        @Visibility,
+        @NoteText,
+        @CreatedBy,
+        @ContactName,
+        @ContactPhone,
+        @ContactEmail
+      )
+    `);
+
+} catch (noteError) {
+  context.log.error("Note insert failed (non-blocking):", noteError.message);
+}
     context.res = {
       status: 200,
       body: { message: "Work order updated successfully." }
