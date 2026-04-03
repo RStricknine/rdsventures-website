@@ -320,25 +320,69 @@
 
       <!-- NOTES TAB -->
       <div id="tab-notes" class="workflow-tab-panel hidden">
-        <section>
-          <h3 class="text-lg font-semibold mb-3">Notes</h3>
+  <section>
+    <h3 class="text-lg font-semibold mb-3">Notes</h3>
 
-          <div>
-            <label class="block text-sm font-medium mb-1">Schedule / Notes</label>
-            <textarea
-              id="editScheduleNotes"
-              rows="8"
-              class="w-full border rounded-lg px-3 py-2"
-            ></textarea>
-          </div>
-
-          <div class="mt-4">
-            <button id="saveNotesButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
-              Save Notes
-            </button>
-          </div>
-        </section>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div>
+        <label class="block text-sm font-medium mb-1">Note Source</label>
+        <select id="noteSource" class="w-full border rounded-lg px-3 py-2">
+          <option value="Office">Office</option>
+          <option value="Technician">Technician</option>
+          <option value="Homeowner">Homeowner</option>
+          <option value="Tenant">Tenant</option>
+        </select>
       </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Note Type</label>
+        <select id="noteType" class="w-full border rounded-lg px-3 py-2">
+          <option value="General">General</option>
+          <option value="Scheduling">Scheduling</option>
+          <option value="Update">Update</option>
+          <option value="Issue">Issue</option>
+          <option value="Completion">Completion</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Contact Name (optional)</label>
+        <input id="noteContactName" type="text" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Contact Phone (optional)</label>
+        <input id="noteContactPhone" type="text" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium mb-1">Contact Email (optional)</label>
+        <input id="noteContactEmail" type="text" class="w-full border rounded-lg px-3 py-2" />
+      </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium mb-1">New Note</label>
+        <textarea id="newNoteText" rows="5" class="w-full border rounded-lg px-3 py-2"></textarea>
+      </div>
+    </div>
+
+    <div class="flex gap-3 mb-4">
+      <button id="saveNoteButton" type="button" class="bg-slate-800 text-white px-4 py-2 rounded-lg">
+        Add Note
+      </button>
+      <button id="refreshNotesButton" type="button" class="border px-4 py-2 rounded-lg">
+        Refresh Notes
+      </button>
+    </div>
+
+    <p id="noteMessage" class="text-sm mt-2 mb-4"></p>
+
+    <div>
+      <h4 class="text-md font-semibold mb-3">Note History</h4>
+      <div id="workOrderNotesList" class="space-y-3"></div>
+    </div>
+  </section>
+</div>
 
       <!-- PHOTOS TAB -->
       <div id="tab-photos" class="workflow-tab-panel hidden">
@@ -453,7 +497,7 @@
 
 
     
-    const openStatuses = [
+    const OPEN_STATUSES = [
   "New",
   "Need to Schedule",
   "Scheduled",
@@ -661,7 +705,7 @@
         
 
         if (activeStatus === "open") {
-          matchesStatus = openStatuses.includes((w.Status || "").trim());
+          matchesStatus = OPEN_STATUSES.includes((w.Status || "").trim());
         } else if (activeStatus && activeStatus !== "all" ) {
           matchesStatus = (w.Status || "").trim() === activeStatus;
         }
@@ -738,9 +782,9 @@
       document.getElementById("dContactType").textContent = w.ContactType ?? "";
       document.getElementById("dContactPhone").textContent = w.ContactPhone ?? "";
       document.getElementById("dContactEmail").textContent = w.ContactEmail ?? "";
+      document.getElementById("editExternalWorkOrderNumber").value = w.ExternalWorkOrderNumber ?? "";
 
-        document.getElementById("editExternalWorkOrderNumber").value =
-        w.ExternalWorkOrderNumber ?? "";
+      loadWorkOrders
 
       const statusDropdown = document.getElementById("editStatus");
       if ([...statusDropdown.options].some(o => o.value === statusValue)) {
@@ -1436,6 +1480,162 @@ console.log("customerProperties after reload:", customerProperties);
   }
 }
 
+    async function loadWorkOrderNotes() {
+  const list = document.getElementById("workOrderNotesList");
+  const message = document.getElementById("noteMessage");
+
+  list.innerHTML = "";
+
+  if (!selectedWorkOrder) {
+    message.textContent = "Select a work order first.";
+    return;
+  }
+
+  message.textContent = "Loading notes...";
+
+  try {
+    const res = await fetch(`/api/workorders/notes/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`);
+    const raw = await res.text();
+
+    let data = [];
+    try {
+      data = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from /api/workorders/notes/list: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to load notes.");
+    }
+
+    renderWorkOrderNotes(data);
+    message.textContent = `${data.length} note(s) loaded.`;
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Failed to load notes.";
+  }
+}
+
+    function renderWorkOrderNotes(notes) {
+  const list = document.getElementById("workOrderNotesList");
+  list.innerHTML = "";
+
+  if (!notes.length) {
+    list.innerHTML = `<p class="text-sm text-slate-500">No notes found.</p>`;
+    return;
+  }
+
+  notes.forEach(note => {
+    const card = document.createElement("div");
+    card.className = "border rounded-xl p-4 bg-slate-50";
+
+    const createdAt = formatDateTime(note.CreatedAt);
+
+    card.innerHTML = `
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <div class="font-semibold text-slate-900">
+            ${note.NoteSource || ""} · ${note.NoteType || ""}
+          </div>
+          <div class="text-xs text-slate-500 mt-1">
+            ${createdAt}${note.CreatedBy ? ` · ${note.CreatedBy}` : ""}
+          </div>
+        </div>
+        <div class="text-xs px-2 py-1 rounded-full bg-slate-200 text-slate-700">
+          ${note.Visibility || "Internal"}
+        </div>
+      </div>
+
+      <div class="mt-3 text-sm text-slate-800 whitespace-pre-wrap">${note.NoteText || ""}</div>
+
+      ${
+        note.ContactName || note.ContactPhone || note.ContactEmail
+          ? `
+            <div class="mt-3 text-xs text-slate-500">
+              ${note.ContactName ? `Name: ${note.ContactName}<br>` : ""}
+              ${note.ContactPhone ? `Phone: ${note.ContactPhone}<br>` : ""}
+              ${note.ContactEmail ? `Email: ${note.ContactEmail}` : ""}
+            </div>
+          `
+          : ""
+      }
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+    async function saveWorkOrderNote() {
+  const message = document.getElementById("noteMessage");
+
+  if (!selectedWorkOrder) {
+    message.textContent = "Select a work order first.";
+    return;
+  }
+
+  const noteSource = document.getElementById("noteSource").value;
+  const noteType = document.getElementById("noteType").value;
+  const noteText = document.getElementById("newNoteText").value.trim();
+  const contactName = document.getElementById("noteContactName").value.trim();
+  const contactPhone = document.getElementById("noteContactPhone").value.trim();
+  const contactEmail = document.getElementById("noteContactEmail").value.trim();
+
+  if (!noteText) {
+    message.textContent = "Enter a note before saving.";
+    return;
+  }
+
+  message.textContent = "Saving note...";
+
+  try {
+    const res = await fetch("/api/workorders/notes/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        workOrderRowId: selectedWorkOrder.RowID,
+        noteSource,
+        noteType,
+        visibility: "Internal",
+        noteText,
+        createdBy: "dashboard-user",
+        contactName: contactName || null,
+        contactPhone: contactPhone || null,
+        contactEmail: contactEmail || null
+      })
+    });
+
+    const raw = await res.text();
+
+    let data = {};
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new Error(`Invalid JSON from /api/workorders/notes/create: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to save note.");
+    }
+
+    document.getElementById("newNoteText").value = "";
+    document.getElementById("noteContactName").value = "";
+    document.getElementById("noteContactPhone").value = "";
+    document.getElementById("noteContactEmail").value = "";
+
+    message.textContent = "Note added successfully.";
+    await loadWorkOrderNotes();
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Failed to save note.";
+  }
+}
+
+
+
+
+
+
+
 
 
 
@@ -1508,7 +1708,8 @@ document.addEventListener("click", (e) => {
 
 
 
-
+      document.getElementById("saveNoteButton").addEventListener("click", saveWorkOrderNote);
+      document.getElementById("refreshNotesButton").addEventListener("click", loadWorkOrderNotes);
 
       document.getElementById("workOrderSearch").addEventListener("input", () => {
         renderWorkOrderList(filterWorkOrders());
