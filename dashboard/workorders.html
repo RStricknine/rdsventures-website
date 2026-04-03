@@ -1588,6 +1588,9 @@ console.log("customerProperties after reload:", customerProperties);
   message.textContent = "Saving note...";
 
   try {
+    console.log({workOrderRowId: selectedWorkOrder?.RowID,noteSource,noteType,noteText,contactName,contactPhone,contactEmail});
+
+
     const res = await fetch("/api/workorders/notes/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1614,7 +1617,7 @@ console.log("customerProperties after reload:", customerProperties);
     }
 
     if (!res.ok) {
-      throw new Error(data.error || "Failed to save note.");
+      throw new Error(data.error || raw || "Failed to save note.");
     }
 
     document.getElementById("newNoteText").value = "";
