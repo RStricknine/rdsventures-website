@@ -813,60 +813,62 @@ card.innerHTML = `
       loadWorkOrderNotes()
 }
 
-    async function saveWorkOrderUpdates() {
-      const message = document.getElementById("workOrderMessage");
+async function saveWorkOrderUpdates() {
+  const message = document.getElementById("workOrderMessage");
 
-      if (!selectedWorkOrder) {
-        message.textContent = "Select a work order first.";
-        return;
-      }
+  if (!selectedWorkOrder) {
+    message.textContent = "Select a work order first.";
+    return;
+  }
 
-      message.textContent = "Saving...";
+  console.log("saveWorkOrderUpdates fired");
 
-      const payload = {
-        rowId: selectedWorkOrder.RowID,
-        externalWorkOrderNumber: document.getElementById("editExternalWorkOrderNumber").value.trim() || null,
-        status: document.getElementById("editStatus").value,
-        startDate: document.getElementById("editStartDate").value || null,
-        endDate: document.getElementById("editEndDate").value || null,
-        //notes: document.getElementById("editScheduleNotes").value.trim()
-      };
+  message.textContent = "Saving...";
 
-      try {
-        const res = await fetch("/api/workorders/update", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+  const payload = {
+    rowId: selectedWorkOrder.RowID,
+    externalWorkOrderNumber: document.getElementById("editExternalWorkOrderNumber").value.trim() || null,
+    status: document.getElementById("editStatus").value,
+    startDate: document.getElementById("editStartDate").value || null,
+    endDate: document.getElementById("editEndDate").value || null,
+    notes: (document.getElementById("editScheduleNotes")?.value || "").trim()
+  };
 
-        const raw = await res.text();
-        let data = {};
+  try {
+    const res = await fetch("/api/workorders/update", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-        try {
-          data = raw ? JSON.parse(raw) : {};
-        } catch {
-          throw new Error(`Invalid JSON from update API: ${raw || "(empty response)"}`);
-        }
+    const raw = await res.text();
+    let data = {};
 
-        if (!res.ok) {
-          throw new Error(data.error || "Failed to save work order.");
-        }
-
-        message.textContent = "Work order updated successfully.";
-
-        await loadWorkOrders();
-
-        const updated = allWorkOrders.find(x => x.RowID === selectedWorkOrder.RowID);
-        if (updated) {
-          selectedWorkOrder = updated;
-          renderWorkOrderList(filterWorkOrders());
-          showWorkOrderDetails(updated);
-        }
-      } catch (err) {
-        console.error(err);
-        message.textContent = err.message || "Failed to save work order.";
-      }
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new Error(`Invalid JSON from update API: ${raw || "(empty response)"}`);
     }
+
+    if (!res.ok) {
+      throw new Error(data.error || data.message || "Failed to save work order.");
+    }
+
+    message.textContent = "Work order updated successfully.";
+
+    await loadWorkOrders();
+
+    const updated = allWorkOrders.find(x => x.RowID === selectedWorkOrder.RowID);
+    if (updated) {
+      selectedWorkOrder = updated;
+      renderWorkOrderList(filterWorkOrders());
+      showWorkOrderDetails(updated);
+    }
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Failed to save work order.";
+  }
+}
 
     async function uploadPhoto() {
       const message = document.getElementById("photoMessage");
