@@ -929,6 +929,7 @@ card.innerHTML = `
       }
     }
 
+
     async function loadPhotos() {
       const beforeList = document.getElementById("beforePhotoList");
       const afterList = document.getElementById("afterPhotoList");
@@ -972,7 +973,9 @@ card.innerHTML = `
       }
     }
 
-     function renderPhotoList(photos, container) {
+ 
+    
+function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
   if (!photos.length) {
@@ -984,56 +987,59 @@ card.innerHTML = `
     const card = document.createElement("div");
     card.className = "rounded-xl border overflow-hidden bg-white shadow relative";
 
-   card.innerHTML = `
-  <div class="relative group">
-    <button type="button" class="photo-preview-button block w-full text-left">
-      <img
-        src="${photo.ImageUrl}"
-        alt="${photo.FileName || "Work order photo"}"
-        class="w-full h-56 object-cover bg-slate-200"
-      />
-    </button>
+    card.innerHTML = `
+      <div class="relative group">
+        <button type="button" class="photo-preview-button block w-full text-left">
+          <img
+            src="${photo.ImageUrl}"
+            alt="${photo.FileName || "Work order photo"}"
+            class="w-full h-56 object-cover bg-slate-200"
+          />
+        </button>
 
-    <button
-      class="delete-photo-btn absolute top-2 right-2 bg-black/60 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full hidden group-hover:flex"
-      data-photo-id="${photo.PhotoId}"
-      title="Delete photo"
-    >
-      ✕
-    </button>
-  </div>
+        <button
+          type="button"
+          class="delete-photo-btn absolute top-2 right-2 bg-black/60 text-white text-xs w-6 h-6 flex items-center justify-center rounded-full hidden group-hover:flex"
+          data-photo-id="${photo.WorkOrderPhotoId}"
+          title="Delete photo"
+        >
+          ✕
+        </button>
+      </div>
 
-  <div class="p-3 space-y-1">
-    <div class="font-medium text-sm text-slate-900">${photo.FileName || ""}</div>
-    <div class="text-xs text-slate-500">${photo.Caption || ""}</div>
-    <div class="text-xs text-slate-400">${formatDateTime(photo.UploadedAt)}</div>
-  </div>
-`;
-
-document.querySelectorAll(".delete-photo-btn").forEach(btn => {
-  btn.addEventListener("click", async (e) => {
-    e.stopPropagation(); // prevents opening the image preview
-
-    const photoId = btn.dataset.photoId;
-
-    if (!confirm("Delete this photo?")) return;
-
-    await deletePhoto(photoId);
-  });
-});
-
-
-
-
+      <div class="p-3 space-y-1">
+        <div class="font-medium text-sm text-slate-900">${photo.FileName || ""}</div>
+        <div class="text-xs text-slate-500">${photo.Caption || ""}</div>
+        <div class="text-xs text-slate-400">${formatDateTime(photo.UploadedAt)}</div>
+      </div>
+    `;
 
     const previewButton = card.querySelector(".photo-preview-button");
-    previewButton.addEventListener("click", () => {
-      openImageModalWithList(photos, index);
-    });
+    if (previewButton) {
+      previewButton.addEventListener("click", () => {
+        openImageModal(photos, index);
+      });
+    }
+
+    const deleteButton = card.querySelector(".delete-photo-btn");
+    if (deleteButton) {
+      deleteButton.addEventListener("click", async (e) => {
+        e.stopPropagation();
+
+        const photoId = deleteButton.dataset.photoId;
+        if (!photoId) return;
+
+        if (!confirm("Delete this photo?")) return;
+
+        await deletePhoto(photoId);
+      });
+    }
 
     container.appendChild(card);
   });
 }
+
+
 
     async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
       return new Promise((resolve, reject) => {
@@ -1668,7 +1674,38 @@ console.log("Saving note for RowID:", selectedWorkOrder?.RowID);
   }
 }
 
+async function deletePhoto(photoId) {
+  const message = document.getElementById("photoMessage");
 
+  try {
+    message.textContent = "Deleting photo...";
+
+    const res = await fetch("/api/workorders/photos/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ photoId })
+    });
+
+    const raw = await res.text();
+    let data = {};
+
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      throw new Error(`Invalid JSON from delete photo API: ${raw || "(empty response)"}`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to delete photo.");
+    }
+
+    message.textContent = "Photo deleted successfully.";
+    await loadPhotos();
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Failed to delete photo.";
+  }
+}
 
 
 
