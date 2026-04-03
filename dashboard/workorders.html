@@ -675,6 +675,7 @@
           selectedWorkOrder = w;
           renderWorkOrderList(filterWorkOrders());
           showWorkOrderDetails(w);
+          showWorkOrderDetails
         });
 
         list.appendChild(card);
@@ -1494,7 +1495,7 @@ console.log("customerProperties after reload:", customerProperties);
   }
 
   message.textContent = "Loading notes...";
-console.log("Loading note for RowID:", selectedWorkOrder?.RowID);
+  console.log("Loading note for RowID:", selectedWorkOrder?.RowID);
   try {
     const res = await fetch(`/api/workorders/notes/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`);
     const raw = await res.text();
@@ -1511,11 +1512,13 @@ console.log("Loading note for RowID:", selectedWorkOrder?.RowID);
     }
 
     renderWorkOrderNotes(data);
+
     message.textContent = `${data.length} note(s) loaded.`;
   } catch (err) {
     console.error(err);
     message.textContent = err.message || "Failed to load notes.";
   }
+
 }
 
     function renderWorkOrderNotes(notes) {
