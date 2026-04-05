@@ -129,8 +129,8 @@ module.exports = async function (context, req) {
       headers: { "Content-Type": "application/json" },
       body: {
         error: "Failed to load photos",
-        message: error.message,
-        code: error.code || null
+        message: error?.message, || "no message",
+        Stack: error?.Stack || null
       }
     };
   }
