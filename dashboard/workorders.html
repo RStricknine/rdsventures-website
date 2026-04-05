@@ -939,56 +939,59 @@ card.innerHTML = `
       }
     }
 
-    async function loadPhotos() {
-      const beforeList = document.getElementById("beforePhotoList");
-      const afterList = document.getElementById("afterPhotoList");
-      const message = document.getElementById("photoMessage");
 
-      beforeList.innerHTML = "";
-      afterList.innerHTML = "";
+async function loadPhotos() {
+  const beforeList = document.getElementById("beforePhotoList");
+  const afterList = document.getElementById("afterPhotoList");
+  const message = document.getElementById("photoMessage");
 
-      if (!selectedWorkOrder) {
-        message.textContent = "Select a work order to load photos.";
-        return;
-      }
+  beforeList.innerHTML = "";
+  afterList.innerHTML = "";
 
-      message.textContent = "Loading photos...";
-console.log("photos/list status:", res.status);
-console.log("photos/list raw:", raw);
-console.log("photos/list parsed:", data);
-      try {
-        const res = await fetch(`/api/workorders/photos/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`);
-        const raw = await res.text();
-        let data = [];
+  if (!selectedWorkOrder) {
+    message.textContent = "Select a work order to load photos.";
+    return;
+  }
 
-console.log("photos/list status:", res.status);
-console.log("photos/list raw:", raw);
-console.log("photos/list parsed:", data);
+  message.textContent = "Loading photos...";
 
+  try {
+    const res = await fetch(
+      `/api/workorders/photos/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`
+    );
 
-        try {
-          data = raw ? JSON.parse(raw) : [];
-        } catch {
-          throw new Error(`Invalid JSON from photo list API: ${raw || "(empty response)"}`);
-        }
+    const raw = await res.text();
+    let data = [];
 
-        if (!res.ok) {
-          throw new Error(data.message || data.error || raw || "Failed to load photos.");
-        }
-
-        const beforePhotos = data.filter(p => p.PhotoType === "Before");
-        const afterPhotos = data.filter(p => p.PhotoType === "After");
-
-        renderPhotoList(beforePhotos, beforeList);
-        renderPhotoList(afterPhotos, afterList);
-
-        message.textContent = `${data.length} photo(s) loaded.`;
-      } catch (err) {
-        console.error(err);
-        message.textContent = err.message || "Failed to load photos.";
-      }
+    try {
+      data = raw ? JSON.parse(raw) : [];
+    } catch {
+      throw new Error(`Invalid JSON from photo list API: ${raw || "(empty response)"}`);
     }
-    
+
+    console.log("photos/list status:", res.status);
+    console.log("photos/list raw:", raw);
+    console.log("photos/list parsed:", data);
+
+    if (!res.ok) {
+      throw new Error(data.message || data.error || raw || "Failed to load photos.");
+    }
+
+    const beforePhotos = data.filter(p => p.PhotoType === "Before");
+    const afterPhotos = data.filter(p => p.PhotoType === "After");
+
+    renderPhotoList(beforePhotos, beforeList);
+    renderPhotoList(afterPhotos, afterList);
+
+    message.textContent = `${data.length} photo(s) loaded.`;
+  } catch (err) {
+    console.error(err);
+    message.textContent = err.message || "Failed to load photos.";
+  }
+}
+
+
+
     function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
