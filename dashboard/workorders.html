@@ -1033,12 +1033,12 @@ card.innerHTML = `
       deleteButton.addEventListener("click", async (e) => {
         e.stopPropagation();
 
-        const photoId = deleteButton.dataset.photoId;
+        const workOrderphotoId = deleteButton.dataset.photoId;
         if (!photoId) return;
 
         if (!confirm("Delete this photo?")) return;
 
-        await deletePhoto(photoId);
+        await deletePhoto(workOrderphotoId);
       });
     }
 
