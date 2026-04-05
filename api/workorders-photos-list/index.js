@@ -33,6 +33,8 @@ async function getPool() {
 function getSasUrl(containerName, blobName) {
   const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
   const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
+  const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+
 
   if (!accountName || !accountKey) {
     throw new Error("Missing AZURE_STORAGE_ACCOUNT_NAME or AZURE_STORAGE_ACCOUNT_KEY");
@@ -89,29 +91,21 @@ module.exports = async function (context, req) {
         ORDER BY PhotoType, ISNULL(SortOrder, 999999), UploadedAt
       `);
 
-    const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
 
-    const photosWithUrls = result.recordset.map(photo => ({
-      ...photo,
-      ImageUrl: getSasUrl(containerName, photo.BlobName)
-    }));
+const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
 
-    context.res = {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-      body: photosWithUrls
-    };
-  } catch (error) {
-    context.log.error("Work order photo list error:", error);
+const photosWithUrls = result.recordset.map(photo => {
+  let imageUrl = null;
 
-    context.res = {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        error: "Failed to load photos",
-        message: error.message,
-        code: error.code || null
-      }
-    };
+  try {
+    imageUrl = getSasUrl(containerName, photo.BlobName);
+  } catch (err) {
+    context.log.error("SAS error:", err.message);
   }
+
+  return {
+    ...photo,
+    ImageUrl: imageUrl
+  };
+});
 };

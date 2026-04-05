@@ -953,11 +953,18 @@ card.innerHTML = `
       }
 
       message.textContent = "Loading photos...";
-
+console.log("photos/list status:", res.status);
+console.log("photos/list raw:", raw);
+console.log("photos/list parsed:", data);
       try {
         const res = await fetch(`/api/workorders/photos/list?workOrderRowId=${encodeURIComponent(selectedWorkOrder.RowID)}`);
         const raw = await res.text();
         let data = [];
+
+console.log("photos/list status:", res.status);
+console.log("photos/list raw:", raw);
+console.log("photos/list parsed:", data);
+
 
         try {
           data = raw ? JSON.parse(raw) : [];
