@@ -484,6 +484,16 @@
   </div>
 </div>
 
+
+
+
+
+// GLOBAL VARIABLES TO HOLD STATE
+
+
+
+
+
   <script>
     let allWorkOrders = [];
     let selectedWorkOrder = null;
@@ -693,7 +703,7 @@ card.innerHTML = `
       });
     }
 
-   function filterWorkOrders() {
+    function filterWorkOrders() {
   const searchValue = document.getElementById("workOrderSearch").value.toLowerCase().trim();
   const dropdownStatus = document.getElementById("statusFilter").value;
 
@@ -929,7 +939,6 @@ card.innerHTML = `
       }
     }
 
-
     async function loadPhotos() {
       const beforeList = document.getElementById("beforePhotoList");
       const afterList = document.getElementById("afterPhotoList");
@@ -972,10 +981,8 @@ card.innerHTML = `
         message.textContent = err.message || "Failed to load photos.";
       }
     }
-
- 
     
-function renderPhotoList(photos, container) {
+    function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
   if (!photos.length) {
@@ -1038,8 +1045,6 @@ function renderPhotoList(photos, container) {
     container.appendChild(card);
   });
 }
-
-
 
     async function resizeImage(file, maxWidth = 1280, quality = 0.7) {
       return new Promise((resolve, reject) => {
@@ -1686,6 +1691,8 @@ async function deletePhoto(photoId) {
       body: JSON.stringify({ photoId })
     });
 
+    body: JSON.stringify({ workorderphotoId });
+
     const raw = await res.text();
     let data = {};
 
@@ -1710,7 +1717,7 @@ async function deletePhoto(photoId) {
 
 
 
-
+// BELOW IS THE INITIALIZATION CODE THAT SETS UP EVENT LISTENERS AND LOADS INITIAL DATA
 
 
 
