@@ -966,7 +966,7 @@ card.innerHTML = `
         }
 
         if (!res.ok) {
-          throw new Error(data.error || "Failed to load photos.");
+          throw new Error(data.message || data.error || raw || "Failed to load photos.");
         }
 
         const beforePhotos = data.filter(p => p.PhotoType === "Before");
