@@ -61,20 +61,35 @@ module.exports = async function (context, req) {
 
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
 
+
+
+
+
+
+
 const photosWithUrls = result.recordset.map(photo => {
   let imageUrl = null;
+  let sasError = null;
 
   try {
     imageUrl = getSasUrl(containerName, photo.BlobName);
   } catch (err) {
+    sasError = err.message;
     context.log.error(`SAS generation failed for blob ${photo.BlobName}: ${err.message}`);
   }
 
   return {
     ...photo,
-    ImageUrl: imageUrl
+    ImageUrl: imageUrl,
+    SasError: sasError
   };
 });
+
+
+
+
+
+
 
     context.res = {
       status: 200,
