@@ -59,10 +59,15 @@ module.exports = async function (context, req) {
         ORDER BY PhotoType, ISNULL(SortOrder, 999999), UploadedAt
       `);
 
-    const photosWithUrls = result.recordset.map(photo => ({
-      ...photo,
-      ImageUrl: null
-    }));
+const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
+const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+
+const photosWithUrls = result.recordset.map(photo => ({
+  ...photo,
+  ImageUrl: accountName && containerName && photo.BlobName
+    ? `https://${accountName}.blob.core.windows.net/${containerName}/${photo.BlobName}`
+    : null
+}));
 
     context.res = {
       status: 200,
