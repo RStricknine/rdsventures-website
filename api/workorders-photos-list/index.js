@@ -33,16 +33,18 @@ async function getPool() {
 function getSasUrl(containerName, blobName) {
   const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
   const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
-  const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-
 
   if (!accountName || !accountKey) {
     throw new Error("Missing AZURE_STORAGE_ACCOUNT_NAME or AZURE_STORAGE_ACCOUNT_KEY");
   }
 
+  if (!containerName) {
+    throw new Error("Missing AZURE_STORAGE_CONTAINER_NAME");
+  }
+
   const sharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
 
-  const expiresOn = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  const expiresOn = new Date(Date.now() + 60 * 60 * 1000);
 
   const sasToken = generateBlobSASQueryParameters(
     {
@@ -71,6 +73,11 @@ module.exports = async function (context, req) {
     }
 
     const db = await getPool();
+    const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+
+    context.log("AZURE_STORAGE_CONTAINER_NAME:", containerName || "(missing)");
+    context.log("AZURE_STORAGE_ACCOUNT_NAME:", process.env.AZURE_STORAGE_ACCOUNT_NAME || "(missing)");
+    context.log("Has AZURE_STORAGE_ACCOUNT_KEY:", process.env.AZURE_STORAGE_ACCOUNT_KEY ? "yes" : "no");
 
     const result = await db.request()
       .input("WorkOrderRowId", sql.Int, parseInt(workOrderRowId, 10))
@@ -91,21 +98,37 @@ module.exports = async function (context, req) {
         ORDER BY PhotoType, ISNULL(SortOrder, 999999), UploadedAt
       `);
 
+    const photosWithUrls = result.recordset.map(photo => {
+      let imageUrl = null;
 
-const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+      try {
+        imageUrl = getSasUrl(containerName, photo.BlobName);
+      } catch (err) {
+        context.log.error(`SAS generation failed for blob ${photo.BlobName}: ${err.message}`);
+      }
 
-const photosWithUrls = result.recordset.map(photo => {
-  let imageUrl = null;
+      return {
+        ...photo,
+        ImageUrl: imageUrl
+      };
+    });
 
-  try {
-    imageUrl = getSasUrl(containerName, photo.BlobName);
-  } catch (err) {
-    context.log.error("SAS error:", err.message);
+    context.res = {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+      body: photosWithUrls
+    };
+  } catch (error) {
+    context.log.error("Work order photo list error:", error);
+
+    context.res = {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+      body: {
+        error: "Failed to load photos",
+        message: error.message,
+        code: error.code || null
+      }
+    };
   }
-
-  return {
-    ...photo,
-    ImageUrl: imageUrl
-  };
-});
 };
