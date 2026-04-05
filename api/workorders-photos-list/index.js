@@ -30,34 +30,7 @@ async function getPool() {
   return pool;
 }
 
-function getSasUrl(containerName, blobName) {
-  const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
-  const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
 
-  if (!accountName || !accountKey) {
-    throw new Error("Missing AZURE_STORAGE_ACCOUNT_NAME or AZURE_STORAGE_ACCOUNT_KEY");
-  }
-
-  if (!containerName) {
-    throw new Error("Missing AZURE_STORAGE_CONTAINER_NAME");
-  }
-
-  const sharedKeyCredential = new StorageSharedKeyCredential(accountName, accountKey);
-
-  const expiresOn = new Date(Date.now() + 60 * 60 * 1000);
-
-  const sasToken = generateBlobSASQueryParameters(
-    {
-      containerName,
-      blobName,
-      permissions: BlobSASPermissions.parse("r"),
-      expiresOn
-    },
-    sharedKeyCredential
-  ).toString();
-
-  return `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
-}
 
 module.exports = async function (context, req) {
   try {
@@ -73,11 +46,6 @@ module.exports = async function (context, req) {
     }
 
     const db = await getPool();
-    const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-
-    context.log("AZURE_STORAGE_CONTAINER_NAME:", containerName || "(missing)");
-    context.log("AZURE_STORAGE_ACCOUNT_NAME:", process.env.AZURE_STORAGE_ACCOUNT_NAME || "(missing)");
-    context.log("Has AZURE_STORAGE_ACCOUNT_KEY:", process.env.AZURE_STORAGE_ACCOUNT_KEY ? "yes" : "no");
 
     const result = await db.request()
       .input("WorkOrderRowId", sql.Int, parseInt(workOrderRowId, 10))
@@ -98,20 +66,10 @@ module.exports = async function (context, req) {
         ORDER BY PhotoType, ISNULL(SortOrder, 999999), UploadedAt
       `);
 
-    const photosWithUrls = result.recordset.map(photo => {
-      let imageUrl = null;
-
-      try {
-        imageUrl = getSasUrl(containerName, photo.BlobName);
-      } catch (err) {
-        context.log.error(`SAS generation failed for blob ${photo.BlobName}: ${err.message}`);
-      }
-
-      return {
-        ...photo,
-        ImageUrl: imageUrl
-      };
-    });
+    const photosWithUrls = result.recordset.map(photo => ({
+      ...photo,
+      ImageUrl: null
+    }));
 
     context.res = {
       status: 200,
@@ -126,9 +84,8 @@ module.exports = async function (context, req) {
       headers: { "Content-Type": "application/json" },
       body: {
         error: "Failed to load photos",
-        message: error.message,
-        code: error.code || null
+        message: error.message
       }
     };
   }
-};
+}
