@@ -1,5 +1,4 @@
 const sql = require("mssql");
-const { BlobServiceClient } = require("@azure/storage-blob");
 
 let pool;
 
@@ -26,21 +25,6 @@ async function getPool() {
   return pool;
 }
 
-async function deleteBlobIfExists(blobName) {
-  const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-  const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-
-  if (!connectionString || !containerName || !blobName) {
-    return;
-  }
-
-  const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-  const containerClient = blobServiceClient.getContainerClient(containerName);
-  const blobClient = containerClient.getBlockBlobClient(blobName);
-
-  await blobClient.deleteIfExists();
-}
-
 module.exports = async function (context, req) {
   try {
     const { workOrderPhotoId } = req.body || {};
@@ -59,10 +43,7 @@ module.exports = async function (context, req) {
     const photoResult = await db.request()
       .input("WorkOrderPhotoId", sql.Int, parseInt(workOrderPhotoId, 10))
       .query(`
-        SELECT
-          WorkOrderPhotoId,
-          BlobName,
-          IsActive
+        SELECT WorkOrderPhotoId
         FROM dbo.WorkOrderPhotos
         WHERE WorkOrderPhotoId = @WorkOrderPhotoId
       `);
@@ -74,15 +55,6 @@ module.exports = async function (context, req) {
         body: { error: "Photo not found." }
       };
       return;
-    }
-
-    const photo = photoResult.recordset[0];
-
-    // Try to delete the blob, but do not fail the whole request if blob delete has an issue
-    try {
-      await deleteBlobIfExists(photo.BlobName);
-    } catch (blobError) {
-      context.log.warn("Blob delete warning:", blobError.message);
     }
 
     await db.request()
@@ -106,8 +78,7 @@ module.exports = async function (context, req) {
       headers: { "Content-Type": "application/json" },
       body: {
         error: "Failed to delete photo",
-        message: error.message,
-        code: error.code || null
+        message: error.message
       }
     };
   }
