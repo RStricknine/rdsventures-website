@@ -35,8 +35,23 @@
     {
       "route": "/*",
       "allowedRoles": ["authenticated"]
-    }
+    },
+
+{
+  "route": "/api/me",
+  "allowedRoles": ["authenticated"]
+},
+
+{
+  "route": "/api/*",
+  "allowedRoles": ["authenticated"]
+}
+
+
+
+
   ],
+  
   "responseOverrides": {
     "401": {
       "statusCode": 302,
