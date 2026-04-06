@@ -1,9 +1,4 @@
 const sql = require("mssql");
-const {
-  BlobSASPermissions,
-  generateBlobSASQueryParameters,
-  StorageSharedKeyCredential
-} = require("@azure/storage-blob");
 
 let pool;
 
@@ -28,41 +23,6 @@ async function getPool() {
   });
 
   return pool;
-}
-
-function buildBlobSasUrl(blobName) {
-  const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
-  const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
-  const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-
-  if (!accountName) {
-    throw new Error("Missing AZURE_STORAGE_ACCOUNT_NAME");
-  }
-  if (!accountKey) {
-    throw new Error("Missing AZURE_STORAGE_ACCOUNT_KEY");
-  }
-  if (!containerName) {
-    throw new Error("Missing AZURE_STORAGE_CONTAINER_NAME");
-  }
-  if (!blobName) {
-    throw new Error("Missing BlobName");
-  }
-
-  const credential = new StorageSharedKeyCredential(accountName, accountKey);
-
-  const expiresOn = new Date(Date.now() + 60 * 60 * 1000);
-
-  const sasToken = generateBlobSASQueryParameters(
-    {
-      containerName,
-      blobName,
-      permissions: BlobSASPermissions.parse("r"),
-      expiresOn
-    },
-    credential
-  ).toString();
-
-  return `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
 }
 
 module.exports = async function (context, req) {
@@ -99,15 +59,15 @@ module.exports = async function (context, req) {
         ORDER BY PhotoType, ISNULL(SortOrder, 999999), UploadedAt
       `);
 
-    const photos = result.recordset.map(photo => ({
+    const photosWithUrls = result.recordset.map(photo => ({
       ...photo,
-      ImageUrl: buildBlobSasUrl(photo.BlobName)
+      ImageUrl: `/api/workorders/photos/view?workOrderPhotoId=${photo.WorkOrderPhotoId}`
     }));
 
     context.res = {
       status: 200,
       headers: { "Content-Type": "application/json" },
-      body: photos
+      body: photosWithUrls
     };
   } catch (error) {
     context.log.error("Work order photo list error:", error);
@@ -117,7 +77,7 @@ module.exports = async function (context, req) {
       headers: { "Content-Type": "application/json" },
       body: {
         error: "Failed to load photos",
-        message: error.message || "(no message)"
+        message: error.message
       }
     };
   }

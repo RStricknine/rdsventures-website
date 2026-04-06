@@ -6,7 +6,7 @@
       "direction": "in",
       "name": "req",
       "methods": ["get"],
-      "route": "metest123"
+      "route": "me"
     },
     {
       "type": "http",
