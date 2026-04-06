@@ -1,5 +1,5 @@
 module.exports = async function (context, req) {
-  context.res = {
+  return {
     status: 200,
     headers: { "Content-Type": "application/json" },
     body: { ok: true, route: "dashboardtest" }
