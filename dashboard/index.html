@@ -182,7 +182,7 @@
 
     async function loadDashboard() {
       try {
-        const res = await fetch("/api/dashboard");
+        const res = await fetch("/api/dashboardtest");
         if (!res.ok) {
           throw new Error("Dashboard API failed: " + res.status);
         }
