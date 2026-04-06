@@ -32,6 +32,14 @@
       "allowedRoles": ["authenticated"]
     },
     {
+      "route": "/api/current-user",
+      "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/*",
+      "allowedRoles": ["authenticated"]
+    },
+    {
       "route": "/*",
       "allowedRoles": ["authenticated"]
     }
