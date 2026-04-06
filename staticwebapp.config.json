@@ -1,11 +1,7 @@
 {
-
   "platform": {
     "apiRuntime": "node:20"
-  }
-
-
-
+  },
   "routes": [
     {
       "route": "/",
@@ -15,12 +11,10 @@
       "route": "/servicerequest.html",
       "allowedRoles": ["anonymous"]
     },
-
     {
       "route": "/api/service-request",
       "allowedRoles": ["anonymous"]
     },
-
     {
       "route": "/api/service-request-list",
       "allowedRoles": ["authenticated"]
@@ -29,26 +23,19 @@
       "route": "/api/service-request-convert",
       "allowedRoles": ["authenticated"]
     },
-
     {
       "route": "/dashboard/*",
       "allowedRoles": ["authenticated"]
     },
-
     {
       "route": "/*",
       "allowedRoles": ["authenticated"]
     }
-
-
   ],
   "responseOverrides": {
     "401": {
       "statusCode": 302,
       "redirect": "/.auth/login/aad"
     }
-  },
-
-
-
+  }
 }
