@@ -1,4 +1,9 @@
 const sql = require("mssql");
+const {
+  BlobSASPermissions,
+  generateBlobSASQueryParameters,
+  StorageSharedKeyCredential
+} = require("@azure/storage-blob");
 
 let pool;
 
@@ -25,9 +30,44 @@ async function getPool() {
   return pool;
 }
 
+function buildBlobSasUrl(blobName) {
+  const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
+  const accountKey = process.env.AZURE_STORAGE_ACCOUNT_KEY;
+  const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+
+  if (!accountName) {
+    throw new Error("Missing AZURE_STORAGE_ACCOUNT_NAME");
+  }
+  if (!accountKey) {
+    throw new Error("Missing AZURE_STORAGE_ACCOUNT_KEY");
+  }
+  if (!containerName) {
+    throw new Error("Missing AZURE_STORAGE_CONTAINER_NAME");
+  }
+  if (!blobName) {
+    throw new Error("Missing BlobName");
+  }
+
+  const credential = new StorageSharedKeyCredential(accountName, accountKey);
+
+  const expiresOn = new Date(Date.now() + 60 * 60 * 1000);
+
+  const sasToken = generateBlobSASQueryParameters(
+    {
+      containerName,
+      blobName,
+      permissions: BlobSASPermissions.parse("r"),
+      expiresOn
+    },
+    credential
+  ).toString();
+
+  return `https://${accountName}.blob.core.windows.net/${containerName}/${blobName}?${sasToken}`;
+}
+
 module.exports = async function (context, req) {
   try {
-    const workOrderRowId = req.query.workOrderRowId;
+    const workOrderRowId = parseInt(req.query.workOrderRowId, 10);
 
     if (!workOrderRowId) {
       context.res = {
@@ -41,7 +81,7 @@ module.exports = async function (context, req) {
     const db = await getPool();
 
     const result = await db.request()
-      .input("WorkOrderRowId", sql.Int, parseInt(workOrderRowId, 10))
+      .input("WorkOrderRowId", sql.Int, workOrderRowId)
       .query(`
         SELECT
           WorkOrderPhotoId,
@@ -59,22 +99,19 @@ module.exports = async function (context, req) {
         ORDER BY PhotoType, ISNULL(SortOrder, 999999), UploadedAt
       `);
 
-const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME;
-const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-
-const photosWithUrls = result.recordset.map(photo => ({
-  ...photo,
-  ImageUrl: accountName && containerName && photo.BlobName
-    ? `https://${accountName}.blob.core.windows.net/${containerName}/${photo.BlobName}`
-    : null
-}));
+    const photos = result.recordset.map(photo => ({
+      ...photo,
+      ImageUrl: buildBlobSasUrl(photo.BlobName)
+    }));
 
     context.res = {
       status: 200,
       headers: { "Content-Type": "application/json" },
-      body: photosWithUrls
+      body: photos
     };
   } catch (error) {
+    context.log.error("Work order photo list error:", error);
+
     context.res = {
       status: 500,
       headers: { "Content-Type": "application/json" },
