@@ -1,4 +1,19 @@
-const sql = require("mssql");
+let sql;
+
+try {
+  sql = require("mssql");
+} catch (err) {
+  module.exports = async function (context, req) {
+    context.res = {
+      status: 500,
+      body: {
+        error: "mssql failed to load",
+        message: err.message
+      }
+    };
+  };
+  return;
+}
 
 let pool;
 
