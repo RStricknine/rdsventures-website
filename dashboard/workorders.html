@@ -1058,6 +1058,7 @@ async function loadPhotos() {
         e.stopPropagation();
 
         const workOrderPhotoId = deleteButton.dataset.photoId;
+        console.log("Delete photo clicked for ID:", workOrderPhotoId);
         if (!workOrderPhotoId) return;
 
         if (!confirm("Delete this photo?")) return;
@@ -1703,7 +1704,7 @@ console.log("Saving note for RowID:", selectedWorkOrder?.RowID);
   }
 }
 
-async function deletePhoto(photoId) {
+async function deletePhoto(workOrderphotoId) {
   const message = document.getElementById("photoMessage");
 
   try {
