@@ -1704,7 +1704,7 @@ console.log("Saving note for RowID:", selectedWorkOrder?.RowID);
   }
 }
 
-async function deletePhoto(workOrderphotoId) {
+async function deletePhoto(workOrderPhotoId) {
   const message = document.getElementById("photoMessage");
 
   try {
@@ -1713,7 +1713,7 @@ async function deletePhoto(workOrderphotoId) {
     const res = await fetch("/api/workorders/photos/delete", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ photoId })
+      body: JSON.stringify({ workOrderPhotoId })
     });
 
     body: JSON.stringify({ workOrderPhotoId });
