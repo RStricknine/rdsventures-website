@@ -3,11 +3,26 @@
     "apiRuntime": "node:20"
   },
   "routes": [
-
-    {
-      "route": "/api/dashboard",
-      "allowedRoles": ["anonymous"]
-    },
+{
+  "route": "/api/workorders/photos/view",
+  "allowedRoles": ["anonymous"]
+},
+{
+  "route": "/api/workorders/photos/list",
+  "allowedRoles": ["authenticated"]
+},
+{
+  "route": "/api/workorders/photos/upload",
+  "allowedRoles": ["authenticated"]
+},
+{
+  "route": "/api/workorders/photos/delete",
+  "allowedRoles": ["authenticated"]
+},
+{
+  "route": "/api/dashboard",
+  "allowedRoles": ["anonymous"]
+},
     {
       "route": "/",
       "allowedRoles": ["anonymous"]
