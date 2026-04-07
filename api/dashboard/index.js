@@ -29,36 +29,75 @@ module.exports = async function (context, req) {
   try {
     const db = await getPool();
 
-    const result = await db.request().query(`
-      SELECT
-        (SELECT COUNT(*) FROM dbo.Customers WHERE IsDeleted = 0) AS customers,
-        (SELECT COUNT(*) FROM dbo.Properties WHERE IsDeleted = 0) AS properties,
-        (SELECT COUNT(*) FROM dbo.stg_WorkOrders WHERE Status IN ('Warranty', 'Dispatched')) AS openWorkOrders
+   const countsResult = await db.request().query(`
+  SELECT
+      (SELECT COUNT(*) FROM dbo.Customers) AS Customers,
+      (SELECT COUNT(*) FROM dbo.Properties) AS Properties,
+      (SELECT COUNT(*)
+       FROM dbo.stg_WorkOrders
+       WHERE Status IN ('Warranty', 'Dispatched')) AS OpenWorkOrders,
+      (SELECT COUNT(*)
+       FROM dbo.stg_WorkOrders
+       WHERE Created >= DATEADD(DAY, -7, GETUTCDATE())) AS NewRequests,
+      (SELECT COUNT(*)
+       FROM dbo.ServiceRequests
+       WHERE RequestStatus = 'New'
+         AND IsDeleted = 0) AS NewServiceRequests;
+`);
+
+    const activityResult = await db.request().query(`
+      SELECT TOP 10
+          CONCAT(
+              'WO ',
+              ISNULL(WorkOrderNumber, CAST(RowID AS nvarchar(20))),
+              CASE
+                  WHEN Subject IS NOT NULL AND LTRIM(RTRIM(Subject)) <> ''
+                  THEN ' - ' + Subject
+                  ELSE ''
+              END,
+              CASE
+                  WHEN Address IS NOT NULL AND LTRIM(RTRIM(Address)) <> ''
+                  THEN ' @ ' + Address
+                  ELSE ''
+              END
+          ) AS Activity
+      FROM dbo.stg_WorkOrders
+      ORDER BY Created DESC, RowID DESC;
     `);
 
-    const row = result.recordset[0] || {};
+    const counts = countsResult.recordset[0] || {};
 
-    context.res = {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        customers: row.customers || 0,
-        properties: row.properties || 0,
-        openWorkOrders: row.openWorkOrders || 0,
-        newRequests: 0,
-        newServiceRequests: 0,
-        recentActivity: []
-      }
-    };
-  } catch (err) {
-    context.log.error("DASHBOARD ERROR:", err);
+  context.res = {
+  status: 200,
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: {
+    customers: counts.Customers ?? 0,
+    properties: counts.Properties ?? 0,
+    openWorkOrders: counts.OpenWorkOrders ?? 0,
+    newRequests: counts.NewRequests ?? 0,
+    newServiceRequests: counts.NewServiceRequests ?? 0,
+    recentActivity: activityResult.recordset.map(r => r.Activity)
+  }
+};
+
+
+
+
+    
+  } catch (error) {
+    context.log.error("Dashboard API error:", error);
 
     context.res = {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: {
-        stage: "dashboard",
-        message: err.message
+        error: "Failed to load dashboard data",
+        message: error.message,
+        code: error.code || null
       }
     };
   }
