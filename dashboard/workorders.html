@@ -990,8 +990,6 @@ async function loadPhotos() {
   }
 }
 
-
-
    function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
@@ -1120,7 +1118,7 @@ async function loadPhotos() {
       return dt.toISOString().slice(0, 10);
     }
 
-    function openImageModalWithList(photos, index) {
+    function openImageModal(photos, index) {
   if (!photos.length) return;
 
   modalPhotos = photos;
