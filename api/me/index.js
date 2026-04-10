@@ -1,4 +1,6 @@
 const sql = require("mssql");
+const { getIdentity } = require('../shared/auth');
+
 
 function json(status, body) {
   return {
@@ -6,34 +8,6 @@ function json(status, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   };
-}
-
-function getUserFromHeaders(req) {
-  const clientPrincipalHeader =
-    req.headers["x-ms-client-principal"] ||
-    req.headers["X-MS-CLIENT-PRINCIPAL"];
-
-  if (!clientPrincipalHeader) return null;
-
-  try {
-    const decoded = Buffer.from(clientPrincipalHeader, "base64").toString("utf8");
-    return JSON.parse(decoded);
-  } catch (err) {
-    return null;
-  }
-}
-
-function getClaim(principal, types) {
-  if (!principal || !Array.isArray(principal.claims)) return null;
-
-  for (const type of types) {
-    const claim = principal.claims.find(c => c.typ === type);
-    if (claim && claim.val) {
-      return String(claim.val).trim();
-    }
-  }
-
-  return null;
 }
 
 function getSqlConfig() {
@@ -59,33 +33,24 @@ module.exports = async function (context, req) {
   let pool;
 
   try {
-    const principal = getUserFromHeaders(req);
+const { getIdentity } = require('../shared/auth');
 
-    if (!principal) {
-      context.res = json(401, {
-        ok: false,
-        error: "No client principal found."
-      });
-      return;
-    }
+const identity = getIdentity(req);
+const email = identity.email;
+const aadObjectId = identity.aadObjectId;
 
-    const email =
-      getClaim(principal, ["preferred_username", "email", "upn", "emails"]) ||
-      principal.userDetails ||
-      null;
+if (!email && !aadObjectId) {
+  context.res = json(401, {
+    ok: false,
+    error: "No usable identity found."
+  });
+  return;
+}
 
-    const aadObjectId = getClaim(principal, [
-      "http://schemas.microsoft.com/identity/claims/objectidentifier",
-      "oid"
-    ]);
 
-    if (!email && !aadObjectId) {
-      context.res = json(401, {
-        ok: false,
-        error: "No usable identity found."
-      });
-      return;
-    }
+
+
+
 
     pool = await sql.connect(getSqlConfig());
 

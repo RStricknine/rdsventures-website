@@ -71,9 +71,16 @@ module.exports = async function (context, req) {
   let pool;
 
   try {
-    const principal = getUserFromHeaders(req);
-    const email = getUserEmail(principal) || (principal && principal.userDetails) || null;
-    const aadObjectId = getAadObjectId(principal);
+    //const principal = getUserFromHeaders(req);
+    //const email = getUserEmail(principal) || (principal && principal.userDetails) || null;
+    //const aadObjectId = getAadObjectId(principal);
+const { getIdentity } = require('../../shared/auth');
+
+const identity = getIdentity(req);
+const email = identity.email;
+const aadObjectId = identity.aadObjectId;
+
+
 
     if (!email && !aadObjectId) {
       context.res = json(401, { ok: false, error: "User identity not found." });
