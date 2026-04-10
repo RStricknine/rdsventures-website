@@ -87,7 +87,7 @@ module.exports = async function (context, req) {
 
   try {
     const principal = getUserFromHeaders(req);
-    const email = getUserEmail(principal);
+    const email = getUserEmail(principal) || (principal && principal.userDetails) || null;
     const aadObjectId = getAadObjectId(principal);
 
     if (!email && !aadObjectId) {

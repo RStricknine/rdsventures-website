@@ -72,7 +72,7 @@ module.exports = async function (context, req) {
 
   try {
     const principal = getUserFromHeaders(req);
-    const email = getUserEmail(principal);
+    const email = getUserEmail(principal) || (principal && principal.userDetails) || null;
     const aadObjectId = getAadObjectId(principal);
 
     if (!email && !aadObjectId) {
@@ -130,7 +130,8 @@ module.exports = async function (context, req) {
         ON tet.TimeEntryTypeId = te.TimeEntryTypeId
       LEFT JOIN dbo.stg_WorkOrders wo
         ON wo.RowID = te.WorkOrderRowId
-      WHERE te.EmployeeProfileId = @EmployeeProfileId
+      WHERE te.IsDeleted = 0
+        AND te.EmployeeProfileId = @EmployeeProfileId
         AND te.WorkDate = CAST(GETDATE() AS DATE)
       ORDER BY te.StartTime DESC, te.CreatedAt DESC;
     `);
