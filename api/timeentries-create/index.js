@@ -1,3 +1,4 @@
+const { getIdentity } = require('../../shared/auth');
 const sql = require("mssql");
 
 function json(status, body) {
@@ -7,44 +8,6 @@ function json(status, body) {
     body: JSON.stringify(body)
   };
 }
-
-function getUserFromHeaders(req) {
-  const clientPrincipalHeader =
-    req.headers["x-ms-client-principal"] ||
-    req.headers["X-MS-CLIENT-PRINCIPAL"];
-
-  if (!clientPrincipalHeader) return null;
-
-  try {
-    const decoded = Buffer.from(clientPrincipalHeader, "base64").toString("utf8");
-    return JSON.parse(decoded);
-  } catch (err) {
-    return null;
-  }
-}
-
-function getUserEmail(principal) {
-  if (!principal || !Array.isArray(principal.claims)) return null;
-
-  const emailClaim =
-    principal.claims.find(c => c.typ === "preferred_username") ||
-    principal.claims.find(c => c.typ === "emails") ||
-    principal.claims.find(c => c.typ === "email") ||
-    principal.claims.find(c => c.typ === "upn");
-
-  return emailClaim ? String(emailClaim.val || "").trim() : null;
-}
-
-function getAadObjectId(principal) {
-  if (!principal || !Array.isArray(principal.claims)) return null;
-
-  const oidClaim =
-    principal.claims.find(c => c.typ === "http://schemas.microsoft.com/identity/claims/objectidentifier") ||
-    principal.claims.find(c => c.typ === "oid");
-
-  return oidClaim ? String(oidClaim.val || "").trim() : null;
-}
-
 function getSqlConfig() {
   return {
     server: process.env.SQL_SERVER,
@@ -63,12 +26,10 @@ function getSqlConfig() {
     }
   };
 }
-
 function parseDateTime(workDate, timeValue) {
   if (!workDate || !timeValue) return null;
   return `${workDate}T${timeValue}:00`;
 }
-
 function safeDecimalHours(startDateTime, endDateTime, breakMinutes) {
   if (!startDateTime || !endDateTime) return 0;
   const start = new Date(startDateTime);
@@ -81,7 +42,6 @@ function safeDecimalHours(startDateTime, endDateTime, breakMinutes) {
   const total = rawHours - breakHours;
   return total > 0 ? Number(total.toFixed(2)) : 0;
 }
-
 module.exports = async function (context, req) {
   let pool;
 
@@ -89,7 +49,7 @@ module.exports = async function (context, req) {
     //const principal = getUserFromHeaders(req);
     //const email = getUserEmail(principal) || (principal && principal.userDetails) || null;
     //const aadObjectId = getAadObjectId(principal);
-const { getIdentity } = require('../../shared/auth');
+
 
 const identity = getIdentity(req);
 const email = identity.email;

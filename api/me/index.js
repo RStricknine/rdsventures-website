@@ -1,7 +1,6 @@
 const sql = require("mssql");
 const { getIdentity } = require('../shared/auth');
 
-
 function json(status, body) {
   return {
     status,
@@ -33,24 +32,17 @@ module.exports = async function (context, req) {
   let pool;
 
   try {
-const { getIdentity } = require('../shared/auth');
+    const identity = getIdentity(req);
+    const email = identity.email;
+    const aadObjectId = identity.aadObjectId;
 
-const identity = getIdentity(req);
-const email = identity.email;
-const aadObjectId = identity.aadObjectId;
-
-if (!email && !aadObjectId) {
-  context.res = json(401, {
-    ok: false,
-    error: "No usable identity found."
-  });
-  return;
-}
-
-
-
-
-
+    if (!email && !aadObjectId) {
+      context.res = json(401, {
+        ok: false,
+        error: "No usable identity found."
+      });
+      return;
+    }
 
     pool = await sql.connect(getSqlConfig());
 
@@ -89,7 +81,7 @@ if (!email && !aadObjectId) {
         auth: {
           email,
           aadObjectId,
-          userDetails: principal.userDetails || null
+          source: identity.source || null
         }
       });
       return;

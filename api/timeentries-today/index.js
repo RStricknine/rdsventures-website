@@ -1,4 +1,5 @@
 
+const { getIdentity } = require('../../shared/auth');
 
 const sql = require("mssql");
 
@@ -8,44 +9,6 @@ function json(status, body) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   };
-}
-
-function getUserFromHeaders(req) {
-  const clientPrincipalHeader =
-    req.headers["x-ms-client-principal"] ||
-    req.headers["X-MS-CLIENT-PRINCIPAL"];
-
-  if (!clientPrincipalHeader) return null;
-
-  try {
-    const decoded = Buffer.from(clientPrincipalHeader, "base64").toString("utf8");
-    const principal = JSON.parse(decoded);
-    return principal;
-  } catch (err) {
-    return null;
-  }
-}
-
-function getUserEmail(principal) {
-  if (!principal || !Array.isArray(principal.claims)) return null;
-
-  const emailClaim =
-    principal.claims.find(c => c.typ === "preferred_username") ||
-    principal.claims.find(c => c.typ === "emails") ||
-    principal.claims.find(c => c.typ === "email") ||
-    principal.claims.find(c => c.typ === "upn");
-
-  return emailClaim ? String(emailClaim.val || "").trim() : null;
-}
-
-function getAadObjectId(principal) {
-  if (!principal || !Array.isArray(principal.claims)) return null;
-
-  const oidClaim =
-    principal.claims.find(c => c.typ === "http://schemas.microsoft.com/identity/claims/objectidentifier") ||
-    principal.claims.find(c => c.typ === "oid");
-
-  return oidClaim ? String(oidClaim.val || "").trim() : null;
 }
 
 function getSqlConfig() {
@@ -71,11 +34,7 @@ module.exports = async function (context, req) {
   let pool;
 
   try {
-    //const principal = getUserFromHeaders(req);
-    //const email = getUserEmail(principal) || (principal && principal.userDetails) || null;
-    //const aadObjectId = getAadObjectId(principal);
-const { getIdentity } = require('../../shared/auth');
-
+   
 const identity = getIdentity(req);
 const email = identity.email;
 const aadObjectId = identity.aadObjectId;
