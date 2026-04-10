@@ -45,10 +45,11 @@ function getBearerToken(req) {
 }
 
 async function verifyBearerToken(token) {
-  const { payload } = await jwtVerify(token, jwks, {
-    issuer,
-    audience: mobileClientId
-  });
+const { payload } = await jwtVerify(token, jwks, {
+  issuer,
+  audience: mobileClientId,
+  algorithms: ["RS256", "RS512", "PS256"]
+});
 
   return payload;
 }
