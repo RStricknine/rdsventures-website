@@ -35,10 +35,7 @@
       "allowedRoles": ["anonymous"]
     },
 
-    {
-      "route": "/",
-      "allowedRoles": ["anonymous"]
-    },
+    
     {
       "route": "/servicerequest.html",
       "allowedRoles": ["anonymous"]
@@ -56,11 +53,11 @@
       "allowedRoles": ["authenticated"]
     },
     {
-      "route": "/*",
-      "allowedRoles": ["authenticated"]
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
     },
     {
-      "route": "/api/*",
+      "route": "/",
       "allowedRoles": ["anonymous"]
     }
   ],
