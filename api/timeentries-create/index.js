@@ -211,59 +211,95 @@ module.exports = async function (context, req) {
     insertRequest.input("WorkOrderNumber", sql.NVarChar(100), lookup.WorkOrderNumber || null);
     insertRequest.input("CreatedBy", sql.NVarChar(320), email || "system");
 
-    const insertResult = await insertRequest.query(`
-      SET NOCOUNT ON;
+    
+const insertResult = await insertRequest.query(`
+  SET NOCOUNT ON;
 
-      INSERT INTO dbo.TimeEntries (
-        EmployeeProfileId,
-        TimeEntryTypeId,
-        TimeEntryStatusId,
-        WorkDate,
-        StartTime,
-        EndTime,
-        BreakMinutes,
-        HoursWorked,
-        IsManualHours,
-        PropertyId,
-        CustomerId,
-        LaborType,
-        Notes,
-        CreatedAt,
-        CreatedBy,
-        ModifiedBy,
-        WorkOrderRowId,
-        WorkOrderNumber
-      )
-      OUTPUT
-        inserted.TimeEntryId AS timeEntryId,
-        inserted.WorkDate AS workDate,
-        inserted.StartTime AS startTime,
-        inserted.EndTime AS endTime,
-        inserted.HoursWorked AS hoursWorked,
-        inserted.WorkOrderRowId AS workOrderRowId,
-        inserted.WorkOrderNumber AS workOrderNumber,
-        inserted.Notes AS notes
-      VALUES (
-        @EmployeeProfileId,
-        @TimeEntryTypeId,
-        1,
-        @WorkDate,
-        @StartTime,
-        @EndTime,
-        @BreakMinutes,
-        @HoursWorked,
-        @IsManualHours,
-        @PropertyId,
-        @CustomerId,
-        @LaborType,
-        @Notes,
-        SYSUTCDATETIME(),
-        @CreatedBy,
-        @CreatedBy,
-        @WorkOrderRowId,
-        @WorkOrderNumber
-      );
-    `);
+  DECLARE @Inserted TABLE (
+    timeEntryId UNIQUEIDENTIFIER,
+    workDate DATE,
+    startTime DATETIME2,
+    endTime DATETIME2,
+    hoursWorked DECIMAL(10,2),
+    workOrderRowId INT,
+    workOrderNumber NVARCHAR(100),
+    notes NVARCHAR(2000)
+  );
+
+  INSERT INTO dbo.TimeEntries (
+    EmployeeProfileId,
+    TimeEntryTypeId,
+    TimeEntryStatusId,
+    WorkDate,
+    StartTime,
+    EndTime,
+    BreakMinutes,
+    HoursWorked,
+    IsManualHours,
+    PropertyId,
+    CustomerId,
+    LaborType,
+    Notes,
+    CreatedAt,
+    CreatedBy,
+    ModifiedBy,
+    WorkOrderRowId,
+    WorkOrderNumber
+  )
+  OUTPUT
+    inserted.TimeEntryId,
+    inserted.WorkDate,
+    inserted.StartTime,
+    inserted.EndTime,
+    inserted.HoursWorked,
+    inserted.WorkOrderRowId,
+    inserted.WorkOrderNumber,
+    inserted.Notes
+  INTO @Inserted (
+    timeEntryId,
+    workDate,
+    startTime,
+    endTime,
+    hoursWorked,
+    workOrderRowId,
+    workOrderNumber,
+    notes
+  )
+  VALUES (
+    @EmployeeProfileId,
+    @TimeEntryTypeId,
+    1,
+    @WorkDate,
+    @StartTime,
+    @EndTime,
+    @BreakMinutes,
+    @HoursWorked,
+    @IsManualHours,
+    @PropertyId,
+    @CustomerId,
+    @LaborType,
+    @Notes,
+    SYSUTCDATETIME(),
+    @CreatedBy,
+    @CreatedBy,
+    @WorkOrderRowId,
+    @WorkOrderNumber
+  );
+
+  SELECT
+    timeEntryId,
+    workDate,
+    startTime,
+    endTime,
+    hoursWorked,
+    workOrderRowId,
+    workOrderNumber,
+    notes
+  FROM @Inserted;
+`);
+
+
+
 
     context.res = json(200, {
       ok: true,
