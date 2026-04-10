@@ -44,15 +44,24 @@ function getBearerToken(req) {
   return auth.substring("Bearer ".length).trim();
 }
 
+
+
+
 async function verifyBearerToken(token) {
-const { payload } = await jwtVerify(token, jwks, {
-  issuer,
-  audience: mobileClientId,
-  algorithms: ["RS256", "RS512", "PS256"]
-});
+  const { payload } = await jwtVerify(token, jwks, {
+    issuer,
+    audience: mobileClientId,
+    algorithms: ["RS256", "RS384", "RS512", "PS256", "PS384", "PS512"]
+  });
 
   return payload;
 }
+
+
+
+
+
+
 
 module.exports = async function (context, req) {
   try {
