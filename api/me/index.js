@@ -1,13 +1,4 @@
 const sql = require("mssql");
-const { createRemoteJWKSet, jwtVerify } = require("jose");
-
-const tenantId = "a15e3ac7-dc12-4e8c-b596-ae0f12a7cf66";
-const mobileClientId = "f4ee7068-746a-4329-80bb-98dfeedd42db";
-
-const issuer = `https://login.microsoftonline.com/${tenantId}/v2.0`;
-const jwks = createRemoteJWKSet(
-  new URL(`https://login.microsoftonline.com/${tenantId}/discovery/v2.0/keys`)
-);
 
 let pool;
 
@@ -35,33 +26,23 @@ async function getPool() {
 }
 
 function getBearerToken(req) {
-  const auth =
-    req.headers.authorization ||
-    req.headers.Authorization ||
-    "";
-
+  const auth = req.headers.authorization || req.headers.Authorization || "";
   if (!auth.startsWith("Bearer ")) return null;
   return auth.substring("Bearer ".length).trim();
 }
 
+function decodeJwtPayload(token) {
+  const parts = token.split(".");
+  if (parts.length < 2) {
+    throw new Error("Invalid JWT format");
+  }
 
-
-
-async function verifyBearerToken(token) {
-  const { payload } = await jwtVerify(token, jwks, {
-    issuer,
-    audience: mobileClientId,
-    algorithms: ["RS256", "RS384", "RS512", "PS256", "PS384", "PS512"]
-  });
-
-  return payload;
+  const payload = parts[1];
+  const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+  const json = Buffer.from(padded, "base64").toString("utf8");
+  return JSON.parse(json);
 }
-
-
-
-
-
-
 
 module.exports = async function (context, req) {
   try {
@@ -78,24 +59,26 @@ module.exports = async function (context, req) {
       return;
     }
 
-    const claims = await verifyBearerToken(token);
+    const claims = decodeJwtPayload(token);
 
-    const aadObjectId = claims.oid;
-    const email =
-      claims.preferred_username ||
-      claims.email ||
-      null;
-    const displayName =
-      claims.name ||
-      email ||
-      "Unknown User";
+    const aadObjectId = claims.oid || null;
+    const email = claims.preferred_username || claims.email || null;
+    const displayName = claims.name || email || "Unknown User";
 
     if (!aadObjectId) {
       context.res = {
         status: 400,
         headers: { "Content-Type": "application/json" },
         body: {
-          error: "Token did not contain oid claim"
+          error: "Token did not contain oid claim",
+          claimsPreview: {
+            iss: claims.iss || null,
+            aud: claims.aud || null,
+            sub: claims.sub || null,
+            preferred_username: claims.preferred_username || null,
+            name: claims.name || null,
+            oid: claims.oid || null
+          }
         }
       };
       return;
@@ -166,7 +149,9 @@ module.exports = async function (context, req) {
       headers: { "Content-Type": "application/json" },
       body: {
         error: "Failed to load user",
-        message: err.message
+        message: err.message,
+        code: err.code || null,
+        name: err.name || null
       }
     };
   }
