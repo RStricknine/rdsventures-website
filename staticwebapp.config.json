@@ -4,6 +4,15 @@
       },
       "routes": [
     {
+      "route": "/api/me",
+      "allowedRoles": ["anonymous"]
+    },
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
+    },
+
+    {
       "route": "/api/workorders/photos/view",
       "allowedRoles": ["anonymous"]
     },
@@ -20,13 +29,15 @@
       "allowedRoles": ["authenticated"]
     },
     {
+      "route": "/dashboard/*",
+      "allowedRoles": ["authenticated"]
+    },
+
+    {
       "route": "/api/dashboard",
       "allowedRoles": ["anonymous"]
     },
-    {
-          "route": "/api/me",
-          "allowedRoles": ["anonymous"]
-    },
+
     {
       "route": "/",
       "allowedRoles": ["anonymous"]
@@ -45,10 +56,6 @@
     },
     {
       "route": "/api/service-request-convert",
-      "allowedRoles": ["authenticated"]
-    },
-    {
-      "route": "/dashboard/*",
       "allowedRoles": ["authenticated"]
     },
     {
