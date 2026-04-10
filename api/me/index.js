@@ -25,10 +25,19 @@ async function getPool() {
   return pool;
 }
 
-function getBearerToken(req) {
+function getTokenFromRequest(req) {
+  const custom =
+    req.headers["x-mobile-id-token"] ||
+    req.headers["X-Mobile-ID-Token"];
+
+  if (custom) return custom;
+
   const auth = req.headers.authorization || req.headers.Authorization || "";
-  if (!auth.startsWith("Bearer ")) return null;
-  return auth.substring("Bearer ".length).trim();
+  if (auth.startsWith("Bearer ")) {
+    return auth.substring("Bearer ".length).trim();
+  }
+
+  return null;
 }
 
 function decodeJwtPayload(token) {
@@ -46,7 +55,7 @@ function decodeJwtPayload(token) {
 
 module.exports = async function (context, req) {
   try {
-    const token = getBearerToken(req);
+    const token = getTokenFromRequest(req);
 
     if (!token) {
       context.res = {
