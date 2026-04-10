@@ -7,10 +7,7 @@
       "route": "/api/me",
       "allowedRoles": ["anonymous"]
     },
-    {
-      "route": "/api/*",
-      "allowedRoles": ["anonymous"]
-    },
+    
 
     {
       "route": "/api/workorders/photos/view",
@@ -61,6 +58,10 @@
     {
       "route": "/*",
       "allowedRoles": ["authenticated"]
+    },
+    {
+      "route": "/api/*",
+      "allowedRoles": ["anonymous"]
     }
   ],
   "responseOverrides": {
