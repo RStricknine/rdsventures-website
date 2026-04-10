@@ -108,8 +108,7 @@ module.exports = async function (context, req) {
         ep.IsOfficeStaff,
         ep.IsActive
       FROM dbo.EmployeeProfiles ep
-      WHERE ep.IsDeleted = 0
-        AND ep.IsActive = 1
+      WHERE ep.IsActive = 1
         AND (
           (@AadObjectId IS NOT NULL AND ep.AadObjectId = @AadObjectId)
           OR (@Email IS NOT NULL AND LOWER(ep.Email) = LOWER(@Email))

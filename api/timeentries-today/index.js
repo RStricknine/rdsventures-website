@@ -94,8 +94,7 @@ module.exports = async function (context, req) {
       SELECT TOP 1
         @EmployeeProfileId = ep.EmployeeProfileId
       FROM dbo.EmployeeProfiles ep
-      WHERE ep.IsDeleted = 0
-        AND ep.IsActive = 1
+      WHERE ep.IsActive = 1
         AND (
           (@AadObjectId IS NOT NULL AND ep.AadObjectId = @AadObjectId)
           OR (@Email IS NOT NULL AND LOWER(ep.Email) = LOWER(@Email))
@@ -131,8 +130,7 @@ module.exports = async function (context, req) {
         ON tet.TimeEntryTypeId = te.TimeEntryTypeId
       LEFT JOIN dbo.stg_WorkOrders wo
         ON wo.RowID = te.WorkOrderRowId
-      WHERE te.IsDeleted = 0
-        AND te.EmployeeProfileId = @EmployeeProfileId
+      WHERE te.EmployeeProfileId = @EmployeeProfileId
         AND te.WorkDate = CAST(GETDATE() AS DATE)
       ORDER BY te.StartTime DESC, te.CreatedAt DESC;
     `);
