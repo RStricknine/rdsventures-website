@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@azure/storage-blob": "^12.26.0", 
+    "@azure/storage-blob": "^12.26.0",
+    "jose": "^6.2.2",
     "mssql": "^11.0.1"
   }
 }

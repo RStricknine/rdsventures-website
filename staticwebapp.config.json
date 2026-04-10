@@ -24,6 +24,10 @@
       "allowedRoles": ["anonymous"]
     },
     {
+          "route": "/api/me",
+          "allowedRoles": ["anonymous"]
+    },
+    {
       "route": "/",
       "allowedRoles": ["anonymous"]
     },

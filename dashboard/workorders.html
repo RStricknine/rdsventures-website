@@ -939,8 +939,7 @@ card.innerHTML = `
       }
     }
 
-
-async function loadPhotos() {
+    async function loadPhotos() {
   const beforeList = document.getElementById("beforePhotoList");
   const afterList = document.getElementById("afterPhotoList");
   const message = document.getElementById("photoMessage");
@@ -990,7 +989,7 @@ async function loadPhotos() {
   }
 }
 
-   function renderPhotoList(photos, container) {
+    function renderPhotoList(photos, container) {
   container.innerHTML = "";
 
   if (!photos.length) {
