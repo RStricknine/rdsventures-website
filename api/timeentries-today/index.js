@@ -47,14 +47,11 @@ module.exports = async function (context, req) {
 
     pool = await sql.connect(getSqlConfig());
 
-    // Step 1: employee lookup only
     const lookupRequest = pool.request();
     lookupRequest.input("Email", sql.NVarChar(320), email);
     lookupRequest.input("AadObjectId", sql.UniqueIdentifier, aadObjectId || null);
 
     const lookupResult = await lookupRequest.query(`
-      SET NOCOUNT ON;
-
       SELECT TOP 1
         ep.EmployeeProfileId
       FROM dbo.EmployeeProfiles ep
@@ -77,13 +74,10 @@ module.exports = async function (context, req) {
       return;
     }
 
-    // Step 2: bare minimum time query
     const entriesRequest = pool.request();
     entriesRequest.input("EmployeeProfileId", sql.UniqueIdentifier, employee.EmployeeProfileId);
 
     const entriesResult = await entriesRequest.query(`
-      SET NOCOUNT ON;
-
       SELECT TOP 20
         te.TimeEntryId,
         te.EmployeeProfileId,
@@ -106,12 +100,10 @@ module.exports = async function (context, req) {
       items: entriesResult.recordset || []
     });
   } catch (err) {
-    context.log.error("timeentries/today debug error", err);
     context.res = json(500, {
       ok: false,
       step: "catch",
-      error: err.message || "Server error.",
-      details: String(err)
+      error: err && err.message ? err.message : "Server error"
     });
   } finally {
     if (pool) {
