@@ -29,64 +29,39 @@
         </div>
       </section>
 
-      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-2">
-        <div class="grid grid-cols-2 gap-2">
-          <button id="timecardTab" class="rounded-xl px-4 py-3 text-sm font-medium bg-slate-900 text-white">
-            Timecard
-          </button>
-          <button id="workorderTab" class="rounded-xl px-4 py-3 text-sm font-medium bg-slate-100 text-slate-700">
-            Work Order
-          </button>
+      <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-slate-500">Status</p>
+            <p id="statusLabel" class="text-base font-semibold">Checking...</p>
+            <p id="statusSubtext" class="text-sm text-slate-500 mt-1">--</p>
+          </div>
+          <span id="statusBadge" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700">
+            --
+          </span>
         </div>
       </section>
 
-      <section id="activeTimerCard" class="hidden bg-emerald-50 rounded-2xl shadow-sm border border-emerald-200 p-4">
+      <section id="openEntryCard" class="hidden bg-emerald-50 rounded-2xl shadow-sm border border-emerald-200 p-4">
         <div class="flex items-start justify-between gap-3">
           <div>
-            <p class="text-sm font-medium text-emerald-700">Active Timer</p>
-            <p id="activeTimerLabel" class="text-base font-semibold text-emerald-900">Working...</p>
-            <p id="activeTimerSince" class="text-sm text-emerald-700 mt-1">Started at --</p>
+            <p class="text-sm font-medium text-emerald-700">Current Entry</p>
+            <p id="openEntryTime" class="text-base font-semibold text-emerald-900">Started at --</p>
+            <p id="openEntryMeta" class="text-sm text-emerald-700 mt-1">Running</p>
           </div>
-          <button id="stopTimerBtn" class="rounded-xl bg-red-600 text-white px-4 py-2 text-sm font-semibold">
-            Stop
-          </button>
         </div>
       </section>
 
       <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-4">
         <div>
-          <h2 class="text-base font-semibold">Add Time Entry</h2>
-          <p class="text-sm text-slate-500">Enter your time for today.</p>
+          <h2 class="text-base font-semibold">Time Entry</h2>
+          <p class="text-sm text-slate-500">Clock in and clock out using the buttons below.</p>
         </div>
 
         <div class="space-y-3">
           <div>
             <label class="block text-sm font-medium mb-1">Work Date</label>
             <input id="workDate" type="date" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" />
-          </div>
-
-          <div id="workOrderFields" class="space-y-3 hidden">
-            <div>
-              <label class="block text-sm font-medium mb-1">Work Order</label>
-              <select id="workOrderSelect" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm">
-                <option value="">Select work order</option>
-              </select>
-            </div>
-
-            <div class="rounded-xl bg-slate-50 border border-slate-200 p-3">
-              <p id="woSummary" class="text-sm text-slate-600">No work order selected.</p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-sm font-medium mb-1">Start</label>
-              <input id="startTime" type="time" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">End</label>
-              <input id="endTime" type="time" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" />
-            </div>
           </div>
 
           <div>
@@ -96,7 +71,7 @@
 
           <div>
             <label class="block text-sm font-medium mb-1">Labor Type</label>
-            <input id="laborType" type="text" placeholder="General labor, admin, service, etc." class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" />
+            <input id="laborType" type="text" placeholder="General Labor, Admin, Service..." class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" />
           </div>
 
           <div>
@@ -106,11 +81,20 @@
         </div>
 
         <p id="formMessage" class="text-sm text-slate-500"></p>
+
+        <div class="grid grid-cols-2 gap-3">
+          <button id="clockInBtn" class="rounded-xl bg-blue-600 text-white px-4 py-3 text-sm font-semibold">
+            Clock In
+          </button>
+          <button id="clockOutBtn" class="rounded-xl bg-slate-900 text-white px-4 py-3 text-sm font-semibold">
+            Clock Out
+          </button>
+        </div>
       </section>
 
       <section class="space-y-3">
         <div class="flex items-center justify-between">
-          <h2 class="text-base font-semibold">Today’s Entries</h2>
+          <h2 id="entriesTitle" class="text-base font-semibold">Entries</h2>
         </div>
         <div id="entriesList" class="space-y-3">
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 text-sm text-slate-500">
@@ -119,33 +103,19 @@
         </div>
       </section>
     </main>
-
-    <div class="fixed bottom-0 inset-x-0 border-t border-slate-200 bg-white/95 backdrop-blur">
-      <div class="max-w-md mx-auto px-4 py-3 flex gap-3">
-        <button id="clockNowBtn" class="flex-1 rounded-xl bg-slate-100 text-slate-800 px-4 py-3 text-sm font-semibold">
-          Clock In
-        </button>
-        <button id="saveEntryBtn" class="flex-1 rounded-xl bg-blue-600 text-white px-4 py-3 text-sm font-semibold">
-          Save Entry
-        </button>
-      </div>
-    </div>
   </div>
 
   <script>
     let currentUser = null;
-    let currentMode = "timecard";
-    let workOrders = [];
+    let openEntry = null;
 
     document.addEventListener("DOMContentLoaded", async () => {
       try {
         wireEvents();
         setToday();
         await loadUser();
-        await loadWorkOrders();
-        await loadTodayEntries();
-        applyModeFromUser();
-        renderMode();
+        await loadEntries();
+        renderStatus();
       } catch (err) {
         console.error(err);
         document.getElementById("formMessage").textContent = err.message || "Failed to load page.";
@@ -153,25 +123,18 @@
     });
 
     function wireEvents() {
-      document.getElementById("timecardTab").addEventListener("click", () => {
-        currentMode = "timecard";
-        renderMode();
-      });
-
-      document.getElementById("workorderTab").addEventListener("click", () => {
-        currentMode = "workorder";
-        renderMode();
-      });
-
       document.getElementById("refreshBtn").addEventListener("click", async () => {
-        await loadTodayEntries();
+        await loadEntries();
+        renderStatus();
       });
 
-      document.getElementById("workOrderSelect").addEventListener("change", renderSelectedWorkOrder);
+      document.getElementById("workDate").addEventListener("change", async () => {
+        await loadEntries();
+        renderStatus();
+      });
 
-      document.getElementById("clockNowBtn").addEventListener("click", handleClockNow);
-      document.getElementById("saveEntryBtn").addEventListener("click", saveEntry);
-      document.getElementById("stopTimerBtn").addEventListener("click", handleStopNow);
+      document.getElementById("clockInBtn").addEventListener("click", handleClockIn);
+      document.getElementById("clockOutBtn").addEventListener("click", handleClockOut);
     }
 
     function setToday() {
@@ -182,12 +145,21 @@
       document.getElementById("workDate").value = `${yyyy}-${mm}-${dd}`;
     }
 
-    async function loadUser() {
-      const res = await fetch("/api/me");
+    async function safeJsonFetch(url, options) {
+      const res = await fetch(url, options);
       const text = await res.text();
+      console.log(`${url} raw response:`, text);
       const data = text ? JSON.parse(text) : {};
+      if (!res.ok || data.ok === false) {
+        throw new Error(data.error || `Request failed (${res.status})`);
+      }
+      return data;
+    }
 
-      if (!res.ok || !data.ok || !data.user) {
+    async function loadUser() {
+      const data = await safeJsonFetch("/api/me");
+
+      if (!data.ok || !data.user) {
         throw new Error(data.error || "Unable to load user");
       }
 
@@ -198,59 +170,11 @@
       document.getElementById("modeBadge").textContent = currentUser.timeEntryMode || "--";
     }
 
-    function applyModeFromUser() {
-      if (!currentUser) return;
-      currentMode = (String(currentUser.timeEntryMode || "").toLowerCase() === "workorder") ? "workorder" : "timecard";
-    }
-
-    function renderMode() {
-      const isTimecard = currentMode === "timecard";
-
-      document.getElementById("timecardTab").className =
-        `rounded-xl px-4 py-3 text-sm font-medium ${isTimecard ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700"}`;
-
-      document.getElementById("workorderTab").className =
-        `rounded-xl px-4 py-3 text-sm font-medium ${!isTimecard ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700"}`;
-
-      document.getElementById("workOrderFields").classList.toggle("hidden", isTimecard);
-      document.getElementById("clockNowBtn").textContent = isTimecard ? "Clock In" : "Start Work";
-    }
-
-    async function loadWorkOrders() {
-      const res = await fetch("/api/workorders/list?filter=open");
-      const text = await res.text();
-      const data = text ? JSON.parse(text) : {};
-
-      workOrders = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
-      const select = document.getElementById("workOrderSelect");
-      select.innerHTML = '<option value="">Select work order</option>';
-
-      for (const wo of workOrders) {
-        const option = document.createElement("option");
-        const rowId = wo.RowID || wo.rowId || wo.WorkOrderRowId || "";
-        option.value = rowId;
-        option.textContent = `${wo.ExternalWorkOrderNumber || wo.WorkOrderNumber || "WO"} - ${wo.CustomerName || wo.Subject || "Work Order"}`;
-        option.dataset.payload = JSON.stringify(wo);
-        select.appendChild(option);
-      }
-    }
-
-    function renderSelectedWorkOrder() {
-      const select = document.getElementById("workOrderSelect");
-      const option = select.selectedOptions[0];
-
-      if (!option || !option.dataset.payload) {
-        document.getElementById("woSummary").textContent = "No work order selected.";
-        return;
-      }
-
-      const wo = JSON.parse(option.dataset.payload);
-      document.getElementById("woSummary").textContent =
-        `${wo.ExternalWorkOrderNumber || wo.WorkOrderNumber || "WO"} • ${wo.CustomerName || ""} • ${wo.PropertyAddress || wo.Address || ""}`;
-    }
-
-    async function loadTodayEntries() {
+    async function loadEntries() {
       const list = document.getElementById("entriesList");
+      const selectedDate = document.getElementById("workDate").value;
+      document.getElementById("entriesTitle").textContent = `Entries for ${selectedDate}`;
+
       list.innerHTML = `
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 text-sm text-slate-500">
           Loading entries...
@@ -258,18 +182,10 @@
       `;
 
       try {
-const selectedDate = document.getElementById("workDate").value;
-const res = await fetch(`/api/timeentries/today?workDate=${encodeURIComponent(selectedDate)}`);
-const text = await res.text();
-console.log("/api/timeentries/today raw response:", text);
-
-const data = text ? JSON.parse(text) : {};
-
-        if (!res.ok || data.ok === false) {
-          throw new Error(data.error || "Failed to load entries");
-        }
-
+        const data = await safeJsonFetch(`/api/timeentries/today?workDate=${encodeURIComponent(selectedDate)}`);
         const items = Array.isArray(data.items) ? data.items : [];
+
+        openEntry = items.find(x => !x.endTime) || null;
 
         if (!items.length) {
           list.innerHTML = `
@@ -277,29 +193,17 @@ const data = text ? JSON.parse(text) : {};
               No entries yet.
             </div>
           `;
-          document.getElementById("activeTimerCard").classList.add("hidden");
           return;
-        }
-
-        const active = items.find(x => !x.endTime);
-
-        if (active) {
-          document.getElementById("activeTimerCard").classList.remove("hidden");
-          document.getElementById("activeTimerLabel").textContent =
-            active.workOrderNumber ? `WO ${active.workOrderNumber}` : "Timecard";
-          document.getElementById("activeTimerSince").textContent =
-            `Started at ${formatDisplayTime(active.startTime)}`;
-        } else {
-          document.getElementById("activeTimerCard").classList.add("hidden");
         }
 
         list.innerHTML = items.map(item => `
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <p class="text-sm font-semibold text-slate-900">${escapeHtml(item.workOrderNumber || item.entryType || "Time Entry")}</p>
+                <p class="text-sm font-semibold text-slate-900">${escapeHtml(item.workOrderNumber || "Time Entry")}</p>
                 <p class="text-sm text-slate-600">${formatDisplayTime(item.startTime)} - ${item.endTime ? formatDisplayTime(item.endTime) : "Running"}</p>
-                <p class="text-xs text-slate-500 mt-1">${escapeHtml(item.notes || "")}</p>
+                ${item.laborType ? `<p class="text-xs text-slate-500 mt-1">Labor: ${escapeHtml(item.laborType)}</p>` : ""}
+                ${item.notes ? `<p class="text-xs text-slate-500 mt-1">${escapeHtml(item.notes)}</p>` : ""}
               </div>
               <div class="text-sm font-medium text-slate-700">
                 ${Number(item.hoursWorked || 0).toFixed(2)} hrs
@@ -309,119 +213,139 @@ const data = text ? JSON.parse(text) : {};
         `).join("");
       } catch (err) {
         console.error(err);
+        openEntry = null;
         list.innerHTML = `
           <div class="bg-white rounded-2xl shadow-sm border border-red-200 p-4 text-sm text-red-600">
             Failed to load entries.
           </div>
         `;
+        document.getElementById("formMessage").textContent = err.message || "Failed to load entries.";
       }
     }
 
-    function handleClockNow() {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      document.getElementById("startTime").value = `${hh}:${mm}`;
-      document.getElementById("formMessage").textContent =
-        currentMode === "timecard" ? "Clock-in time set." : "Start time set.";
+    function renderStatus() {
+      const statusLabel = document.getElementById("statusLabel");
+      const statusSubtext = document.getElementById("statusSubtext");
+      const statusBadge = document.getElementById("statusBadge");
+      const openCard = document.getElementById("openEntryCard");
+      const openEntryTime = document.getElementById("openEntryTime");
+      const openEntryMeta = document.getElementById("openEntryMeta");
+      const clockInBtn = document.getElementById("clockInBtn");
+      const clockOutBtn = document.getElementById("clockOutBtn");
+
+      if (openEntry) {
+        statusLabel.textContent = "Clocked In";
+        statusSubtext.textContent = `Started at ${formatDisplayTime(openEntry.startTime)}`;
+        statusBadge.textContent = "CLOCKED IN";
+        statusBadge.className = "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-emerald-100 text-emerald-800";
+        openCard.classList.remove("hidden");
+        openEntryTime.textContent = `Started at ${formatDisplayTime(openEntry.startTime)}`;
+        openEntryMeta.textContent = `${openEntry.laborType ? `Labor: ${openEntry.laborType}` : "Running"}${openEntry.notes ? ` • ${openEntry.notes}` : ""}`;
+        clockInBtn.disabled = true;
+        clockInBtn.className = "rounded-xl bg-slate-300 text-slate-500 px-4 py-3 text-sm font-semibold";
+        clockOutBtn.disabled = false;
+        clockOutBtn.className = "rounded-xl bg-red-600 text-white px-4 py-3 text-sm font-semibold";
+      } else {
+        statusLabel.textContent = "Clocked Out";
+        statusSubtext.textContent = "No open time entry";
+        statusBadge.textContent = "CLOCKED OUT";
+        statusBadge.className = "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium bg-slate-100 text-slate-700";
+        openCard.classList.add("hidden");
+        clockInBtn.disabled = false;
+        clockInBtn.className = "rounded-xl bg-blue-600 text-white px-4 py-3 text-sm font-semibold";
+        clockOutBtn.disabled = true;
+        clockOutBtn.className = "rounded-xl bg-slate-300 text-slate-500 px-4 py-3 text-sm font-semibold";
+      }
     }
 
-    async function handleStopNow() {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      document.getElementById("endTime").value = `${hh}:${mm}`;
-      document.getElementById("formMessage").textContent = "End time set. Tap Save Entry.";
-    }
-
-    async function saveEntry() {
-      const message = document.getElementById("formMessage");
-      message.textContent = "Saving...";
-
-      const workOrderRowId = currentMode === "workorder"
-        ? document.getElementById("workOrderSelect").value || null
-        : null;
-
-      const payload = {
-        mode: currentMode,
-        workDate: document.getElementById("workDate").value,
-        startTime: document.getElementById("startTime").value,
-        endTime: document.getElementById("endTime").value || null,
-        breakMinutes: Number(document.getElementById("breakMinutes").value || 0),
-        laborType: document.getElementById("laborType").value || null,
-        notes: document.getElementById("notes").value || null,
-        workOrderRowId
-      };
+    async function handleClockIn() {
+      if (openEntry) {
+        document.getElementById("formMessage").textContent = "You already have an open time entry.";
+        return;
+      }
 
       try {
-const res = await fetch("/api/timeentries/create", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload)
-});
+        document.getElementById("formMessage").textContent = "Clocking in...";
 
-const text = await res.text();
-console.log("/api/timeentries/create raw response:", text);
+        const payload = {
+          mode: "timecard",
+          workDate: document.getElementById("workDate").value,
+          startTime: getNowHHMM(),
+          breakMinutes: Number(document.getElementById("breakMinutes").value || 0),
+          laborType: document.getElementById("laborType").value || null,
+          notes: document.getElementById("notes").value || null,
+          workOrderRowId: null
+        };
 
-const data = text ? JSON.parse(text) : {};
+        await safeJsonFetch("/api/timeentries/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
-if (!res.ok || data.ok === false) {
-  throw new Error(data.error || `Save failed (${res.status})`);
-}
-
-        if (!res.ok || data.ok === false) {
-          throw new Error(data.error || "Save failed");
-        }
-
-        message.textContent = "Time entry saved.";
-
-        if (!payload.endTime) {
-          document.getElementById("activeTimerCard").classList.remove("hidden");
-          document.getElementById("activeTimerLabel").textContent =
-            currentMode === "workorder"
-              ? `WO ${data.item?.workOrderNumber || ""}`.trim()
-              : "Timecard";
-          document.getElementById("activeTimerSince").textContent =
-            `Started at ${formatDisplayTime(payload.startTime)}`;
-        }
-
-        document.getElementById("notes").value = "";
-        document.getElementById("laborType").value = "";
-        document.getElementById("breakMinutes").value = "0";
-        await loadTodayEntries();
+        document.getElementById("formMessage").textContent = "Clocked in.";
+        await loadEntries();
+        renderStatus();
       } catch (err) {
         console.error(err);
-        message.textContent = err.message || "Save failed.";
+        document.getElementById("formMessage").textContent = err.message || "Clock in failed.";
       }
     }
 
-function formatDisplayTime(value) {
-  if (!value) return "--";
+    async function handleClockOut() {
+      if (!openEntry) {
+        document.getElementById("formMessage").textContent = "No open time entry found.";
+        return;
+      }
 
-  const str = String(value);
+      try {
+        document.getElementById("formMessage").textContent = "Clocking out...";
 
-  // Handles ISO-like values such as 2026-04-10T16:00:00.000Z
-  const isoMatch = str.match(/T(\d{2}):(\d{2})/);
-  if (isoMatch) {
-    let hh = Number(isoMatch[1]);
-    const mm = isoMatch[2];
-    const suffix = hh >= 12 ? "PM" : "AM";
-    hh = hh % 12 || 12;
-    return `${hh}:${mm} ${suffix}`;
-  }
+        await safeJsonFetch("/api/timeentries/stop", {
+          method: "POST"
+        });
 
-  // Handles values like 16:00:00
-  const plainMatch = str.match(/^(\d{2}):(\d{2})/);
-  if (plainMatch) {
-    let hh = Number(plainMatch[1]);
-    const mm = plainMatch[2];
-    const suffix = hh >= 12 ? "PM" : "AM";
-    hh = hh % 12 || 12;
-    return `${hh}:${mm} ${suffix}`;
-  }
+        document.getElementById("formMessage").textContent = "Clocked out.";
+        await loadEntries();
+        renderStatus();
+      } catch (err) {
+        console.error(err);
+        document.getElementById("formMessage").textContent = err.message || "Clock out failed.";
+      }
+    }
 
-  return str;
-}
+    function getNowHHMM() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      return `${hh}:${mm}`;
+    }
+
+    function formatDisplayTime(value) {
+      if (!value) return "--";
+
+      const str = String(value);
+
+      const isoMatch = str.match(/T(\d{2}):(\d{2})/);
+      if (isoMatch) {
+        let hh = Number(isoMatch[1]);
+        const mm = isoMatch[2];
+        const suffix = hh >= 12 ? "PM" : "AM";
+        hh = hh % 12 || 12;
+        return `${hh}:${mm} ${suffix}`;
+      }
+
+      const plainMatch = str.match(/^(\d{2}):(\d{2})/);
+      if (plainMatch) {
+        let hh = Number(plainMatch[1]);
+        const mm = plainMatch[2];
+        const suffix = hh >= 12 ? "PM" : "AM";
+        hh = hh % 12 || 12;
+        return `${hh}:${mm} ${suffix}`;
+      }
+
+      return str;
+    }
 
     function escapeHtml(str) {
       return String(str)
