@@ -110,6 +110,9 @@
     let openEntry = null;
     let refeshTimer = null;
 
+
+
+
     document.addEventListener("DOMContentLoaded", async () => {
       try {
         wireEvents();
@@ -137,6 +140,32 @@
       document.getElementById("clockInBtn").addEventListener("click", handleClockIn);
       document.getElementById("clockOutBtn").addEventListener("click", handleClockOut);
     }
+
+
+
+function startAutoRefresh() {
+  stopAutoRefresh();
+
+  refreshTimer = setInterval(async () => {
+    try {
+      console.log("auto-refresh running", new Date().toLocaleTimeString());
+      await loadEntries();
+      renderStatus();
+    } catch (err) {
+      console.error("Auto-refresh failed:", err);
+    }
+  }, 5000); // use 5000 while testing, switch to 20000 later
+}
+
+function stopAutoRefresh() {
+  if (refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+}
+
+
+
 
     function setToday() {
       const today = new Date();
