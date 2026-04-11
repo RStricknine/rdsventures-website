@@ -110,7 +110,19 @@
     let openEntry = null;
     let refeshTimer = null;
 
-
+document.addEventListener("visibilitychange", async () => {
+  if (document.hidden) {
+    stopAutoRefresh();
+  } else {
+    startAutoRefresh();
+    try {
+      await loadEntries();
+      renderStatus();
+    } catch (err) {
+      console.error("Refresh on visibility failed:", err);
+    }
+  }
+});
 
 
     document.addEventListener("DOMContentLoaded", async () => {
@@ -120,6 +132,8 @@
         await loadUser();
         await loadEntries();
         renderStatus();
+        startAutoRefresh();
+        console.log("auto-refresh started");
       } catch (err) {
         console.error(err);
         document.getElementById("formMessage").textContent = err.message || "Failed to load page.";
