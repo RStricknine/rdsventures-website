@@ -83,24 +83,18 @@ const aadObjectId = identity.aadObjectId;
       END
 
       SELECT
-        te.EmployeeProfileId AS employeeProfileId,
-        tet.Code AS entryType,
-        te.WorkOrderRowId AS workOrderRowId,
-        COALESCE(te.WorkOrderNumber, wo.ExternalWorkOrderNumber, wo.WorkOrderNumber) AS workOrderNumber,
-        te.StartTime AS startTime,
-        te.EndTime AS endTime,
-        te.HoursWorked AS hoursWorked,
-        te.Notes AS notes
-      FROM dbo.TimeEntries te
-      LEFT JOIN dbo.TimeEntryTypes tet
-        ON tet.TimeEntryTypeId = te.TimeEntryTypeId
-      LEFT JOIN dbo.stg_WorkOrders wo
-        ON wo.RowID = te.WorkOrderRowId
-      WHERE te.IsDeleted = 0
-        AND te.EmployeeProfileId = @EmployeeProfileId
-        AND te.WorkDate = CAST(GETDATE() AS DATE)
-      ORDER BY te.StartTime DESC, te.CreatedAt DESC;
-    `);
+  te.EmployeeProfileId AS employeeProfileId,
+  te.WorkOrderRowId AS workOrderRowId,
+  te.WorkOrderNumber AS workOrderNumber,
+  te.StartTime AS startTime,
+  te.EndTime AS endTime,
+  te.HoursWorked AS hoursWorked,
+  te.Notes AS notes
+FROM dbo.TimeEntries te
+WHERE te.IsDeleted = 0
+  AND te.EmployeeProfileId = @EmployeeProfileId
+  AND te.WorkDate = CAST(GETDATE() AS DATE)
+ORDER BY te.StartTime DESC, te.CreatedAt DESC;
 
     context.res = json(200, {
       ok: true,
