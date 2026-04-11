@@ -28,6 +28,8 @@ module.exports = async function (context, req) {
 
   try {
     const identity = getIdentity(req);
+const workDate = String((req.query && req.query.workDate) || "").trim();
+
 
     pool = await sql.connect(getSqlConfig());
 
@@ -48,6 +50,7 @@ module.exports = async function (context, req) {
 
     const entries = await pool.request()
       .input("EmployeeProfileId", sql.UniqueIdentifier, employee.EmployeeProfileId)
+      .input("WorkDate", sql.Date, workDate || null)
       .query(`
        SELECT
   te.EmployeeProfileId AS employeeProfileId,
@@ -60,7 +63,7 @@ module.exports = async function (context, req) {
 FROM dbo.TimeEntries te
 WHERE te.IsDeleted = 0
   AND te.EmployeeProfileId = @EmployeeProfileId
-  AND te.WorkDate = CAST(GETDATE() AS DATE)
+  AND te.WorkDate = @WorkDate
 ORDER BY te.StartTime DESC, te.CreatedAt DESC
       `);
 

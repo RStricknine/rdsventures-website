@@ -258,7 +258,8 @@
       `;
 
       try {
-const res = await fetch("/api/timeentries/today");
+const selectedDate = document.getElementById("workDate").value;
+const res = await fetch(`/api/timeentries/today?workDate=${encodeURIComponent(selectedDate)}`);
 const text = await res.text();
 console.log("/api/timeentries/today raw response:", text);
 
