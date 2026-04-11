@@ -43,7 +43,6 @@ module.exports = async function (context, req) {
 
     pool = await sql.connect(getSqlConfig());
 
-    // Step 1: find employee
     const lookup = await pool.request()
       .input("Email", sql.NVarChar(320), email)
       .input("AadObjectId", sql.UniqueIdentifier, aadObjectId || null)
@@ -65,7 +64,6 @@ module.exports = async function (context, req) {
       return;
     }
 
-    // Step 2: find open entry
     const openResult = await pool.request()
       .input("EmployeeProfileId", sql.UniqueIdentifier, employee.EmployeeProfileId)
       .query(`
@@ -90,11 +88,19 @@ module.exports = async function (context, req) {
       return;
     }
 
-    // Step 3: close it
     const updateResult = await pool.request()
       .input("TimeEntryId", sql.UniqueIdentifier, openEntry.TimeEntryId)
       .query(`
+        SET NOCOUNT ON;
+
         DECLARE @EndTime DATETIME2 = GETDATE();
+
+        DECLARE @Updated TABLE (
+          timeEntryId UNIQUEIDENTIFIER,
+          startTime DATETIME2,
+          endTime DATETIME2,
+          hoursWorked DECIMAL(10,2)
+        );
 
         UPDATE dbo.TimeEntries
         SET
@@ -111,8 +117,20 @@ module.exports = async function (context, req) {
           inserted.StartTime,
           inserted.EndTime,
           inserted.HoursWorked
+        INTO @Updated (
+          timeEntryId,
+          startTime,
+          endTime,
+          hoursWorked
+        )
         WHERE TimeEntryId = @TimeEntryId;
 
+        SELECT
+          timeEntryId,
+          startTime,
+          endTime,
+          hoursWorked
+        FROM @Updated;
       `);
 
     context.res = json(200, {
