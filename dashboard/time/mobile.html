@@ -395,13 +395,33 @@ if (!res.ok || data.ok === false) {
       }
     }
 
-    function formatDisplayTime(value) {
-      if (!value) return "--";
-      if (/^\d{2}:\d{2}/.test(value)) return value.substring(0, 5);
-      const d = new Date(value);
-      if (isNaN(d.getTime())) return String(value);
-      return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-    }
+function formatDisplayTime(value) {
+  if (!value) return "--";
+
+  const str = String(value);
+
+  // Handles ISO-like values such as 2026-04-10T16:00:00.000Z
+  const isoMatch = str.match(/T(\d{2}):(\d{2})/);
+  if (isoMatch) {
+    let hh = Number(isoMatch[1]);
+    const mm = isoMatch[2];
+    const suffix = hh >= 12 ? "PM" : "AM";
+    hh = hh % 12 || 12;
+    return `${hh}:${mm} ${suffix}`;
+  }
+
+  // Handles values like 16:00:00
+  const plainMatch = str.match(/^(\d{2}):(\d{2})/);
+  if (plainMatch) {
+    let hh = Number(plainMatch[1]);
+    const mm = plainMatch[2];
+    const suffix = hh >= 12 ? "PM" : "AM";
+    hh = hh % 12 || 12;
+    return `${hh}:${mm} ${suffix}`;
+  }
+
+  return str;
+}
 
     function escapeHtml(str) {
       return String(str)
