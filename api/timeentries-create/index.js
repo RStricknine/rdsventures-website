@@ -1,4 +1,4 @@
-const { getIdentity } = require('../../shared/auth');
+const { getIdentity } = require('../shared/auth');
 const sql = require("mssql");
 
 function json(status, body) {
