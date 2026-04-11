@@ -184,7 +184,8 @@
 
     async function loadUser() {
       const res = await fetch("/api/me");
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
 
       if (!res.ok || !data.ok || !data.user) {
         throw new Error(data.error || "Unable to load user");
@@ -217,7 +218,8 @@
 
     async function loadWorkOrders() {
       const res = await fetch("/api/workorders/list?filter=open");
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
 
       workOrders = Array.isArray(data) ? data : (Array.isArray(data.items) ? data.items : []);
       const select = document.getElementById("workOrderSelect");
@@ -256,8 +258,11 @@
       `;
 
       try {
-        const res = await fetch("/api/timeentries/today");
-        const data = await res.json();
+const res = await fetch("/api/timeentries/today");
+const text = await res.text();
+console.log("/api/timeentries/today raw response:", text);
+
+const data = text ? JSON.parse(text) : {};
 
         if (!res.ok || data.ok === false) {
           throw new Error(data.error || "Failed to load entries");
@@ -348,13 +353,20 @@
       };
 
       try {
-        const res = await fetch("/api/timeentries/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+const res = await fetch("/api/timeentries/create", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload)
+});
 
-        const data = await res.json();
+const text = await res.text();
+console.log("/api/timeentries/create raw response:", text);
+
+const data = text ? JSON.parse(text) : {};
+
+if (!res.ok || data.ok === false) {
+  throw new Error(data.error || `Save failed (${res.status})`);
+}
 
         if (!res.ok || data.ok === false) {
           throw new Error(data.error || "Save failed");
