@@ -24,24 +24,41 @@ function getSqlConfig() {
 }
 
 module.exports = async function (context, req) {
+  let pool;
+
   try {
     const identity = getIdentity(req);
 
-    const pool = await sql.connect(getSqlConfig());
+    pool = await sql.connect(getSqlConfig());
 
-    const result = await pool.request()
+    const lookup = await pool.request()
       .input("Email", sql.NVarChar(320), identity.email)
       .input("AadObjectId", sql.UniqueIdentifier, identity.aadObjectId || null)
       .query(`
         SELECT TOP 1 EmployeeProfileId
         FROM dbo.EmployeeProfiles
         WHERE IsActive = 1
+          AND (
+            (@AadObjectId IS NOT NULL AND AadObjectId = @AadObjectId)
+            OR (@Email IS NOT NULL AND LOWER(Email) = LOWER(@Email))
+          )
+      `);
+
+    const employee = lookup.recordset[0];
+
+    const entries = await pool.request()
+      .input("EmployeeProfileId", sql.UniqueIdentifier, employee.EmployeeProfileId)
+      .query(`
+        SELECT TOP 20 *
+        FROM dbo.TimeEntries
+        WHERE EmployeeProfileId = @EmployeeProfileId
+        ORDER BY CreatedAt DESC
       `);
 
     context.res = json(200, {
       ok: true,
-      step: "employee_lookup",
-      result: result.recordset
+      step: "entries_basic",
+      items: entries.recordset
     });
 
   } catch (err) {
@@ -50,5 +67,9 @@ module.exports = async function (context, req) {
       step: "catch",
       error: err.message
     });
+  } finally {
+    if (pool) {
+      try { await pool.close(); } catch (_) {}
+    }
   }
 };
