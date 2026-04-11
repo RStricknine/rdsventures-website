@@ -49,10 +49,19 @@ module.exports = async function (context, req) {
     const entries = await pool.request()
       .input("EmployeeProfileId", sql.UniqueIdentifier, employee.EmployeeProfileId)
       .query(`
-        SELECT TOP 20 *
-        FROM dbo.TimeEntries
-        WHERE EmployeeProfileId = @EmployeeProfileId
-        ORDER BY CreatedAt DESC
+       SELECT
+  te.EmployeeProfileId AS employeeProfileId,
+  te.WorkOrderRowId AS workOrderRowId,
+  te.WorkOrderNumber AS workOrderNumber,
+  te.StartTime AS startTime,
+  te.EndTime AS endTime,
+  te.HoursWorked AS hoursWorked,
+  te.Notes AS notes
+FROM dbo.TimeEntries te
+WHERE te.IsDeleted = 0
+  AND te.EmployeeProfileId = @EmployeeProfileId
+  AND te.WorkDate = CAST(GETDATE() AS DATE)
+ORDER BY te.StartTime DESC, te.CreatedAt DESC
       `);
 
     context.res = json(200, {
