@@ -41,6 +41,20 @@ module.exports = async function (context, req) {
       return;
     }
 
+    const body = req.body || {};
+    const workDate = String(body.workDate || "").trim();
+    const endTime = String(body.endTime || "").trim();
+
+    if (!workDate) {
+      context.res = json(400, { ok: false, error: "workDate is required." });
+      return;
+    }
+
+    if (!endTime) {
+      context.res = json(400, { ok: false, error: "endTime is required." });
+      return;
+    }
+
     pool = await sql.connect(getSqlConfig());
 
     const lookup = await pool.request()
@@ -90,10 +104,16 @@ module.exports = async function (context, req) {
 
     const updateResult = await pool.request()
       .input("TimeEntryId", sql.UniqueIdentifier, openEntry.TimeEntryId)
+      .input("WorkDate", sql.Date, workDate)
+      .input("EndTimeText", sql.NVarChar(5), endTime)
       .query(`
         SET NOCOUNT ON;
 
-        DECLARE @EndTime DATETIME2 = GETDATE();
+        DECLARE @EndTime DATETIME2 =
+          CASE
+            WHEN @EndTimeText IS NULL OR @EndTimeText = '' THEN NULL
+            ELSE CAST(CONCAT(CONVERT(varchar(10), @WorkDate, 23), 'T', @EndTimeText, ':00') AS DATETIME2)
+          END;
 
         DECLARE @Updated TABLE (
           timeEntryId UNIQUEIDENTIFIER,
@@ -137,7 +157,6 @@ module.exports = async function (context, req) {
       ok: true,
       item: updateResult.recordset[0]
     });
-
   } catch (err) {
     context.log.error("timeentries/stop error", err);
     context.res = json(500, {

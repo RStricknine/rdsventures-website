@@ -301,9 +301,14 @@
       try {
         document.getElementById("formMessage").textContent = "Clocking out...";
 
-        await safeJsonFetch("/api/timeentries/stop", {
-          method: "POST"
-        });
+       await safeJsonFetch("/api/timeentries/stop", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    workDate: document.getElementById("workDate").value,
+    endTime: getNowHHMM()
+  })
+});
 
         document.getElementById("formMessage").textContent = "Clocked out.";
         await loadEntries();
