@@ -1,6 +1,4 @@
-
 const { getIdentity } = require('../../shared/auth');
-
 const sql = require("mssql");
 
 function json(status, body) {
@@ -34,12 +32,9 @@ module.exports = async function (context, req) {
   let pool;
 
   try {
-   
-const identity = getIdentity(req);
-const email = identity.email;
-const aadObjectId = identity.aadObjectId;
-
-
+    const identity = getIdentity(req);
+    const email = identity.email;
+    const aadObjectId = identity.aadObjectId;
 
     if (!email && !aadObjectId) {
       context.res = json(401, { ok: false, error: "User identity not found." });
@@ -70,7 +65,6 @@ const aadObjectId = identity.aadObjectId;
       BEGIN
         SELECT
           CAST(NULL AS UNIQUEIDENTIFIER) AS employeeProfileId,
-          CAST(NULL AS NVARCHAR(50)) AS entryType,
           CAST(NULL AS INT) AS workOrderRowId,
           CAST(NULL AS NVARCHAR(100)) AS workOrderNumber,
           CAST(NULL AS DATETIME2) AS startTime,
@@ -83,18 +77,19 @@ const aadObjectId = identity.aadObjectId;
       END
 
       SELECT
-  te.EmployeeProfileId AS employeeProfileId,
-  te.WorkOrderRowId AS workOrderRowId,
-  te.WorkOrderNumber AS workOrderNumber,
-  te.StartTime AS startTime,
-  te.EndTime AS endTime,
-  te.HoursWorked AS hoursWorked,
-  te.Notes AS notes
-FROM dbo.TimeEntries te
-WHERE te.IsDeleted = 0
-  AND te.EmployeeProfileId = @EmployeeProfileId
-  AND te.WorkDate = CAST(GETDATE() AS DATE)
-ORDER BY te.StartTime DESC, te.CreatedAt DESC;
+        te.EmployeeProfileId AS employeeProfileId,
+        te.WorkOrderRowId AS workOrderRowId,
+        te.WorkOrderNumber AS workOrderNumber,
+        te.StartTime AS startTime,
+        te.EndTime AS endTime,
+        te.HoursWorked AS hoursWorked,
+        te.Notes AS notes
+      FROM dbo.TimeEntries te
+      WHERE te.IsDeleted = 0
+        AND te.EmployeeProfileId = @EmployeeProfileId
+        AND te.WorkDate = CAST(GETDATE() AS DATE)
+      ORDER BY te.StartTime DESC, te.CreatedAt DESC;
+    `);
 
     context.res = json(200, {
       ok: true,
