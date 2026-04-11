@@ -8,6 +8,7 @@ function json(status, body) {
     body: JSON.stringify(body)
   };
 }
+
 function getSqlConfig() {
   return {
     server: process.env.SQL_SERVER,
@@ -26,37 +27,37 @@ function getSqlConfig() {
     }
   };
 }
-function parseDateTime(workDate, timeValue) {
-  if (!workDate || !timeValue) return null;
-  return `${workDate}T${timeValue}:00`;
-}
-function safeDecimalHours(startDateTime, endDateTime, breakMinutes) {
-  if (!startDateTime || !endDateTime) return 0;
-  const start = new Date(startDateTime);
-  const end = new Date(endDateTime);
-  const ms = end.getTime() - start.getTime();
-  if (Number.isNaN(ms) || ms < 0) return 0;
 
-  const rawHours = ms / (1000 * 60 * 60);
-  const breakHours = (Number(breakMinutes || 0) / 60);
-  const total = rawHours - breakHours;
-  return total > 0 ? Number(total.toFixed(2)) : 0;
+function safeDecimalHours(startTime, endTime, breakMinutes) {
+  if (!startTime || !endTime) return 0;
+
+  const [sh, sm] = String(startTime).split(":").map(Number);
+  const [eh, em] = String(endTime).split(":").map(Number);
+
+  if (
+    Number.isNaN(sh) || Number.isNaN(sm) ||
+    Number.isNaN(eh) || Number.isNaN(em)
+  ) {
+    return 0;
+  }
+
+  const startMinutes = (sh * 60) + sm;
+  const endMinutes = (eh * 60) + em;
+
+  const diffMinutes = endMinutes - startMinutes;
+  if (diffMinutes <= 0) return 0;
+
+  const totalHours = (diffMinutes - Number(breakMinutes || 0)) / 60;
+  return totalHours > 0 ? Number(totalHours.toFixed(2)) : 0;
 }
+
 module.exports = async function (context, req) {
   let pool;
 
   try {
-    //const principal = getUserFromHeaders(req);
-    //const email = getUserEmail(principal) || (principal && principal.userDetails) || null;
-    //const aadObjectId = getAadObjectId(principal);
-
-
-const identity = getIdentity(req);
-const email = identity.email;
-const aadObjectId = identity.aadObjectId;
-
-
-
+    const identity = getIdentity(req);
+    const email = identity.email;
+    const aadObjectId = identity.aadObjectId;
 
     if (!email && !aadObjectId) {
       context.res = json(401, { ok: false, error: "User identity not found." });
@@ -93,9 +94,7 @@ const aadObjectId = identity.aadObjectId;
       return;
     }
 
-    const startDateTime = parseDateTime(workDate, startTime);
-    const endDateTime = endTime ? parseDateTime(workDate, endTime) : null;
-    const hoursWorked = safeDecimalHours(startDateTime, endDateTime, breakMinutes);
+    const hoursWorked = safeDecimalHours(startTime, endTime, breakMinutes);
 
     pool = await sql.connect(getSqlConfig());
 
@@ -166,11 +165,11 @@ const aadObjectId = identity.aadObjectId;
     insertRequest.input("EmployeeProfileId", sql.UniqueIdentifier, lookup.EmployeeProfileId);
     insertRequest.input("TimeEntryTypeId", sql.Int, lookup.TimeEntryTypeId);
     insertRequest.input("WorkDate", sql.Date, workDate);
-    insertRequest.input("StartTime", sql.DateTime2, startDateTime);
-    insertRequest.input("EndTime", sql.DateTime2, endDateTime);
+    insertRequest.input("StartTimeText", sql.NVarChar(5), startTime);
+    insertRequest.input("EndTimeText", sql.NVarChar(5), endTime);
     insertRequest.input("BreakMinutes", sql.Int, breakMinutes);
     insertRequest.input("HoursWorked", sql.Decimal(10, 2), hoursWorked);
-    insertRequest.input("IsManualHours", sql.Bit, endDateTime ? 1 : 0);
+    insertRequest.input("IsManualHours", sql.Bit, endTime ? 1 : 0);
     insertRequest.input("PropertyId", sql.Int, lookup.PropertyId || null);
     insertRequest.input("CustomerId", sql.UniqueIdentifier, lookup.CustomerId || null);
     insertRequest.input("LaborType", sql.NVarChar(100), laborType);
@@ -179,95 +178,97 @@ const aadObjectId = identity.aadObjectId;
     insertRequest.input("WorkOrderNumber", sql.NVarChar(100), lookup.WorkOrderNumber || null);
     insertRequest.input("CreatedBy", sql.NVarChar(320), email || "system");
 
-    
-const insertResult = await insertRequest.query(`
-  SET NOCOUNT ON;
+    const insertResult = await insertRequest.query(`
+      SET NOCOUNT ON;
 
-  DECLARE @Inserted TABLE (
-    timeEntryId UNIQUEIDENTIFIER,
-    workDate DATE,
-    startTime DATETIME2,
-    endTime DATETIME2,
-    hoursWorked DECIMAL(10,2),
-    workOrderRowId INT,
-    workOrderNumber NVARCHAR(100),
-    notes NVARCHAR(2000)
-  );
+      DECLARE @Inserted TABLE (
+        timeEntryId UNIQUEIDENTIFIER,
+        workDate DATE,
+        startTime DATETIME2,
+        endTime DATETIME2,
+        hoursWorked DECIMAL(10,2),
+        workOrderRowId INT,
+        workOrderNumber NVARCHAR(100),
+        notes NVARCHAR(2000)
+      );
 
-  INSERT INTO dbo.TimeEntries (
-    EmployeeProfileId,
-    TimeEntryTypeId,
-    TimeEntryStatusId,
-    WorkDate,
-    StartTime,
-    EndTime,
-    BreakMinutes,
-    HoursWorked,
-    IsManualHours,
-    PropertyId,
-    CustomerId,
-    LaborType,
-    Notes,
-    CreatedAt,
-    CreatedBy,
-    ModifiedBy,
-    WorkOrderRowId,
-    WorkOrderNumber
-  )
-  OUTPUT
-    inserted.TimeEntryId,
-    inserted.WorkDate,
-    inserted.StartTime,
-    inserted.EndTime,
-    inserted.HoursWorked,
-    inserted.WorkOrderRowId,
-    inserted.WorkOrderNumber,
-    inserted.Notes
-  INTO @Inserted (
-    timeEntryId,
-    workDate,
-    startTime,
-    endTime,
-    hoursWorked,
-    workOrderRowId,
-    workOrderNumber,
-    notes
-  )
-  VALUES (
-    @EmployeeProfileId,
-    @TimeEntryTypeId,
-    1,
-    @WorkDate,
-    @StartTime,
-    @EndTime,
-    @BreakMinutes,
-    @HoursWorked,
-    @IsManualHours,
-    @PropertyId,
-    @CustomerId,
-    @LaborType,
-    @Notes,
-    SYSUTCDATETIME(),
-    @CreatedBy,
-    @CreatedBy,
-    @WorkOrderRowId,
-    @WorkOrderNumber
-  );
+      INSERT INTO dbo.TimeEntries (
+        EmployeeProfileId,
+        TimeEntryTypeId,
+        TimeEntryStatusId,
+        WorkDate,
+        StartTime,
+        EndTime,
+        BreakMinutes,
+        HoursWorked,
+        IsManualHours,
+        PropertyId,
+        CustomerId,
+        LaborType,
+        Notes,
+        CreatedAt,
+        CreatedBy,
+        ModifiedBy,
+        WorkOrderRowId,
+        WorkOrderNumber
+      )
+      OUTPUT
+        inserted.TimeEntryId,
+        inserted.WorkDate,
+        inserted.StartTime,
+        inserted.EndTime,
+        inserted.HoursWorked,
+        inserted.WorkOrderRowId,
+        inserted.WorkOrderNumber,
+        inserted.Notes
+      INTO @Inserted (
+        timeEntryId,
+        workDate,
+        startTime,
+        endTime,
+        hoursWorked,
+        workOrderRowId,
+        workOrderNumber,
+        notes
+      )
+      VALUES (
+        @EmployeeProfileId,
+        @TimeEntryTypeId,
+        1,
+        @WorkDate,
+        CASE
+          WHEN @StartTimeText IS NULL OR @StartTimeText = '' THEN NULL
+          ELSE CAST(CONCAT(CONVERT(varchar(10), @WorkDate, 23), 'T', @StartTimeText, ':00') AS DATETIME2)
+        END,
+        CASE
+          WHEN @EndTimeText IS NULL OR @EndTimeText = '' THEN NULL
+          ELSE CAST(CONCAT(CONVERT(varchar(10), @WorkDate, 23), 'T', @EndTimeText, ':00') AS DATETIME2)
+        END,
+        @BreakMinutes,
+        @HoursWorked,
+        @IsManualHours,
+        @PropertyId,
+        @CustomerId,
+        @LaborType,
+        @Notes,
+        SYSUTCDATETIME(),
+        @CreatedBy,
+        @CreatedBy,
+        @WorkOrderRowId,
+        @WorkOrderNumber
+      );
 
-  SELECT
-    timeEntryId,
-    workDate,
-    startTime,
-    endTime,
-    hoursWorked,
-    workOrderRowId,
-    workOrderNumber,
-    notes
-  FROM @Inserted;
-`);
-
-
-
+      SELECT
+        timeEntryId,
+        workDate,
+        startTime,
+        endTime,
+        hoursWorked,
+        workOrderRowId,
+        workOrderNumber,
+        notes
+      FROM @Inserted;
+    `);
 
     context.res = json(200, {
       ok: true,
