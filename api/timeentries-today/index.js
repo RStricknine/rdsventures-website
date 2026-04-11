@@ -37,69 +37,81 @@ module.exports = async function (context, req) {
     const aadObjectId = identity.aadObjectId;
 
     if (!email && !aadObjectId) {
-      context.res = json(401, { ok: false, error: "User identity not found." });
+      context.res = json(401, {
+        ok: false,
+        step: "identity",
+        error: "User identity not found."
+      });
       return;
     }
 
     pool = await sql.connect(getSqlConfig());
 
-    const request = pool.request();
-    request.input("Email", sql.NVarChar(320), email);
-    request.input("AadObjectId", sql.UniqueIdentifier, aadObjectId || null);
+    // Step 1: employee lookup only
+    const lookupRequest = pool.request();
+    lookupRequest.input("Email", sql.NVarChar(320), email);
+    lookupRequest.input("AadObjectId", sql.UniqueIdentifier, aadObjectId || null);
 
-    const result = await request.query(`
+    const lookupResult = await lookupRequest.query(`
       SET NOCOUNT ON;
 
-      DECLARE @EmployeeProfileId UNIQUEIDENTIFIER;
-
       SELECT TOP 1
-        @EmployeeProfileId = ep.EmployeeProfileId
+        ep.EmployeeProfileId
       FROM dbo.EmployeeProfiles ep
       WHERE ep.IsActive = 1
         AND (
           (@AadObjectId IS NOT NULL AND ep.AadObjectId = @AadObjectId)
           OR (@Email IS NOT NULL AND LOWER(ep.Email) = LOWER(@Email))
         );
+    `);
 
-      IF @EmployeeProfileId IS NULL
-      BEGIN
-        SELECT
-          CAST(NULL AS UNIQUEIDENTIFIER) AS employeeProfileId,
-          CAST(NULL AS INT) AS workOrderRowId,
-          CAST(NULL AS NVARCHAR(100)) AS workOrderNumber,
-          CAST(NULL AS DATETIME2) AS startTime,
-          CAST(NULL AS DATETIME2) AS endTime,
-          CAST(NULL AS DECIMAL(10,2)) AS hoursWorked,
-          CAST(NULL AS NVARCHAR(2000)) AS notes
-        WHERE 1 = 0;
+    const employee = lookupResult.recordset && lookupResult.recordset[0];
 
-        RETURN;
-      END
+    if (!employee || !employee.EmployeeProfileId) {
+      context.res = json(404, {
+        ok: false,
+        step: "employee_lookup",
+        error: "EmployeeProfile not found.",
+        debug: { email, aadObjectId }
+      });
+      return;
+    }
 
-      SELECT
-        te.EmployeeProfileId AS employeeProfileId,
-        te.WorkOrderRowId AS workOrderRowId,
-        te.WorkOrderNumber AS workOrderNumber,
-        te.StartTime AS startTime,
-        te.EndTime AS endTime,
-        te.HoursWorked AS hoursWorked,
-        te.Notes AS notes
+    // Step 2: bare minimum time query
+    const entriesRequest = pool.request();
+    entriesRequest.input("EmployeeProfileId", sql.UniqueIdentifier, employee.EmployeeProfileId);
+
+    const entriesResult = await entriesRequest.query(`
+      SET NOCOUNT ON;
+
+      SELECT TOP 20
+        te.TimeEntryId,
+        te.EmployeeProfileId,
+        te.WorkDate,
+        te.StartTime,
+        te.EndTime,
+        te.HoursWorked,
+        te.Notes,
+        te.WorkOrderRowId,
+        te.WorkOrderNumber,
+        te.CreatedAt
       FROM dbo.TimeEntries te
-      WHERE te.IsDeleted = 0
-        AND te.EmployeeProfileId = @EmployeeProfileId
-        AND te.WorkDate = CAST(GETDATE() AS DATE)
-      ORDER BY te.StartTime DESC, te.CreatedAt DESC;
+      WHERE te.EmployeeProfileId = @EmployeeProfileId
+      ORDER BY te.CreatedAt DESC;
     `);
 
     context.res = json(200, {
       ok: true,
-      items: result.recordset || []
+      step: "success",
+      items: entriesResult.recordset || []
     });
   } catch (err) {
-    context.log.error("timeentries/today error", err);
+    context.log.error("timeentries/today debug error", err);
     context.res = json(500, {
       ok: false,
-      error: err.message || "Server error."
+      step: "catch",
+      error: err.message || "Server error.",
+      details: String(err)
     });
   } finally {
     if (pool) {
